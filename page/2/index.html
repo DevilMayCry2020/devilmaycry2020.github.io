@@ -229,15 +229,15 @@
     <article class="col-12 col-md-12 mx-auto index-info">
       <h2 class="index-header">
         
-        <a href="/2025/05/05/DB/%E4%BB%A3%E7%A0%81%E5%A4%A7%E5%85%A8/ch12/ch12/" target="_self">
-          ch12. 基本数据类型
+        <a href="/2025/05/05/note/db/postgresql/MemoryContext%E5%88%86%E6%9E%90/MemoryContext/" target="_self">
+          PostgreSQL中的WAL文件与LSN深入探索和分析
         </a>
       </h2>
 
       
-      <a class="index-excerpt index-excerpt__noimg" href="/2025/05/05/DB/%E4%BB%A3%E7%A0%81%E5%A4%A7%E5%85%A8/ch12/ch12/" target="_self">
+      <a class="index-excerpt index-excerpt__noimg" href="/2025/05/05/note/db/postgresql/MemoryContext%E5%88%86%E6%9E%90/MemoryContext/" target="_self">
         <div>
-          介绍ch12. 基本数据类型 内容12.1 数值概论使用数时少分错误的建议：1、避免使用神秘数值(magic number)2、如果需要，可以使用硬编码的0和1程序主体中仅能出现的文字量就是0和13、预防除零错误使类型转换变得明显4、避免混合类型的比较5、注意编译器的警告   12.2 整数1、检查整数除法2、检查整数溢出3、检查中间结果溢出   12.3 浮点数1、避免数量级相差巨大的数之间的加
+          介绍PostgreSQL中MemoryContext机制解析 内容1. MemoryContext概述MemoryContext 以功能为单位组织起来的树形数据结构，不同的阶段使用不同的 MemoryContext，它的存在是为了更清晰的管理内存。   合理管理碎片小内存。频繁的向 OS 申请和释放内存效率是很差的。MemoryContext 会以 trunk 为单位向 OS 申请成块的内存，并管
         </div>
       </a>
 
@@ -261,13 +261,20 @@
     
       <span class="category-chain">
         
-  <a href="/categories/BOOK/" class="category-chain-item">BOOK</a>
+  <a href="/categories/DB/" class="category-chain-item">DB</a>
   
   
     <span>></span>
     
-  <a href="/categories/BOOK/%E4%BB%A3%E7%A0%81%E5%A4%A7%E5%85%A8/" class="category-chain-item">代码大全</a>
+  <a href="/categories/DB/PostgreSQL/" class="category-chain-item">PostgreSQL</a>
   
+  
+    <span>></span>
+    
+  <a href="/categories/DB/PostgreSQL/MemoryContext/" class="category-chain-item">MemoryContext</a>
+  
+  
+
   
 
   
@@ -282,516 +289,10 @@
         
           <div class="post-meta">
             <i class="iconfont icon-tags"></i>
-            
-              <a href="/tags/book/">#book</a>
-            
-              <a href="/tags/code/">#code</a>
-            
-              <a href="/tags/programming/">#programming</a>
-            
-          </div>
-        
-      </div>
-    </article>
-  </div>
-
-  <div class="row mx-auto index-card">
-    
-    
-    <article class="col-12 col-md-12 mx-auto index-info">
-      <h2 class="index-header">
-        
-        <a href="/2025/05/05/DB/%E4%BB%A3%E7%A0%81%E5%A4%A7%E5%85%A8/ch11/ch11/" target="_self">
-          ch11. 变量名的力量
-        </a>
-      </h2>
-
-      
-      <a class="index-excerpt index-excerpt__noimg" href="/2025/05/05/DB/%E4%BB%A3%E7%A0%81%E5%A4%A7%E5%85%A8/ch11/ch11/" target="_self">
-        <div>
-          介绍ch11. 变量名的力量 内容11.1 选择好变量名的注意事项可读、易记、恰如其分   最重要的命名注意事项该名字要完全准确的描述出该变量所代表的事物。   最适当的名字长度   变量名对作用域的影响短 – 临时长 – 全局1、对位于全局命名空间中的名字加以限定词   变量名中的计算值限定词把限定词加到名字的最后。   变量名中的常用对仗词 11.2 为特定类型的数据命名为循环下标命名   为
-        </div>
-      </a>
-
-      <div class="index-btm post-metas">
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-date"></i>
-            <time datetime="2025-05-05 20:24" pubdate>
-              2025-05-05
-            </time>
-          </div>
-        
-        
-          <div class="post-meta mr-3 d-flex align-items-center">
-            <i class="iconfont icon-category"></i>
-            
-
-<span class="category-chains">
-  
-  
-    
-      <span class="category-chain">
-        
-  <a href="/categories/BOOK/" class="category-chain-item">BOOK</a>
-  
-  
-    <span>></span>
-    
-  <a href="/categories/BOOK/%E4%BB%A3%E7%A0%81%E5%A4%A7%E5%85%A8/" class="category-chain-item">代码大全</a>
-  
-  
-
-  
-
-      </span>
-    
-  
-</span>
-
-          </div>
-        
-        
-          <div class="post-meta">
-            <i class="iconfont icon-tags"></i>
-            
-              <a href="/tags/book/">#book</a>
-            
-              <a href="/tags/code/">#code</a>
-            
-              <a href="/tags/programming/">#programming</a>
-            
-          </div>
-        
-      </div>
-    </article>
-  </div>
-
-  <div class="row mx-auto index-card">
-    
-    
-    <article class="col-12 col-md-12 mx-auto index-info">
-      <h2 class="index-header">
-        
-        <a href="/2025/05/05/DB/%E4%BB%A3%E7%A0%81%E5%A4%A7%E5%85%A8/ch10/ch10/" target="_self">
-          ch10. 使用变量的一般事项
-        </a>
-      </h2>
-
-      
-      <a class="index-excerpt index-excerpt__noimg" href="/2025/05/05/DB/%E4%BB%A3%E7%A0%81%E5%A4%A7%E5%85%A8/ch10/ch10/" target="_self">
-        <div>
-          介绍ch10. 使用变量的一般事项 内容10.1 数据认知10.2 轻松掌握变量定义加快变量定义的工作隐式声明：1、关闭隐式声明2、声明全部变量3、遵循某种命名规则4、检查变量名   10.3 变量初始化原则不合理的初始化数据是产生编程错误的常见根源之一。避免产生初始化错误的建议：1、在声明变量的时候初始化2、在靠近变量第一次使用的位置初始化它3、理想情况下，在靠近第一次使用变量的位置声明和定义该
-        </div>
-      </a>
-
-      <div class="index-btm post-metas">
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-date"></i>
-            <time datetime="2025-05-05 20:24" pubdate>
-              2025-05-05
-            </time>
-          </div>
-        
-        
-          <div class="post-meta mr-3 d-flex align-items-center">
-            <i class="iconfont icon-category"></i>
-            
-
-<span class="category-chains">
-  
-  
-    
-      <span class="category-chain">
-        
-  <a href="/categories/BOOK/" class="category-chain-item">BOOK</a>
-  
-  
-    <span>></span>
-    
-  <a href="/categories/BOOK/%E4%BB%A3%E7%A0%81%E5%A4%A7%E5%85%A8/" class="category-chain-item">代码大全</a>
-  
-  
-
-  
-
-      </span>
-    
-  
-</span>
-
-          </div>
-        
-        
-          <div class="post-meta">
-            <i class="iconfont icon-tags"></i>
-            
-              <a href="/tags/book/">#book</a>
-            
-              <a href="/tags/code/">#code</a>
-            
-              <a href="/tags/programming/">#programming</a>
-            
-          </div>
-        
-      </div>
-    </article>
-  </div>
-
-  <div class="row mx-auto index-card">
-    
-    
-    <article class="col-12 col-md-12 mx-auto index-info">
-      <h2 class="index-header">
-        
-        <a href="/2025/05/05/DB/%E4%BB%A3%E7%A0%81%E5%A4%A7%E5%85%A8/ch09/ch9/" target="_self">
-          ch9. 伪代码编程过程
-        </a>
-      </h2>
-
-      
-      <a class="index-excerpt index-excerpt__noimg" href="/2025/05/05/DB/%E4%BB%A3%E7%A0%81%E5%A4%A7%E5%85%A8/ch09/ch9/" target="_self">
-        <div>
-          介绍ch9. 伪代码编程过程 内容1、将从微观上关注编程过程 – 也就是关注创建单独的类及其子程序的特定步骤2、讲述伪代码编程过程(PPP)   9.1 创建类和子程序的步骤概述   创建一个类的步骤1、创建类的总体设计2、创建类中的子程序3、复审并测试整个类   创建子程序的步骤 9.2 伪代码使用伪代码的指导原则   9.3 通过伪代码编程过程创建子程序设计子程序1、检查先决条件要做的工作是否
-        </div>
-      </a>
-
-      <div class="index-btm post-metas">
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-date"></i>
-            <time datetime="2025-05-05 20:24" pubdate>
-              2025-05-05
-            </time>
-          </div>
-        
-        
-          <div class="post-meta mr-3 d-flex align-items-center">
-            <i class="iconfont icon-category"></i>
-            
-
-<span class="category-chains">
-  
-  
-    
-      <span class="category-chain">
-        
-  <a href="/categories/BOOK/" class="category-chain-item">BOOK</a>
-  
-  
-    <span>></span>
-    
-  <a href="/categories/BOOK/%E4%BB%A3%E7%A0%81%E5%A4%A7%E5%85%A8/" class="category-chain-item">代码大全</a>
-  
-  
-
-  
-
-      </span>
-    
-  
-</span>
-
-          </div>
-        
-        
-          <div class="post-meta">
-            <i class="iconfont icon-tags"></i>
-            
-              <a href="/tags/book/">#book</a>
-            
-              <a href="/tags/code/">#code</a>
-            
-              <a href="/tags/programming/">#programming</a>
-            
-          </div>
-        
-      </div>
-    </article>
-  </div>
-
-  <div class="row mx-auto index-card">
-    
-    
-    <article class="col-12 col-md-12 mx-auto index-info">
-      <h2 class="index-header">
-        
-        <a href="/2025/05/05/DB/%E4%BB%A3%E7%A0%81%E5%A4%A7%E5%85%A8/ch08/ch8/" target="_self">
-          ch8. 防御性编程
-        </a>
-      </h2>
-
-      
-      <a class="index-excerpt index-excerpt__noimg" href="/2025/05/05/DB/%E4%BB%A3%E7%A0%81%E5%A4%A7%E5%85%A8/ch08/ch8/" target="_self">
-        <div>
-          介绍ch8. 防御性编程 内容子程序应该不因传入错误数据而被破坏，哪怕是由其他子程序产生的错误数据。   8.1 保护程序免遭非法输入数据的破坏garbage in， garbage out – 缺乏安全性代表   三种方法处理：1、检查所有来源于外部的数据的值2、检查子程序所有输入参数的值3、决定如何处理错误的输入数据 8.2 断言断言(assertion)是指在开发期间使用的、让程序在运行时进
-        </div>
-      </a>
-
-      <div class="index-btm post-metas">
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-date"></i>
-            <time datetime="2025-05-05 20:24" pubdate>
-              2025-05-05
-            </time>
-          </div>
-        
-        
-          <div class="post-meta mr-3 d-flex align-items-center">
-            <i class="iconfont icon-category"></i>
-            
-
-<span class="category-chains">
-  
-  
-    
-      <span class="category-chain">
-        
-  <a href="/categories/BOOK/" class="category-chain-item">BOOK</a>
-  
-  
-    <span>></span>
-    
-  <a href="/categories/BOOK/%E4%BB%A3%E7%A0%81%E5%A4%A7%E5%85%A8/" class="category-chain-item">代码大全</a>
-  
-  
-
-  
-
-      </span>
-    
-  
-</span>
-
-          </div>
-        
-        
-          <div class="post-meta">
-            <i class="iconfont icon-tags"></i>
-            
-              <a href="/tags/book/">#book</a>
-            
-              <a href="/tags/code/">#code</a>
-            
-              <a href="/tags/programming/">#programming</a>
-            
-          </div>
-        
-      </div>
-    </article>
-  </div>
-
-  <div class="row mx-auto index-card">
-    
-    
-    <article class="col-12 col-md-12 mx-auto index-info">
-      <h2 class="index-header">
-        
-        <a href="/2025/05/05/DB/%E4%BB%A3%E7%A0%81%E5%A4%A7%E5%85%A8/ch07/ch7/" target="_self">
-          ch7. 高质量的子程序
-        </a>
-      </h2>
-
-      
-      <a class="index-excerpt index-excerpt__noimg" href="/2025/05/05/DB/%E4%BB%A3%E7%A0%81%E5%A4%A7%E5%85%A8/ch07/ch7/" target="_self">
-        <div>
-          介绍ch7. 高质量的子程序 内容7.1 创建子程序的正当理由 7.2 在子程序层上设计   7.3 好的子程序名字   7.4 子程序可以写多长   7.5 如何使用子程序参数 7.6 使用函数时要特别考虑的问题   7.7 宏子程序和内联子程序   CHECKLIST   KeyPoints 安装教程 xxxx xxxx xxxx  使用说明 xxxx xxxx xxxx
-        </div>
-      </a>
-
-      <div class="index-btm post-metas">
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-date"></i>
-            <time datetime="2025-05-05 20:24" pubdate>
-              2025-05-05
-            </time>
-          </div>
-        
-        
-          <div class="post-meta mr-3 d-flex align-items-center">
-            <i class="iconfont icon-category"></i>
-            
-
-<span class="category-chains">
-  
-  
-    
-      <span class="category-chain">
-        
-  <a href="/categories/BOOK/" class="category-chain-item">BOOK</a>
-  
-  
-    <span>></span>
-    
-  <a href="/categories/BOOK/%E4%BB%A3%E7%A0%81%E5%A4%A7%E5%85%A8/" class="category-chain-item">代码大全</a>
-  
-  
-
-  
-
-      </span>
-    
-  
-</span>
-
-          </div>
-        
-        
-          <div class="post-meta">
-            <i class="iconfont icon-tags"></i>
-            
-              <a href="/tags/book/">#book</a>
-            
-              <a href="/tags/code/">#code</a>
-            
-              <a href="/tags/programming/">#programming</a>
-            
-          </div>
-        
-      </div>
-    </article>
-  </div>
-
-  <div class="row mx-auto index-card">
-    
-    
-    <article class="col-12 col-md-12 mx-auto index-info">
-      <h2 class="index-header">
-        
-        <a href="/2025/05/05/DB/%E4%BB%A3%E7%A0%81%E5%A4%A7%E5%85%A8/ch01/ch1/" target="_self">
-          ch1. 欢迎进入软件构建的世界
-        </a>
-      </h2>
-
-      
-      <a class="index-excerpt index-excerpt__noimg" href="/2025/05/05/DB/%E4%BB%A3%E7%A0%81%E5%A4%A7%E5%85%A8/ch01/ch1/" target="_self">
-        <div>
-          介绍ch1. 欢迎进入软件构建的世界 内容1.1 什么是软件构建安装教程 xxxx xxxx xxxx  使用说明 xxxx xxxx xxxx
-        </div>
-      </a>
-
-      <div class="index-btm post-metas">
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-date"></i>
-            <time datetime="2025-05-05 20:24" pubdate>
-              2025-05-05
-            </time>
-          </div>
-        
-        
-          <div class="post-meta mr-3 d-flex align-items-center">
-            <i class="iconfont icon-category"></i>
-            
-
-<span class="category-chains">
-  
-  
-    
-      <span class="category-chain">
-        
-  <a href="/categories/BOOK/" class="category-chain-item">BOOK</a>
-  
-  
-    <span>></span>
-    
-  <a href="/categories/BOOK/%E4%BB%A3%E7%A0%81%E5%A4%A7%E5%85%A8/" class="category-chain-item">代码大全</a>
-  
-  
-
-  
-
-      </span>
-    
-  
-</span>
-
-          </div>
-        
-        
-          <div class="post-meta">
-            <i class="iconfont icon-tags"></i>
-            
-              <a href="/tags/book/">#book</a>
-            
-              <a href="/tags/code/">#code</a>
-            
-              <a href="/tags/programming/">#programming</a>
-            
-          </div>
-        
-      </div>
-    </article>
-  </div>
-
-  <div class="row mx-auto index-card">
-    
-    
-    <article class="col-12 col-md-12 mx-auto index-info">
-      <h2 class="index-header">
-        
-        <a href="/2025/05/05/DB/%E4%BA%8B%E5%8A%A1%E5%A4%84%E7%90%86-%E6%A6%82%E5%BF%B5%E4%B8%8E%E6%8A%80%E6%9C%AF/ch7/ch7/" target="_self">
-          ch7. 隔离性的概念
-        </a>
-      </h2>
-
-      
-      <a class="index-excerpt index-excerpt__noimg" href="/2025/05/05/DB/%E4%BA%8B%E5%8A%A1%E5%A4%84%E7%90%86-%E6%A6%82%E5%BF%B5%E4%B8%8E%E6%8A%80%E6%9C%AF/ch7/ch7/" target="_self">
-        <div>
-          介绍ch7. 隔离性的概念 内容7.7 幻像和谓词锁   7.8 粒度锁   7.9 封锁的启发式算法安装教程 xxxx xxxx xxxx  使用说明 xxxx xxxx xxxx
-        </div>
-      </a>
-
-      <div class="index-btm post-metas">
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-date"></i>
-            <time datetime="2025-05-05 20:24" pubdate>
-              2025-05-05
-            </time>
-          </div>
-        
-        
-          <div class="post-meta mr-3 d-flex align-items-center">
-            <i class="iconfont icon-category"></i>
-            
-
-<span class="category-chains">
-  
-  
-    
-      <span class="category-chain">
-        
-  <a href="/categories/BOOK/" class="category-chain-item">BOOK</a>
-  
-  
-    <span>></span>
-    
-  <a href="/categories/BOOK/%E4%BA%8B%E5%8A%A1%E5%A4%84%E7%90%86-%E6%A6%82%E5%BF%B5%E4%B8%8E%E6%8A%80%E6%9C%AF/" class="category-chain-item">事务处理-概念与技术</a>
-  
-  
-
-  
-
-      </span>
-    
-  
-</span>
-
-          </div>
-        
-        
-          <div class="post-meta">
-            <i class="iconfont icon-tags"></i>
-            
-              <a href="/tags/book/">#book</a>
             
               <a href="/tags/database/">#database</a>
             
-              <a href="/tags/transactions/">#transactions</a>
+              <a href="/tags/PostgreSQL/">#PostgreSQL</a>
             
           </div>
         
@@ -805,15 +306,15 @@
     <article class="col-12 col-md-12 mx-auto index-info">
       <h2 class="index-header">
         
-        <a href="/2025/05/05/DB/%E4%BA%8B%E5%8A%A1%E5%A4%84%E7%90%86-%E6%A6%82%E5%BF%B5%E4%B8%8E%E6%8A%80%E6%9C%AF/ch1/ch1/" target="_self">
-          ch1. 概述
+        <a href="/2025/05/05/note/db/postgresql/extension/PgExtension/pg_recovery/pg_recovery/" target="_self">
+          PostgreSQL pg_recovery 拓展插件
         </a>
       </h2>
 
       
-      <a class="index-excerpt index-excerpt__noimg" href="/2025/05/05/DB/%E4%BA%8B%E5%8A%A1%E5%A4%84%E7%90%86-%E6%A6%82%E5%BF%B5%E4%B8%8E%E6%8A%80%E6%9C%AF/ch1/ch1/" target="_self">
+      <a class="index-excerpt index-excerpt__noimg" href="/2025/05/05/note/db/postgresql/extension/PgExtension/pg_recovery/pg_recovery/" target="_self">
         <div>
-          介绍ch1. 概述 内容1.1 历史回顾苏美尔人发明了事务处理的记录方法 1.2 什么是事务处理系统补偿事务：事务的逆操作序列。用于恢复时撤销该事务的运行对数据库产生的影响。远程过程调用：一个进程调用另一个远程进程的程序的一种方式，好像远程进程上的子程序在本地一样。事务型远程过程调用：把有多个客户和服务器的工作结合到一个单独的ACID执行单元中的一种方式。   1.2.4 从资源管理器角度对事务处
+          介绍PostgreSQL pg_recovery 拓展插件 目录1. 一条 SQL 实现 PostgreSQL 数据找回2. pg_recovery 设计原理与源码解读 内容一条SQL实现PostgreSQL数据找回123快速找回丢失数据，是数据库的一项重要功能需求，一般建议使用官方推荐的工具。面向开源数据库，生态中也出现很多好用的开源工具。PostgreSQL 是非常流行的开源数据库，接下来介绍
         </div>
       </a>
 
@@ -837,13 +338,20 @@
     
       <span class="category-chain">
         
-  <a href="/categories/BOOK/" class="category-chain-item">BOOK</a>
+  <a href="/categories/DB/" class="category-chain-item">DB</a>
   
   
     <span>></span>
     
-  <a href="/categories/BOOK/%E4%BA%8B%E5%8A%A1%E5%A4%84%E7%90%86-%E6%A6%82%E5%BF%B5%E4%B8%8E%E6%8A%80%E6%9C%AF/" class="category-chain-item">事务处理-概念与技术</a>
+  <a href="/categories/DB/PostgreSQL/" class="category-chain-item">PostgreSQL</a>
   
+  
+    <span>></span>
+    
+  <a href="/categories/DB/PostgreSQL/extension/" class="category-chain-item">extension</a>
+  
+  
+
   
 
   
@@ -859,11 +367,9 @@
           <div class="post-meta">
             <i class="iconfont icon-tags"></i>
             
-              <a href="/tags/book/">#book</a>
-            
               <a href="/tags/database/">#database</a>
             
-              <a href="/tags/transactions/">#transactions</a>
+              <a href="/tags/PostgreSQL/">#PostgreSQL</a>
             
           </div>
         
@@ -877,15 +383,15 @@
     <article class="col-12 col-md-12 mx-auto index-info">
       <h2 class="index-header">
         
-        <a href="/2025/05/05/DB/PostgreSQL%E6%8C%87%E5%8D%97/%E5%86%85%E5%B9%95%E6%8E%A2%E7%B4%A2_new_release/ch9/ch9/" target="_self">
-          ch9. WRITE AHEAD LOGGING (WAL)
+        <a href="/2025/05/05/note/db/postgresql/extension/PgExtension/pageinspect/PageInspect/" target="_self">
+          PostgreSQL pg_pageinspect 拓展插件
         </a>
       </h2>
 
       
-      <a class="index-excerpt index-excerpt__noimg" href="/2025/05/05/DB/PostgreSQL%E6%8C%87%E5%8D%97/%E5%86%85%E5%B9%95%E6%8E%A2%E7%B4%A2_new_release/ch9/ch9/" target="_self">
+      <a class="index-excerpt index-excerpt__noimg" href="/2025/05/05/note/db/postgresql/extension/PgExtension/pageinspect/PageInspect/" target="_self">
         <div>
-          ch9. WRITE AHEAD LOGGING (WAL)事务日志是数据库的重要组成部分,因为它们可以确保即使在系统故障的情况下也不会丢失任何数据。它们是数据库系统中所有更改和操作的历史记录。这确保了即使出现电源故障或服务器崩溃等故障,也不会丢失任何数据。 日志包含已执行的每个事务的足够信息,因此数据库服务器可以通过在事务日志中重放更改和操作来恢复数据库集群,以应对服务器崩溃的情况。 在计算机科
+          介绍PostgreSQL pg_pageinspect 拓展插件 目录1. Postgresql的pageinspect插件框架2. 使用pageinspect研究PostgreSQL的infomask 内容Postgresql的pageinspect插件框架1、插件源码分析123pageinspect是一个非常典型、简单的插件，大部分流程可以学习、复用。如果需要写新的插件，可以直接copy修改下
         </div>
       </a>
 
@@ -909,13 +415,20 @@
     
       <span class="category-chain">
         
-  <a href="/categories/BOOK/" class="category-chain-item">BOOK</a>
+  <a href="/categories/DB/" class="category-chain-item">DB</a>
   
   
     <span>></span>
     
-  <a href="/categories/BOOK/PostgreSQL%E6%8C%87%E5%8D%97%EF%BC%9A%E5%86%85%E5%B9%95%E6%8E%A2%E7%B4%A2/" class="category-chain-item">PostgreSQL指南：内幕探索</a>
+  <a href="/categories/DB/PostgreSQL/" class="category-chain-item">PostgreSQL</a>
   
+  
+    <span>></span>
+    
+  <a href="/categories/DB/PostgreSQL/extension/" class="category-chain-item">extension</a>
+  
+  
+
   
 
   
@@ -931,13 +444,429 @@
           <div class="post-meta">
             <i class="iconfont icon-tags"></i>
             
-              <a href="/tags/book/">#book</a>
+              <a href="/tags/database/">#database</a>
+            
+              <a href="/tags/PostgreSQL/">#PostgreSQL</a>
+            
+          </div>
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+    <article class="col-12 col-md-12 mx-auto index-info">
+      <h2 class="index-header">
+        
+        <a href="/2025/05/05/note/db/postgresql/conf/keepalive/" target="_self">
+          PostgreSQL中的keepalive
+        </a>
+      </h2>
+
+      
+      <a class="index-excerpt index-excerpt__noimg" href="/2025/05/05/note/db/postgresql/conf/keepalive/" target="_self">
+        <div>
+          xxTCP keepalive for a better PostgreSQL experience TCP keepalive 以获得更好的 PostgreSQL 体验 本文主要内容如下：    Chapter Contents sub Chapter    1 Reasons for broken connections 1.1 Database server crashes    1.2 C
+        </div>
+      </a>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2025-05-05 20:24" pubdate>
+              2025-05-05
+            </time>
+          </div>
+        
+        
+          <div class="post-meta mr-3 d-flex align-items-center">
+            <i class="iconfont icon-category"></i>
+            
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/DB/" class="category-chain-item">DB</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/DB/PostgreSQL/" class="category-chain-item">PostgreSQL</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/DB/PostgreSQL/conf/" class="category-chain-item">conf</a>
+  
+  
+
+  
+
+  
+
+      </span>
+    
+  
+</span>
+
+          </div>
+        
+        
+          <div class="post-meta">
+            <i class="iconfont icon-tags"></i>
             
               <a href="/tags/database/">#database</a>
             
-              <a href="/tags/transactions/">#transactions</a>
+              <a href="/tags/PostgreSQL/">#PostgreSQL</a>
             
           </div>
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+    <article class="col-12 col-md-12 mx-auto index-info">
+      <h2 class="index-header">
+        
+        <a href="/2025/05/05/note/db/postgresql/checkpoint/gdb/README/" target="_self">
+          PostgreSQL 调试 checkpointer 进程
+        </a>
+      </h2>
+
+      
+      <a class="index-excerpt index-excerpt__noimg" href="/2025/05/05/note/db/postgresql/checkpoint/gdb/README/" target="_self">
+        <div>
+          How to gdb checkpointer?PostgreSQL 调试 checkpointer 进程 https://blog.japinli.top/2022/11/postgresql-debug-checkpointer/ https://stackoverflow.com/questions/36993909/debugging-a-program-that-uses-sigint-
+        </div>
+      </a>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2025-05-05 20:24" pubdate>
+              2025-05-05
+            </time>
+          </div>
+        
+        
+          <div class="post-meta mr-3 d-flex align-items-center">
+            <i class="iconfont icon-category"></i>
+            
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/DB/" class="category-chain-item">DB</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/DB/PostgreSQL/" class="category-chain-item">PostgreSQL</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/DB/PostgreSQL/checkpoint/" class="category-chain-item">checkpoint</a>
+  
+  
+
+  
+
+  
+
+      </span>
+    
+  
+</span>
+
+          </div>
+        
+        
+          <div class="post-meta">
+            <i class="iconfont icon-tags"></i>
+            
+              <a href="/tags/database/">#database</a>
+            
+              <a href="/tags/PostgreSQL/">#PostgreSQL</a>
+            
+          </div>
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+    <article class="col-12 col-md-12 mx-auto index-info">
+      <h2 class="index-header">
+        
+        <a href="/2025/05/05/note/db/Oracle/RAC/GRD/README/" target="_self">
+          Global Resource Drectory (GRD)
+        </a>
+      </h2>
+
+      
+      <a class="index-excerpt index-excerpt__noimg" href="/2025/05/05/note/db/Oracle/RAC/GRD/README/" target="_self">
+        <div>
+          Global Resource Drectory (GRD) Global Resource Drectory (GRD)本章主要内容如下：    Chapter Contents    1.1 GRD introduction   1.2 Cache Coherency   1.3 Resources and Enqueues   1.4 Global Enqueue Services (GES
+        </div>
+      </a>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2025-05-05 20:24" pubdate>
+              2025-05-05
+            </time>
+          </div>
+        
+        
+          <div class="post-meta mr-3 d-flex align-items-center">
+            <i class="iconfont icon-category"></i>
+            
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/DB/" class="category-chain-item">DB</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/DB/Oracle/" class="category-chain-item">Oracle</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/DB/Oracle/RAC/" class="category-chain-item">RAC</a>
+  
+  
+
+  
+
+  
+
+      </span>
+    
+  
+</span>
+
+          </div>
+        
+        
+          <div class="post-meta">
+            <i class="iconfont icon-tags"></i>
+            
+              <a href="/tags/database/">#database</a>
+            
+              <a href="/tags/oracle/">#oracle</a>
+            
+          </div>
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+    <article class="col-12 col-md-12 mx-auto index-info">
+      <h2 class="index-header">
+        
+        <a href="/2025/05/05/note/db/Oracle/PLSQL/DBMS_LOCK/README/" target="_self">
+          oracle DBMS_LOCK
+        </a>
+      </h2>
+
+      
+      <a class="index-excerpt index-excerpt__noimg" href="/2025/05/05/note/db/Oracle/PLSQL/DBMS_LOCK/README/" target="_self">
+        <div>
+          介绍oracle DBMS_LOCK 包 目录内容DBMS_LOCK包为Oracle锁定管理服务提供了接口。 您可以请求特定模式的锁，为其分配一个唯一名称，使得该名称在同一实例或其他实例中的另一个进程中可被识别，进而改变锁的模式并释放该锁。 本章包含以下内容：    Chapter Contents    1. 概述   2. 安全模型   3. 常量   4. 规则与限制   5. 操作注意事项
+        </div>
+      </a>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2025-05-05 20:24" pubdate>
+              2025-05-05
+            </time>
+          </div>
+        
+        
+          <div class="post-meta mr-3 d-flex align-items-center">
+            <i class="iconfont icon-category"></i>
+            
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/DB/" class="category-chain-item">DB</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/DB/Oracle/" class="category-chain-item">Oracle</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/DB/Oracle/package/" class="category-chain-item">package</a>
+  
+  
+
+  
+
+  
+
+      </span>
+    
+  
+</span>
+
+          </div>
+        
+        
+          <div class="post-meta">
+            <i class="iconfont icon-tags"></i>
+            
+              <a href="/tags/database/">#database</a>
+            
+              <a href="/tags/oracle/">#oracle</a>
+            
+          </div>
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+    <article class="col-12 col-md-12 mx-auto index-info">
+      <h2 class="index-header">
+        
+        <a href="/2025/05/05/note/db/mysql/LockFunc/README/" target="_self">
+          MySQL Locking Functions
+        </a>
+      </h2>
+
+      
+      <a class="index-excerpt index-excerpt__noimg" href="/2025/05/05/note/db/mysql/LockFunc/README/" target="_self">
+        <div>
+          介绍MySQL Locking Functions https://dev.mysql.com/doc/refman/8.0/en/locking-functions.html 目录内容本章包含以下内容：    Chapter Contents    1. GET_LOCK   2. IS_FREE_LOCK   3. IS_USED_LOCK   4. RELEASE_ALL_LOCKS   5
+        </div>
+      </a>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2025-05-05 20:24" pubdate>
+              2025-05-05
+            </time>
+          </div>
+        
+        
+          <div class="post-meta mr-3 d-flex align-items-center">
+            <i class="iconfont icon-category"></i>
+            
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/DB/" class="category-chain-item">DB</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/DB/MySQL/" class="category-chain-item">MySQL</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/DB/MySQL/lock/" class="category-chain-item">lock</a>
+  
+  
+
+  
+
+  
+
+      </span>
+    
+  
+</span>
+
+          </div>
+        
+        
+          <div class="post-meta">
+            <i class="iconfont icon-tags"></i>
+            
+              <a href="/tags/database/">#database</a>
+            
+              <a href="/tags/MySQL/">#MySQL</a>
+            
+          </div>
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+    <article class="col-12 col-md-12 mx-auto index-info">
+      <h2 class="index-header">
+        
+        <a href="/2025/05/05/%E6%B5%8B%E8%AF%95%E6%96%87%E7%AB%A0/" target="_self">
+          测试文章
+        </a>
+      </h2>
+
+      
+      <a class="index-excerpt index-excerpt__noimg" href="/2025/05/05/%E6%B5%8B%E8%AF%95%E6%96%87%E7%AB%A0/" target="_self">
+        <div>
+          1 2 3 45  6
+        </div>
+      </a>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2025-05-05 17:31" pubdate>
+              2025-05-05
+            </time>
+          </div>
+        
+        
         
       </div>
     </article>
@@ -947,7 +876,7 @@
 
   <nav aria-label="navigation">
     <span class="pagination" id="pagination">
-      <a class="extend prev" rel="prev" href="/"><i class="iconfont icon-arrowleft"></i></a><a class="page-number" href="/">1</a><span class="page-number current">2</span><a class="page-number" href="/page/3/#board">3</a><a class="page-number" href="/page/4/#board">4</a><span class="space">&hellip;</span><a class="page-number" href="/page/10/#board">10</a><a class="extend next" rel="next" href="/page/3/#board"><i class="iconfont icon-arrowright"></i></a>
+      <a class="extend prev" rel="prev" href="/"><i class="iconfont icon-arrowleft"></i></a><a class="page-number" href="/">1</a><span class="page-number current">2</span>
     </span>
   </nav>
 
