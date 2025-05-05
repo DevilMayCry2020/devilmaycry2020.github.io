@@ -544,15 +544,15 @@
     <article class="col-12 col-md-12 mx-auto index-info">
       <h2 class="index-header">
         
-        <a href="/2025/05/05/%E6%B5%8B%E8%AF%95%E6%96%87%E7%AB%A0/" target="_self">
-          测试文章
+        <a href="/2025/05/05/note/DB/sqlserver/lock/deadlock_priority/" target="_self">
+          SQLServer 死锁优先级
         </a>
       </h2>
 
       
-      <a class="index-excerpt index-excerpt__noimg" href="/2025/05/05/%E6%B5%8B%E8%AF%95%E6%96%87%E7%AB%A0/" target="_self">
+      <a class="index-excerpt index-excerpt__noimg" href="/2025/05/05/note/DB/sqlserver/lock/deadlock_priority/" target="_self">
         <div>
-          1 2 3 45  6
+          SQLServer 死锁优先级SET DEADLOCK_PRIORITY (Transact-SQL) 本文主要内容如下：    Chapter Contents    1 语法   2 参数   3 备注   4 权限   5 示例   6 后续步骤   指定当前会话与其他会话发生死锁时继续处理的相对重要性。 1 语法123SET DEADLOCK_PRIORITY &#123; LOW | N
         </div>
       </a>
 
@@ -560,18 +560,376 @@
         
           <div class="post-meta mr-3">
             <i class="iconfont icon-date"></i>
-            <time datetime="2025-05-05 17:31" pubdate>
+            <time datetime="2025-05-05 20:24" pubdate>
               2025-05-05
             </time>
           </div>
         
         
+          <div class="post-meta mr-3 d-flex align-items-center">
+            <i class="iconfont icon-category"></i>
+            
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/DB/" class="category-chain-item">DB</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/DB/sqlserver/" class="category-chain-item">sqlserver</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/DB/sqlserver/lock/" class="category-chain-item">lock</a>
+  
+  
+
+  
+
+  
+
+      </span>
+    
+  
+</span>
+
+          </div>
+        
+        
+          <div class="post-meta">
+            <i class="iconfont icon-tags"></i>
+            
+              <a href="/tags/database/">#database</a>
+            
+              <a href="/tags/sqlserver/">#sqlserver</a>
+            
+          </div>
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+    <article class="col-12 col-md-12 mx-auto index-info">
+      <h2 class="index-header">
+        
+        <a href="/2025/05/05/note/DB/postgresql/unlogged/README/" target="_self">
+          深入浅出无日志表
+        </a>
+      </h2>
+
+      
+      <a class="index-excerpt index-excerpt__noimg" href="/2025/05/05/note/DB/postgresql/unlogged/README/" target="_self">
+        <div>
+          深入浅出无日志表   Chapter Contents    1 前言   2 分析   3 见微知著   4 表的转换   5 块结构   6 小结   1. 前言在 PostgreSQL 中，支持多种类型的表 — 临时表、普通表，以及无日志表。  顾名思义，”无日志”其优势在于不用记录 WAL，那么写入速度自然也杠杠的  同理，无日志表在备库上没有数据(只有一个壳)，也无法进行访问，会提示ER
+        </div>
+      </a>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2025-05-05 20:24" pubdate>
+              2025-05-05
+            </time>
+          </div>
+        
+        
+          <div class="post-meta mr-3 d-flex align-items-center">
+            <i class="iconfont icon-category"></i>
+            
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/DB/" class="category-chain-item">DB</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/DB/PostgreSQL/" class="category-chain-item">PostgreSQL</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/DB/PostgreSQL/unlogged/" class="category-chain-item">unlogged</a>
+  
+  
+
+  
+
+  
+
+      </span>
+    
+  
+</span>
+
+          </div>
+        
+        
+          <div class="post-meta">
+            <i class="iconfont icon-tags"></i>
+            
+              <a href="/tags/database/">#database</a>
+            
+              <a href="/tags/PostgreSQL/">#PostgreSQL</a>
+            
+          </div>
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+    <article class="col-12 col-md-12 mx-auto index-info">
+      <h2 class="index-header">
+        
+        <a href="/2025/05/05/note/DB/postgresql/Transactions/delayChkpt/DelayChkpt/" target="_self">
+          DelayCheckpoint
+        </a>
+      </h2>
+
+      
+      <a class="index-excerpt index-excerpt__noimg" href="/2025/05/05/note/DB/postgresql/Transactions/delayChkpt/DelayChkpt/" target="_self">
+        <div>
+          介绍DelayCheckpoint 内容1、事务提交三个关键步骤： 提交标志的设置 ：执行“s-&gt;state&#x3D;TRANS_COMMIT”设置事务的状态。 记载到日志 ：调用RecordTransactionCommit（）记录日志并刷出日志（不一定刷出到物理存储，需要根据fsync参数的设置值确定）。 释放锁 ：释放锁的位置是在设置提交标志之前还是之后，可以表明使用的封锁算法是否是
+        </div>
+      </a>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2025-05-05 20:24" pubdate>
+              2025-05-05
+            </time>
+          </div>
+        
+        
+          <div class="post-meta mr-3 d-flex align-items-center">
+            <i class="iconfont icon-category"></i>
+            
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/DB/" class="category-chain-item">DB</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/DB/PostgreSQL/" class="category-chain-item">PostgreSQL</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/DB/PostgreSQL/transactions/" class="category-chain-item">transactions</a>
+  
+  
+
+  
+
+  
+
+      </span>
+    
+  
+</span>
+
+          </div>
+        
+        
+          <div class="post-meta">
+            <i class="iconfont icon-tags"></i>
+            
+              <a href="/tags/database/">#database</a>
+            
+              <a href="/tags/PostgreSQL/">#PostgreSQL</a>
+            
+          </div>
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+    <article class="col-12 col-md-12 mx-auto index-info">
+      <h2 class="index-header">
+        
+        <a href="/2025/05/05/note/DB/postgresql/toast/README/" target="_self">
+          toast
+        </a>
+      </h2>
+
+      
+      <a class="index-excerpt index-excerpt__noimg" href="/2025/05/05/note/DB/postgresql/toast/README/" target="_self">
+        <div>
+          toasttoast in pg 本章主要内容如下：    Chapter Contents sub Chapter    1 TOAST in PG 1.1 xx    1.2 xx   2 xx    3 xx    1 xx1.1 xx1.2 xx2 xx3 xx参与贡献 Fork 本仓库 新建 Feat_xxx 分支 提交代码 新建 Pull Request  特技 使用 Readme_X
+        </div>
+      </a>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2025-05-05 20:24" pubdate>
+              2025-05-05
+            </time>
+          </div>
+        
+        
+          <div class="post-meta mr-3 d-flex align-items-center">
+            <i class="iconfont icon-category"></i>
+            
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/DB/" class="category-chain-item">DB</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/DB/PostgreSQL/" class="category-chain-item">PostgreSQL</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/DB/PostgreSQL/toast/" class="category-chain-item">toast</a>
+  
+  
+
+  
+
+  
+
+      </span>
+    
+  
+</span>
+
+          </div>
+        
+        
+          <div class="post-meta">
+            <i class="iconfont icon-tags"></i>
+            
+              <a href="/tags/database/">#database</a>
+            
+              <a href="/tags/PostgreSQL/">#PostgreSQL</a>
+            
+          </div>
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+    <article class="col-12 col-md-12 mx-auto index-info">
+      <h2 class="index-header">
+        
+        <a href="/2025/05/05/note/DB/postgresql/PostgreSQL%E4%B8%AD%E7%9A%84WAL/WAL/" target="_self">
+          PostgreSQL中的WAL文件与LSN深入探索和分析
+        </a>
+      </h2>
+
+      
+      <a class="index-excerpt index-excerpt__noimg" href="/2025/05/05/note/DB/postgresql/PostgreSQL%E4%B8%AD%E7%9A%84WAL/WAL/" target="_self">
+        <div>
+          介绍PostgreSQL中的WAL文件与LSN深入探索和分析 内容1. 前言在16MB段大小的前提下，WAL文件的排列大概是这个样子的：   2、 16MB wal seg下的WAL段文件命名及LSN编码规则00000001 00000002 000000FA分为三段，分别是 “时间线”、“32bit 逻辑日志号”、“32bit 日志段号”我们也可以看到，上边的日志段号FE-&gt;FF然后又回到
+        </div>
+      </a>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2025-05-05 20:24" pubdate>
+              2025-05-05
+            </time>
+          </div>
+        
+        
+          <div class="post-meta mr-3 d-flex align-items-center">
+            <i class="iconfont icon-category"></i>
+            
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/DB/" class="category-chain-item">DB</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/DB/PostgreSQL/" class="category-chain-item">PostgreSQL</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/DB/PostgreSQL/WAL/" class="category-chain-item">WAL</a>
+  
+  
+
+  
+
+  
+
+      </span>
+    
+  
+</span>
+
+          </div>
+        
+        
+          <div class="post-meta">
+            <i class="iconfont icon-tags"></i>
+            
+              <a href="/tags/database/">#database</a>
+            
+              <a href="/tags/PostgreSQL/">#PostgreSQL</a>
+            
+          </div>
         
       </div>
     </article>
   </div>
 
 
+
+  <nav aria-label="navigation">
+    <span class="pagination" id="pagination">
+      <span class="page-number current">1</span><a class="page-number" href="/page/2/#board">2</a><a class="extend next" rel="next" href="/page/2/#board"><i class="iconfont icon-arrowright"></i></a>
+    </span>
+  </nav>
 
 
 

@@ -1,0 +1,734 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Smile">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="SQLServer 死锁优先级SET DEADLOCK_PRIORITY (Transact-SQL) 本文主要内容如下：    Chapter Contents    1 语法   2 参数   3 备注   4 权限   5 示例   6 后续步骤   指定当前会话与其他会话发生死锁时继续处理的相对重要性。 1 语法123SET DEADLOCK_PRIORITY &#123; LOW | N">
+<meta property="og:type" content="article">
+<meta property="og:title" content="SQLServer 死锁优先级">
+<meta property="og:url" content="http://smilemzy.com/2025/05/05/note/DB/sqlserver/lock/deadlock_priority/index.html">
+<meta property="og:site_name" content="Smile">
+<meta property="og:description" content="SQLServer 死锁优先级SET DEADLOCK_PRIORITY (Transact-SQL) 本文主要内容如下：    Chapter Contents    1 语法   2 参数   3 备注   4 权限   5 示例   6 后续步骤   指定当前会话与其他会话发生死锁时继续处理的相对重要性。 1 语法123SET DEADLOCK_PRIORITY &#123; LOW | N">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2025-05-05T12:24:14.216Z">
+<meta property="article:modified_time" content="2025-05-05T12:31:47.481Z">
+<meta property="article:author" content="Smile">
+<meta property="article:tag" content="database">
+<meta property="article:tag" content="sqlserver">
+<meta name="twitter:card" content="summary_large_image">
+  
+  
+  
+  <title>SQLServer 死锁优先级 - Smile</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/c/font_1749284_5i9bdhy70f8.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/c/font_1736178_k526ubmyhba.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"smilemzy.com","root":"/","version":"1.9.8","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false},"umami":{"src":null,"website_id":null,"domains":null,"start_time":"2024-01-01T00:00:00.000Z","token":null,"api_server":null}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+
+  
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Smile</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/" target="_self">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/" target="_self">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/" target="_self">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/" target="_self">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/" target="_self">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="SQLServer 死锁优先级"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2025-05-05 20:24" pubdate>
+          2025年5月5日 晚上
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          1.2k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          10 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">SQLServer 死锁优先级</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <h2 id="SQLServer-死锁优先级"><a href="#SQLServer-死锁优先级" class="headerlink" title="SQLServer 死锁优先级"></a>SQLServer 死锁优先级</h2><p>SET DEADLOCK_PRIORITY (Transact-SQL)</p>
+<p>本文主要内容如下：</p>
+<table>
+<thead>
+<tr>
+<th>Chapter Contents</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><a href="#cp1">1 语法</a></td>
+</tr>
+<tr>
+<td><a href="#cp2">2 参数</a></td>
+</tr>
+<tr>
+<td><a href="#cp3">3 备注</a></td>
+</tr>
+<tr>
+<td><a href="#cp4">4 权限</a></td>
+</tr>
+<tr>
+<td><a href="#cp5">5 示例</a></td>
+</tr>
+<tr>
+<td><a href="#cp6">6 后续步骤</a></td>
+</tr>
+</tbody></table>
+<p>指定当前会话与其他会话发生死锁时继续处理的相对重要性。</p>
+<h3 id="1-语法"><a href="#1-语法" class="headerlink" title="1 语法"></a><a name="cp1"></a>1 语法</h3><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-keyword">SET</span> DEADLOCK_PRIORITY &#123; LOW <span class="hljs-operator">|</span> NORMAL <span class="hljs-operator">|</span> HIGH <span class="hljs-operator">|</span> <span class="hljs-operator">&lt;</span><span class="hljs-type">numeric</span><span class="hljs-operator">-</span>priority<span class="hljs-operator">&gt;</span> <span class="hljs-operator">|</span> <span class="hljs-variable">@deadlock_var</span> <span class="hljs-operator">|</span> <span class="hljs-variable">@deadlock_intvar</span> &#125;<br>  <br><span class="hljs-operator">&lt;</span><span class="hljs-type">numeric</span><span class="hljs-operator">-</span>priority<span class="hljs-operator">&gt;</span> ::<span class="hljs-operator">=</span> &#123; <span class="hljs-number">-10</span> <span class="hljs-operator">|</span> <span class="hljs-number">-9</span> <span class="hljs-operator">|</span> <span class="hljs-number">-8</span> <span class="hljs-operator">|</span> ... <span class="hljs-operator">|</span> <span class="hljs-number">0</span> <span class="hljs-operator">|</span> ... <span class="hljs-operator">|</span> <span class="hljs-number">8</span> <span class="hljs-operator">|</span> <span class="hljs-number">9</span> <span class="hljs-operator">|</span> <span class="hljs-number">10</span> &#125;<br></code></pre></td></tr></table></figure>
+<h3 id="2-参数"><a href="#2-参数" class="headerlink" title="2 参数"></a><a name="cp2"></a>2 参数</h3><p>LOW</p>
+<p>指定如果当前会话发生死锁，并且死锁链中涉及的其他会话的死锁优先级设置为 NORMAL 或 HIGH 或大于 -5 的整数值，则当前会话将成为死锁牺牲品。 如果其他会话的死锁优先级设置为小于 -5 的整数值，则当前会话将不会成为死锁牺牲品。 此参数还指定如果其他会话的死锁优先级设置为 LOW 或 -5，则当前会话将可能成为死锁牺牲品。</p>
+<p>NORMAL</p>
+<p>指定如果死锁链中涉及的其他会话的死锁优先级设置为 HIGH 或大于 0 的整数值，则当前会话将成为死锁牺牲品，但如果其他会话的死锁优先级设置为 LOW 或小于 0 的整数值，则当前会话将不会成为死锁牺牲品。 此参数还指定如果其他会话的死锁优先级设置为 NORMAL 或 0，则当前会话将可能成为死锁牺牲品。 NORMAL 为默认优先级。</p>
+<p>HIGH</p>
+<p>指定如果死锁链中涉及的其他会话的死锁优先级设置为大于 5 的整数值，则当前会话将成为死锁牺牲品，或者如果其他会话的死锁优先级设置为 HIGH 或 5，则当前会话可能成为死锁牺牲品。</p>
+<numeric-priority>
+
+<p>用以提供 21 个死锁优先级别的整数值范围（-10 到 10）。 它指定如果死锁链中涉及的其他会话以更高的死锁优先级值运行，则当前会话将成为死锁牺牲品，但如果其他会话以低于当前会话的死锁优先级值运行，则当前会话不会成为死锁牺牲品。 它还指定如果其他会话以相同于当前会话的死锁优先级值运行，则当前会话可能成为死锁牺牲品。 LOW 对应于 -5、NORMAL 对应于 0 以及 HIGH 对应于 5。</p>
+<p>@deadlock_var</p>
+<p>指定死锁优先级的字符变量。 此变量必须设置为“LOW”、“NORMAL”或“HIGH”中的一个值。 而且必须足够大以保存整个字符串。</p>
+<p>@deadlock_intvar</p>
+<p>指定死锁优先级的整数变量。 此变量必须设置为 -10 到 10 范围中的一个整数值。</p>
+<h3 id="3-备注"><a href="#3-备注" class="headerlink" title="3 备注"></a><a name="cp3"></a>3 备注</h3><p>当两个会话同时等待访问由其他会话锁定的资源时，便会发生死锁。 当 SQL Server 实例检测到两个会话发生死锁时，将选择其中一个会话作为死锁牺牲品来解决死锁。 此牺牲品的当前事务将回滚，且死锁错误消息 1205 返回客户端。 这样可释放由该会话所控制的所有锁，从而允许其他会话继续进行。</p>
+<p>将哪个会话选为死锁牺牲品取决于每个会话的死锁优先级：</p>
+<pre><code class="hljs">(1) 如果两个会话的死锁优先级相同，则 SQL Server 实例将回滚的开销较低的会话选为死锁牺牲品。 例如，如果两个会话都将其死锁优先级设置为 HIGH，则此实例便将它估计回滚的开销较低的会话选为牺牲品。 该成本是通过比较各事务此时已写入的日志字节数来确定的。 （可以在死锁图中将此值看作“已用日志”）。
+
+(2) 如果会话的死锁优先级不同，则将死锁优先级最低的会话选为死锁牺牲品。
+</code></pre>
+<p>SET DEADLOCK_PRIORITY 是在执行或运行时设置，而不是在分析时设置。</p>
+<p>此语法在 Azure Synapse Analytics 专用 SQL 池中不受支持。 它在 Azure Synapse Analytics 无服务器 SQL 池中受支持。</p>
+<h3 id="4-权限"><a href="#4-权限" class="headerlink" title="4 权限"></a><a name="cp4"></a>4 权限</h3><p>要求 公共 角色具有成员身份。</p>
+<h3 id="5-示例"><a href="#5-示例" class="headerlink" title="5 示例"></a><a name="cp5"></a>5 示例</h3><p>以下示例使用变量将死锁优先级设置为 LOW。</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-keyword">DECLARE</span> <span class="hljs-variable">@deadlock_var</span> <span class="hljs-type">NCHAR</span>(<span class="hljs-number">3</span>);<br><span class="hljs-keyword">SET</span> <span class="hljs-variable">@deadlock_var</span> <span class="hljs-operator">=</span> N<span class="hljs-string">&#x27;LOW&#x27;</span>;<br>  <br><span class="hljs-keyword">SET</span> DEADLOCK_PRIORITY <span class="hljs-variable">@deadlock_var</span>;<br>GO<br></code></pre></td></tr></table></figure>
+
+<p>以下示例将死锁优先级设置为 NORMAL。</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-keyword">SET</span> DEADLOCK_PRIORITY NORMAL;<br>GO<br></code></pre></td></tr></table></figure>
+<h3 id="6-后续步骤"><a href="#6-后续步骤" class="headerlink" title="6 后续步骤"></a><a name="cp6"></a>6 后续步骤</h3><h4 id="参与贡献"><a href="#参与贡献" class="headerlink" title="参与贡献"></a>参与贡献</h4><ol>
+<li>Fork 本仓库</li>
+<li>新建 Feat_xxx 分支</li>
+<li>提交代码</li>
+<li>新建 Pull Request</li>
+</ol>
+<h4 id="特技"><a href="#特技" class="headerlink" title="特技"></a>特技</h4><ol>
+<li>使用 Readme_XXX.md 来支持不同的语言，例如 Readme_en.md, Readme_zh.md</li>
+<li>Gitee 官方博客 <a target="_blank" rel="noopener" href="https://blog.gitee.com/">blog.gitee.com</a></li>
+<li>你可以 <a target="_blank" rel="noopener" href="https://gitee.com/explore">https://gitee.com/explore</a> 这个地址来了解 Gitee 上的优秀开源项目</li>
+<li><a target="_blank" rel="noopener" href="https://gitee.com/gvp">GVP</a> 全称是 Gitee 最有价值开源项目，是综合评定出的优秀开源项目</li>
+<li>Gitee 官方提供的使用手册 <a target="_blank" rel="noopener" href="https://gitee.com/help">https://gitee.com/help</a></li>
+<li>Gitee 封面人物是一档用来展示 Gitee 会员风采的栏目 <a target="_blank" rel="noopener" href="https://gitee.com/gitee-stars/">https://gitee.com/gitee-stars/</a></li>
+</ol>
+</numeric-priority>
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/DB/" class="category-chain-item">DB</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/DB/sqlserver/" class="category-chain-item">sqlserver</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/DB/sqlserver/lock/" class="category-chain-item">lock</a>
+  
+  
+
+  
+
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/database/" class="print-no-link">#database</a>
+      
+        <a href="/tags/sqlserver/" class="print-no-link">#sqlserver</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>SQLServer 死锁优先级</div>
+      <div>http://smilemzy.com/2025/05/05/note/DB/sqlserver/lock/deadlock_priority/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Smile</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2025年5月5日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-cc-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2025/05/05/note/linux/CentOS%20%E6%8D%A2yum%E6%BA%90/Centos_CS/" title="Centos 更换yum源">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">Centos 更换yum源</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2025/05/05/note/DB/postgresql/unlogged/README/" title="深入浅出无日志表">
+                        <span class="hidden-mobile">深入浅出无日志表</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/5.0.0/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

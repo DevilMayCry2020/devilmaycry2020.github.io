@@ -1,0 +1,713 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Smile">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="介绍DelayCheckpoint 内容1、事务提交三个关键步骤： 提交标志的设置 ：执行“s-&gt;state&#x3D;TRANS_COMMIT”设置事务的状态。 记载到日志 ：调用RecordTransactionCommit（）记录日志并刷出日志（不一定刷出到物理存储，需要根据fsync参数的设置值确定）。 释放锁 ：释放锁的位置是在设置提交标志之前还是之后，可以表明使用的封锁算法是否是">
+<meta property="og:type" content="article">
+<meta property="og:title" content="DelayCheckpoint">
+<meta property="og:url" content="http://smilemzy.com/2025/05/05/note/DB/postgresql/Transactions/delayChkpt/DelayChkpt/index.html">
+<meta property="og:site_name" content="Smile">
+<meta property="og:description" content="介绍DelayCheckpoint 内容1、事务提交三个关键步骤： 提交标志的设置 ：执行“s-&gt;state&#x3D;TRANS_COMMIT”设置事务的状态。 记载到日志 ：调用RecordTransactionCommit（）记录日志并刷出日志（不一定刷出到物理存储，需要根据fsync参数的设置值确定）。 释放锁 ：释放锁的位置是在设置提交标志之前还是之后，可以表明使用的封锁算法是否是">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://smilemzy.com/2025/05/05/note/DB/postgresql/Transactions/delayChkpt/DelayChkpt/img.png">
+<meta property="og:image" content="http://smilemzy.com/2025/05/05/note/DB/postgresql/Transactions/delayChkpt/DelayChkpt/img_1.png">
+<meta property="og:image" content="http://smilemzy.com/2025/05/05/note/DB/postgresql/Transactions/delayChkpt/DelayChkpt/img_2.png">
+<meta property="og:image" content="http://smilemzy.com/2025/05/05/note/DB/postgresql/Transactions/delayChkpt/DelayChkpt/img_3.png">
+<meta property="og:image" content="http://smilemzy.com/2025/05/05/note/DB/postgresql/Transactions/delayChkpt/DelayChkpt/img_4.png">
+<meta property="og:image" content="http://smilemzy.com/2025/05/05/note/DB/postgresql/Transactions/delayChkpt/DelayChkpt/img_5.png">
+<meta property="og:image" content="http://smilemzy.com/2025/05/05/note/DB/postgresql/Transactions/delayChkpt/DelayChkpt/img_8.png">
+<meta property="og:image" content="http://smilemzy.com/2025/05/05/note/DB/postgresql/Transactions/delayChkpt/DelayChkpt/img_7.png">
+<meta property="article:published_time" content="2025-05-05T12:24:14.188Z">
+<meta property="article:modified_time" content="2025-05-05T12:33:15.738Z">
+<meta property="article:author" content="Smile">
+<meta property="article:tag" content="database">
+<meta property="article:tag" content="PostgreSQL">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="http://smilemzy.com/2025/05/05/note/DB/postgresql/Transactions/delayChkpt/DelayChkpt/img.png">
+  
+  
+  
+  <title>DelayCheckpoint - Smile</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/c/font_1749284_5i9bdhy70f8.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/c/font_1736178_k526ubmyhba.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"smilemzy.com","root":"/","version":"1.9.8","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false},"umami":{"src":null,"website_id":null,"domains":null,"start_time":"2024-01-01T00:00:00.000Z","token":null,"api_server":null}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+
+  
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Smile</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/" target="_self">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/" target="_self">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/" target="_self">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/" target="_self">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/" target="_self">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="DelayCheckpoint"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2025-05-05 20:24" pubdate>
+          2025年5月5日 晚上
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          865 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          8 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">DelayCheckpoint</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <h4 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h4><p>DelayCheckpoint</p>
+<h4 id="内容"><a href="#内容" class="headerlink" title="内容"></a>内容</h4><h5 id="1、事务提交"><a href="#1、事务提交" class="headerlink" title="1、事务提交"></a>1、事务提交</h5><p>三个关键步骤：</p>
+<p>提交标志的设置 ：执行“s-&gt;state&#x3D;TRANS_COMMIT”设置事务的状态。</p>
+<p>记载到日志 ：调用RecordTransactionCommit（）记录日志并刷出日志<br>（不一定刷出到物理存储，需要根据fsync参数的设置值确定）。</p>
+<p>释放锁 ：释放锁的位置是在设置提交标志之前还是之后，可以表明使用的封锁算法是否是<br>SS2PL。</p>
+<p>CommitTransaction函数：</p>
+<p><img src="/2025/05/05/note/DB/postgresql/Transactions/delayChkpt/DelayChkpt/img.png" srcset="/img/loading.gif" lazyload alt="img.png"></p>
+<p>RecordTransactionCommit 函数<br>为了保证事务的原子性、一致性，<br>日志一定要在提交事务前刷出完成。</p>
+<p><img src="/2025/05/05/note/DB/postgresql/Transactions/delayChkpt/DelayChkpt/img_1.png" srcset="/img/loading.gif" lazyload alt="img_1.png"><br><img src="/2025/05/05/note/DB/postgresql/Transactions/delayChkpt/DelayChkpt/img_2.png" srcset="/img/loading.gif" lazyload alt="img_2.png"><br><img src="/2025/05/05/note/DB/postgresql/Transactions/delayChkpt/DelayChkpt/img_3.png" srcset="/img/loading.gif" lazyload alt="img_3.png"><br><img src="/2025/05/05/note/DB/postgresql/Transactions/delayChkpt/DelayChkpt/img_4.png" srcset="/img/loading.gif" lazyload alt="img_4.png"></p>
+<h5 id="2、DelayChkpt是什么"><a href="#2、DelayChkpt是什么" class="headerlink" title="2、DelayChkpt是什么"></a>2、DelayChkpt是什么</h5><p>综合上述代码，delayChkpt阻塞checkpoint发生位置如下：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs text">RecordTransactionCommit<br>  ...<br>  START_CRIT_SECTION();<br>  MyPgXact-&gt;delayChkpt = true;<br>  /* 写XLOG：COMMIT */<br>  /* 写CLOG：内存写不刷盘 */<br>  MyPgXact-&gt;delayChkpt = false;<br>  ...<br></code></pre></td></tr></table></figure>
+
+<p>delayChkpt生效位置：<br>CreateCheckPoint等待delayChkpt</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><code class="hljs text">CreateCheckPoint<br>  // 【1】计算位置（重要）<br>  WALInsertLockAcquireExclusive();<br>  curInsert = XLogBytePosToRecPtr(Insert-&gt;CurrBytePos);<br>  freespace = INSERT_FREESPACE(curInsert);<br>	if (freespace == 0)<br>	&#123;<br>		if (curInsert % XLogSegSize == 0)<br>			curInsert += SizeOfXLogLongPHD;<br>		else<br>			curInsert += SizeOfXLogShortPHD;<br>	&#125;<br>	checkPoint.redo = curInsert;<br>	RedoRecPtr = XLogCtl-&gt;Insert.RedoRecPtr = checkPoint.redo;<br>	WALInsertLockRelease();<br>  <br>	// 【2】通过delayChkpt等其他所有正在提交中、正在写日志的事务<br>	vxids = GetVirtualXIDsDelayingChkpt(&amp;nvxids);<br>	if (nvxids &gt; 0)<br>	&#123;<br>		do<br>		&#123;<br>			pg_usleep(10000L);	/* wait for 10 msec */<br>		&#125; while (HaveVirtualXIDsDelayingChkpt(vxids, nvxids));<br>	&#125;<br>	pfree(vxids);<br>  <br>  // 【3】刷数据<br>	CheckPointGuts(checkPoint.redo, flags);<br>  // 【4】记chkpt日志<br>	XLogBeginInsert();<br>	XLogRegisterData((char *) (&amp;checkPoint), sizeof(checkPoint));<br>	recptr = XLogInsert(RM_XLOG_ID,<br>						shutdown ? XLOG_CHECKPOINT_SHUTDOWN :<br>						XLOG_CHECKPOINT_ONLINE);<br><br>	XLogFlush(recptr);<br></code></pre></td></tr></table></figure>
+
+<h5 id="3、为什么需要DelayChkpt"><a href="#3、为什么需要DelayChkpt" class="headerlink" title="3、为什么需要DelayChkpt"></a>3、为什么需要DelayChkpt</h5><p>确定REDO点位是在createCheckpoint的函数前面执行的，<br>checkpoint和事务提交并发会有下面三种情况发生：</p>
+<p><img src="/2025/05/05/note/DB/postgresql/Transactions/delayChkpt/DelayChkpt/img_5.png" srcset="/img/loading.gif" lazyload alt="img_5.png"></p>
+<p>情况一：redo point在commit提交前，那么如果crash发生了，redo过程会覆盖这条xlog，<br>不会有问题</p>
+<p>情况三：redo point在事务提交后，redo时xlog虽然还是做不到，但是clog一定会被刷下去，<br>所以我们不会丢失事务提交信息。</p>
+<p>情况二：如果没有delayChkpt，redo point可能发生在上图中的位置<br>（然后checkpoint刷完数据后，当前事务才写clog），XLOG已经先写了，如果crash发生了，<br>redo过程不会覆盖这条xlog，而且clog信息不存在，那么commit信息彻底丢掉了。</p>
+<h5 id="4、目前RAC中的DelayChkpt"><a href="#4、目前RAC中的DelayChkpt" class="headerlink" title="4、目前RAC中的DelayChkpt"></a>4、目前RAC中的DelayChkpt</h5><p>各个节点分别进行</p>
+<h5 id="5、RAC支持2PC中的DelayChkpt"><a href="#5、RAC支持2PC中的DelayChkpt" class="headerlink" title="5、RAC支持2PC中的DelayChkpt"></a>5、RAC支持2PC中的DelayChkpt</h5><p>在RAC支持2PC的需求中，支持跨界点提交事务。<br>即node1 执行prepare的事务 p1，node2 可以执行 commit prepared ‘p1’进行提交操作。<br>如果执行了跨节点的事务提交，<br>那么目前的实现中，RecordTransactionCommit函数中xlog、clog的写入分别在两个节点进行，<br>其中xlog由执行SQL的节点写入，clog由执行prepare节点写入。</p>
+<p>由于目前实现delayChkpt是各个节点分别进行，就需要考虑DelayChkpt的问题，</p>
+<p>目前采用下图实现方法：假设node2提交node1 prepare的事务。<br><img src="/2025/05/05/note/DB/postgresql/Transactions/delayChkpt/DelayChkpt/img_8.png" srcset="/img/loading.gif" lazyload alt="img_8.png"></p>
+<p>分析可行性：</p>
+<p><img src="/2025/05/05/note/DB/postgresql/Transactions/delayChkpt/DelayChkpt/img_7.png" srcset="/img/loading.gif" lazyload alt="img_7.png"></p>
+<p>对于情况一、情况三，事务clog 不会发生丢失;</p>
+<p>重点分析情况二(1)~(3):</p>
+<p>对于(1)，任一节点发起 checkpoint,首先node1未被阻塞，可正常完成，node2<br>被阻塞，直到 xlog 和 node1 clog 写入完成并且delayChkpt 为false时才开始<br>checkpoint，如图中(4)时刻 node2开始执行checkpoint，那么 node1 的clog<br>页面不会刷盘。<br>但是，在这种情况下，发起checkpoint时已经获取过全部节点的redo point,而<br>本次事务的 xlog 在 redo point 之后，因此此时发生故障也会回放这条xlog.不<br>会导致事务状态丢失。</p>
+<p>对于(2)，处于 node1、node2的delayChkpt中，会被阻塞，发生故障则不会<br>丢失事务状态。<br>对于(3)，node1正常 checkpoint，将clog刷盘，node2 被阻塞。如果发生故<br>障，xlog 会被回放，不会丢失事务状态。</p>
+<h4 id="安装教程"><a href="#安装教程" class="headerlink" title="安装教程"></a>安装教程</h4><ol>
+<li>xxxx</li>
+<li>xxxx</li>
+<li>xxxx</li>
+</ol>
+<h4 id="使用说明"><a href="#使用说明" class="headerlink" title="使用说明"></a>使用说明</h4><ol>
+<li>xxxx</li>
+<li>xxxx</li>
+<li>xxxx</li>
+</ol>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/DB/" class="category-chain-item">DB</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/DB/PostgreSQL/" class="category-chain-item">PostgreSQL</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/DB/PostgreSQL/transactions/" class="category-chain-item">transactions</a>
+  
+  
+
+  
+
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/database/" class="print-no-link">#database</a>
+      
+        <a href="/tags/PostgreSQL/" class="print-no-link">#PostgreSQL</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>DelayCheckpoint</div>
+      <div>http://smilemzy.com/2025/05/05/note/DB/postgresql/Transactions/delayChkpt/DelayChkpt/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Smile</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2025年5月5日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-cc-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2025/05/05/note/DB/postgresql/unlogged/README/" title="深入浅出无日志表">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">深入浅出无日志表</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2025/05/05/note/DB/postgresql/toast/README/" title="toast">
+                        <span class="hidden-mobile">toast</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/5.0.0/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>
