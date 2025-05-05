@@ -1,0 +1,749 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Smile">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="ch15. Locks on MemoryStructures本章主要内容如下：    Chapter Contents    15.1 Spinlocks   15.2 Lightweight Locks   15.3 Examples   15.4 Monitoring Waits   15.5 Sampling   15.1 Spinlocks为了保护共享内存中的数据结构，PostgreSQ">
+<meta property="og:type" content="article">
+<meta property="og:title" content="ch15. Locks on MemoryStructures">
+<meta property="og:url" content="http://smilemzy.com/2025/05/05/DB/PostgreSQL14_Internals/ch15/ch15/index.html">
+<meta property="og:site_name" content="Smile">
+<meta property="og:description" content="ch15. Locks on MemoryStructures本章主要内容如下：    Chapter Contents    15.1 Spinlocks   15.2 Lightweight Locks   15.3 Examples   15.4 Monitoring Waits   15.5 Sampling   15.1 Spinlocks为了保护共享内存中的数据结构，PostgreSQ">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://smilemzy.com/2025/05/05/DB/PostgreSQL14_Internals/ch15/ch15/img.png">
+<meta property="og:image" content="http://smilemzy.com/2025/05/05/DB/PostgreSQL14_Internals/ch15/ch15/img_1.png">
+<meta property="article:published_time" content="2025-05-05T12:24:14.544Z">
+<meta property="article:modified_time" content="2025-05-05T12:57:04.216Z">
+<meta property="article:author" content="Smile">
+<meta property="article:tag" content="book">
+<meta property="article:tag" content="database">
+<meta property="article:tag" content="transactions">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="http://smilemzy.com/2025/05/05/DB/PostgreSQL14_Internals/ch15/ch15/img.png">
+  
+  
+  
+  <title>ch15. Locks on MemoryStructures - Smile</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/c/font_1749284_5i9bdhy70f8.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/c/font_1736178_k526ubmyhba.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"smilemzy.com","root":"/","version":"1.9.8","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false},"umami":{"src":null,"website_id":null,"domains":null,"start_time":"2024-01-01T00:00:00.000Z","token":null,"api_server":null}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+
+  
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Smile</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/" target="_self">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/" target="_self">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/" target="_self">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/" target="_self">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/" target="_self">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="ch15. Locks on MemoryStructures"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2025-05-05 20:24" pubdate>
+          2025年5月5日 晚上
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          2.7k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          23 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">ch15. Locks on MemoryStructures</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <h2 id="ch15-Locks-on-MemoryStructures"><a href="#ch15-Locks-on-MemoryStructures" class="headerlink" title="ch15. Locks on MemoryStructures"></a>ch15. Locks on MemoryStructures</h2><p>本章主要内容如下：</p>
+<table>
+<thead>
+<tr>
+<th>Chapter Contents</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><a href="#Spinlocks">15.1 Spinlocks</a></td>
+</tr>
+<tr>
+<td><a href="#lwlock">15.2 Lightweight Locks</a></td>
+</tr>
+<tr>
+<td><a href="#example">15.3 Examples</a></td>
+</tr>
+<tr>
+<td><a href="#monitor-wait">15.4 Monitoring Waits</a></td>
+</tr>
+<tr>
+<td><a href="#sampling">15.5 Sampling</a></td>
+</tr>
+</tbody></table>
+<h3 id="15-1-Spinlocks"><a href="#15-1-Spinlocks" class="headerlink" title="15.1 Spinlocks"></a><a name="Spinlocks"></a>15.1 Spinlocks</h3><p>为了保护共享内存中的数据结构，PostgreSQL 使用了几种更加轻量和开销更小的锁，而不是常规的重锁。</p>
+<p>最简单的锁是自旋锁。自旋锁通常仅获取非常短的时间 (不超过几个 CPU 周期)，以保护特定内存单元不受并发更新的影响。</p>
+<p>自旋锁基于原子 CPU 指令，比如 CAS (compare-and-swap) 1。它们仅支持独占锁定模式。如果所需资源已被锁定，那么进程将忙等，并重复命令 (在循环中”自旋”，因此得名)。如果在指定的时间间隔内无法获取锁，进程将暂停一段时间，然后开始另一次循环。</p>
+<p>如果评估冲突的概率非常低，那么这种策略是有意义的，因此在一次失败的尝试之后，锁很有可能在几条指令内被获取。</p>
+<p>自旋锁既没有死锁检测，也没有监测机制。从实际的角度来看，我们只需要知道它们的存在；正确实现的全部责任均落在 PostgreSQL 开发者身上。</p>
+<h3 id="15-2-Lightweight-Locks"><a href="#15-2-Lightweight-Locks" class="headerlink" title="15.2 Lightweight Locks"></a><a name="lwlock"></a>15.2 Lightweight Locks</h3><p>接下来，还有所谓的轻量锁，即 lwlocks 2。轻量锁是在处理数据结构 (例如，哈希表或指针列表) 所需的时间内获取的，通常时间较短；然而，当用于保护 I&#x2F;O 操作时，可能需要更长的时间。</p>
+<p>轻量锁支持两种模式：独占模式 (用于数据修改) 和共享模式 (用于只读操作)。轻量锁没有严格的队列机制：如果有多个进程在等待一个锁，其中一个进程将或多或少以随机的方式获得对资源的访问。在高负载的系统中，特别是那些有多个并发进程的系统中，这种机制可能会导致一些令人不悦的影响。</p>
+<p>轻量锁也没有提供死锁检测机制；我们必须相信 PostgreSQL 开发人员正确实现了这些锁。然而，这些锁确实有监测机制，因此与自旋锁不同，它们是可以被观察到的。</p>
+<h3 id="15-3-Examples"><a href="#15-3-Examples" class="headerlink" title="15.3 Examples"></a><a name="example"></a>15.3 Examples</h3><p>为了了解如何使用以及在何处使用自旋锁和轻量锁，让我们看下两个共享内存结构：缓冲区缓存和 WAL 缓冲区。我只会提到其中一些锁；由于全貌过于复杂，可能只有 PostgreSQL 内核开发人员感兴趣。</p>
+<h4 id="15-3-1-缓冲区缓存"><a href="#15-3-1-缓冲区缓存" class="headerlink" title="15.3.1 缓冲区缓存"></a>15.3.1 缓冲区缓存</h4><p>为了访问用于定位缓存中特定缓冲区的哈希表，进程必须以共享模式获取一个 BufferMapping 轻量锁以进行读取，或者如果预期有任何修改，则以独占模式获取。</p>
+<p><img src="/2025/05/05/DB/PostgreSQL14_Internals/ch15/ch15/img.png" srcset="/img/loading.gif" lazyload alt="img.png"></p>
+<p>哈希表的访问十分频繁，因此这个锁经常成为瓶颈。为了最大限度地提高粒度，它被构造为一个由 128 个独立的轻量锁组成的锁集，每个锁用于保护哈希表的一个分区。3</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs text">早在 2006 年，Postgres 8.2 版本就将哈希表锁转换为包含 16 个锁的锁集；十年后，当 9.5 版本发布时，锁集的大小增加到了 128 个，但对于现代多核系统来说，这可能仍然不够。<br></code></pre></td></tr></table></figure>
+
+<p>为了访问缓冲区头，进程获取缓冲区头自旋锁 4 (名字是任意的，因为自旋锁没有对用户可见的名字)。某些操作，比如增加使用计数，不需要显式锁定，可以使用原子 CPU 指令执行。</p>
+<p>为了读取缓冲区中的页面，进程需要获取此缓冲区头中的 BufferContent 锁 5。这个锁通常仅在读取元组指针时持有，稍后，缓冲区锁定提供的保护就足够了。如果需要修改缓冲区的内容，那么必须以独占模式获取 BufferContent 锁。当从磁盘读取某个缓冲区 (或写入磁盘) 时，PostgreSQL 还会在缓冲区头中获取 BufferIO 锁；它实际上是一个用作锁的属性，而不是一个真正的锁 6。它向请求访问这个页面的其他进程发出信号，告诉它们必须等到 I&#x2F;O 操作完成。</p>
+<p>指向空闲缓冲区的指针和淘汰机制的时钟指针由一个共同的缓冲区策略自旋锁保护 7。</p>
+<h4 id="15-3-2-WAL-缓冲区"><a href="#15-3-2-WAL-缓冲区" class="headerlink" title="15.3.2 WAL 缓冲区"></a>15.3.2 WAL 缓冲区</h4><p><img src="/2025/05/05/DB/PostgreSQL14_Internals/ch15/ch15/img_1.png" srcset="/img/loading.gif" lazyload alt="img_1.png"></p>
+<p>WAL 缓存也使用哈希表将页面映射到缓冲区。不同于缓冲区缓存的哈希表，它由单个 WALBufMapping 轻量锁保护，因为 WAL 缓存较小 (通常是缓冲区缓存大小的 1&#x2F;32 )，并且缓冲区的访问更加有序 8。</p>
+<p>将 WAL 页面写入磁盘受到 WALWrite 轻量锁的保护，以确保此操作一次只由一个进程执行。</p>
+<p>为了创建一个 WAL 条目，进程首先在 WAL 页面内预留一些空间，然后用数据填充。空间预留严格有序；进程必须获取一个插入位置的自旋锁，以保护插入指针 9。但一旦空间被预留后，它就可以由若干并发进程共同填充。为此，每个进程都必须获取构成 WALInsert 锁集的 8 个轻量锁中的任何一个 10。</p>
+<h3 id="15-4-Monitoring-Waits"><a href="#15-4-Monitoring-Waits" class="headerlink" title="15.4 Monitoring Waits"></a><a name="monitor-wait"></a>15.4 Monitoring Waits</h3><p>毫无疑问，锁对于 PostgreSQL 的正确运行是必不可少的，但它们可能导致不希望的等待。追踪这些等待以了解它们的起源是非常有用的。</p>
+<p>获取长锁概览的最简单方式是调整 log_lock_waits 参数为 on。它会详细记录所有导致事务等待时间超过 deadlock_timeout 的锁至日志中。这些数据在死锁检测完成时显示，因此而得名。</p>
+<p>然而，pg_stat_activity 视图提供了更多有用和完整的信息。每当一个进程 (不管是系统进程还是后端进程) 由于在等待某个东西而无法继续其操作时，此等待就会反映在 wait_event_type 和 wait_event 字段中，分别显示等待的类型和名称。</p>
+<p>所有等待可以归类如下 11。</p>
+<p>各种锁的等待组成了一个相当大的群组：</p>
+<p><strong>Lock</strong>：重锁</p>
+<p><strong>LWLock</strong>：轻量锁</p>
+<p><strong>BufferPin</strong>：锁定的缓冲区</p>
+<p>但进程也可能在等待其他事件：</p>
+<p><strong>IO</strong>：输入&#x2F;输出，需要读取或写入某些数据时</p>
+<p><strong>Client</strong>：客户端发送的数据 (psql 大部分时间处于这个状态)</p>
+<p><strong>IPC</strong>：其他进程发送的数据</p>
+<p><strong>Extension</strong>：由扩展注册的特定事件</p>
+<p>有时，一个进程没有执行任何有用的工作。这样的等待通常是”正常”的，意味着它们不表明有任何问题。这类分组包括以下等待：</p>
+<p><strong>Activity</strong>：后台进程在其主循环中</p>
+<p><strong>Timeout</strong>：计时器</p>
+<p>每种等待类型的锁按等待名称进一步分类。例如，等待轻量锁有相应的锁名称或相应的锁集 12。</p>
+<p>你应该记住，pg_stat_activity 视图只显示了那些在源代码中以适当方式处理的等待 13。除非等待的名称出现在这个视图中，否则进程不会处于任何已知类型的等待状态。这样的时间应被视为”未知时间”，这并不一定意味着进程没有任何等待 — 我们只是不知道此刻发生了什么。</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-operator">=</span><span class="hljs-operator">&gt;</span> <span class="hljs-keyword">SELECT</span> backend_type, wait_event_type <span class="hljs-keyword">AS</span> event_type, wait_event<br><span class="hljs-keyword">FROM</span> pg_stat_activity;<br>        backend_type          <span class="hljs-operator">|</span> event_type <span class="hljs-operator">|</span>     wait_event<br>−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−<span class="hljs-operator">+</span>−−−−−−−−−−−−<span class="hljs-operator">+</span>−−−−−−−−−−−−−−−−−−−−−<br> logical replication launcher <span class="hljs-operator">|</span> Activity   <span class="hljs-operator">|</span> LogicalLauncherMain<br> autovacuum launcher          <span class="hljs-operator">|</span> Activity   <span class="hljs-operator">|</span> AutoVacuumMain<br> client backend               <span class="hljs-operator">|</span>            <span class="hljs-operator">|</span><br> background writer            <span class="hljs-operator">|</span> Activity   <span class="hljs-operator">|</span> BgWriterMain<br> checkpointer                 <span class="hljs-operator">|</span> Activity   <span class="hljs-operator">|</span> CheckpointerMain<br> walwriter                    <span class="hljs-operator">|</span> Activity   <span class="hljs-operator">|</span> WalWriterMain<br>(<span class="hljs-number">6</span> <span class="hljs-keyword">rows</span>)<br></code></pre></td></tr></table></figure>
+
+<p>当对视图进行采样时，所有的后台进程都处于空闲状态，而客户端后端进程正忙于执行查询，并且没有等待任何东西。</p>
+<h3 id="15-5-Sampling"><a href="#15-5-Sampling" class="headerlink" title="15.5 Sampling"></a><a name="sampling"></a>15.5 Sampling</h3><p>不幸的是，pg_stat_activity 视图只显示了关于等待的当前信息；统计数据不会累积。收集随时间变化的等待数据的唯一方式是定期采样该视图。</p>
+<p>我们必须考虑到抽样的随机性。与采样间隔相比，等待时间越短，检测到这种等待情况的机会就越低。因此，更长的采样间隔需要更多的样本来反映事物的实际状态 (但随着采样率的增加，开销也会增加)。出于同样的原因，采样对于分析短暂会话几乎没有用处。</p>
+<p>PostgreSQL 没有提供内置的采样工具；但是，我们仍然可以尝试使用 pg_wait_sampling 14 扩展。为此，我们需要在 shared_preload_libraries 参数中指定它的库名，然后重启服务器：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-operator">=</span><span class="hljs-operator">&gt;</span> <span class="hljs-keyword">ALTER</span> <span class="hljs-keyword">SYSTEM</span> <span class="hljs-keyword">SET</span> shared_preload_libraries <span class="hljs-operator">=</span> <span class="hljs-string">&#x27;pg_wait_sampling&#x27;</span>;<br>postgres$ pg_ctl restart <span class="hljs-operator">-</span>l <span class="hljs-operator">/</span>home<span class="hljs-operator">/</span>postgres<span class="hljs-operator">/</span>logfile<br></code></pre></td></tr></table></figure>
+<p>现在让我们在数据库中安装扩展：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-operator">=</span><span class="hljs-operator">&gt;</span> <span class="hljs-keyword">CREATE</span> EXTENSION pg_wait_sampling;<br></code></pre></td></tr></table></figure>
+
+<p>此扩展可以显示保存在其环形缓冲区中的历史等待情况。然而，更有趣的是获取等待概况 — 整个会话期间的累计统计数据。</p>
+<p>例如，让我们看一下基准测试期间的等待情况。我们需要启动 pgbench 工具，并在其运行时确定其进程 ID：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs shell"><span class="hljs-meta prompt_">postgres$ </span><span class="language-bash">/usr/local/pgsql/bin/pgbench -T 60 internals</span><br>=&gt; SELECT pid FROM pg_stat_activity<br>WHERE application_name = &#x27;pgbench&#x27;;<br>  pid<br>−−−−−−−<br> 36367<br>(1 row)<br></code></pre></td></tr></table></figure>
+
+<p>测试完成之后，等待概况如下所示：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-operator">=</span><span class="hljs-operator">&gt;</span> <span class="hljs-keyword">SELECT</span> pid, event_type, event, count<br><span class="hljs-keyword">FROM</span> pg_wait_sampling_profile <span class="hljs-keyword">WHERE</span> pid <span class="hljs-operator">=</span> <span class="hljs-number">36380</span><br><span class="hljs-keyword">ORDER</span> <span class="hljs-keyword">BY</span> count <span class="hljs-keyword">DESC</span> LIMIT <span class="hljs-number">4</span>;<br>  pid  <span class="hljs-operator">|</span> event_type <span class="hljs-operator">|</span> 	 event     <span class="hljs-operator">|</span> count<br>−−−−−−−<span class="hljs-operator">+</span>−−−−−−−−−−−−<span class="hljs-operator">+</span>−−−−−−−−−−−−−−<span class="hljs-operator">+</span>−−−−−−−<br> <span class="hljs-number">36367</span> <span class="hljs-operator">|</span> IO         <span class="hljs-operator">|</span> WALSync      <span class="hljs-operator">|</span>  <span class="hljs-number">3478</span><br> <span class="hljs-number">36367</span> <span class="hljs-operator">|</span> IO         <span class="hljs-operator">|</span> WALWrite     <span class="hljs-operator">|</span>    <span class="hljs-number">52</span><br> <span class="hljs-number">36367</span> <span class="hljs-operator">|</span> Client     <span class="hljs-operator">|</span> ClientRead   <span class="hljs-operator">|</span>    <span class="hljs-number">30</span><br> <span class="hljs-number">36367</span> <span class="hljs-operator">|</span> IO         <span class="hljs-operator">|</span> DataFileRead <span class="hljs-operator">|</span>     <span class="hljs-number">2</span><br>(<span class="hljs-number">4</span> <span class="hljs-keyword">rows</span>)<br></code></pre></td></tr></table></figure>
+
+<p>默认情况下 (由 pg_wait_sampling.profile_period 参数设置) 每秒采样 100 次。因此，要估算等待时间的秒数，必须将值除以 100。</p>
+<p>在这个特定案例中，大部分等待与将 WAL 条目刷新到磁盘有关。这很好地说明了未知的等待时间：WALSync 事件直到 PostgreSQL 12 才被记录；对于更低的版本，等待概况不会包含第一行，尽管等待本身仍然存在。</p>
+<p>如果我们人为降低文件系统的速度，使每个 I&#x2F;O 操作需要耗时 0.1 秒 (为此，我使用了 slowfs 15)，那么等待概况将如下所示：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><code class="hljs sql">postgres$ <span class="hljs-operator">/</span>usr<span class="hljs-operator">/</span><span class="hljs-keyword">local</span><span class="hljs-operator">/</span>pgsql<span class="hljs-operator">/</span>bin<span class="hljs-operator">/</span>pgbench <span class="hljs-operator">-</span>T <span class="hljs-number">60</span> internals<br><span class="hljs-operator">=</span><span class="hljs-operator">&gt;</span> <span class="hljs-keyword">SELECT</span> pid <span class="hljs-keyword">FROM</span> pg_stat_activity<br><span class="hljs-keyword">WHERE</span> application_name <span class="hljs-operator">=</span> <span class="hljs-string">&#x27;pgbench&#x27;</span>;<br>  pid<br>−−−−−−−<br> <span class="hljs-number">36747</span><br>(<span class="hljs-number">1</span> <span class="hljs-type">row</span>)<br><span class="hljs-operator">=</span><span class="hljs-operator">&gt;</span> <span class="hljs-keyword">SELECT</span> pid, event_type, event, count<br><span class="hljs-keyword">FROM</span> pg_wait_sampling_profile <span class="hljs-keyword">WHERE</span> pid <span class="hljs-operator">=</span> <span class="hljs-number">36759</span><br><span class="hljs-keyword">ORDER</span> <span class="hljs-keyword">BY</span> count <span class="hljs-keyword">DESC</span> LIMIT <span class="hljs-number">4</span>;<br>  pid  <span class="hljs-operator">|</span> event_type <span class="hljs-operator">|</span>     event      <span class="hljs-operator">|</span> count<br>−−−−−−−<span class="hljs-operator">+</span>−−−−−−−−−−−−<span class="hljs-operator">+</span>−−−−−−−−−−−−−−−−<span class="hljs-operator">+</span>−−−−−−−<br> <span class="hljs-number">36747</span> <span class="hljs-operator">|</span> IO         <span class="hljs-operator">|</span> WALWrite       <span class="hljs-operator">|</span> 	<span class="hljs-number">3603</span><br> <span class="hljs-number">36747</span> <span class="hljs-operator">|</span> LWLock     <span class="hljs-operator">|</span> WALWrite       <span class="hljs-operator">|</span>  <span class="hljs-number">2095</span><br> <span class="hljs-number">36747</span> <span class="hljs-operator">|</span> IO         <span class="hljs-operator">|</span> WALSync        <span class="hljs-operator">|</span>    <span class="hljs-number">22</span><br> <span class="hljs-number">36747</span> <span class="hljs-operator">|</span> IO         <span class="hljs-operator">|</span> DataFileExtend <span class="hljs-operator">|</span>    <span class="hljs-number">19</span><br>(<span class="hljs-number">4</span> <span class="hljs-keyword">rows</span>)<br></code></pre></td></tr></table></figure>
+
+<p>现在，I&#x2F;O 操作是最慢的，主要是以同步模式将 WAL 文件写入磁盘的相关操作。WAL 写入受到 WALWrite 轻量锁的保护，因此相应的行也会出现在等待概况中。</p>
+<p>显然，在前一个示例中也获得了相同的锁，但由于等待时间短于采样间隔，所以要么它很少被采样到，要么根本就没有出现在等待概况中。这再次说明，要分析短暂的等待，你必须对其进行相当长时间的采样。</p>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/BOOK/" class="category-chain-item">BOOK</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/BOOK/PostgreSQL14-Internals/" class="category-chain-item">PostgreSQL14_Internals</a>
+  
+  
+
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/book/" class="print-no-link">#book</a>
+      
+        <a href="/tags/database/" class="print-no-link">#database</a>
+      
+        <a href="/tags/transactions/" class="print-no-link">#transactions</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>ch15. Locks on MemoryStructures</div>
+      <div>http://smilemzy.com/2025/05/05/DB/PostgreSQL14_Internals/ch15/ch15/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Smile</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2025年5月5日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-cc-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2025/05/05/DB/PostgreSQL14_Internals/ch16/ch16/" title="ch16. Query Execution Stages">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">ch16. Query Execution Stages</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2025/05/05/DB/PostgreSQL14_Internals/ch14/ch14/" title="ch14. Miscellaneous Locks">
+                        <span class="hidden-mobile">ch14. Miscellaneous Locks</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/5.0.0/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

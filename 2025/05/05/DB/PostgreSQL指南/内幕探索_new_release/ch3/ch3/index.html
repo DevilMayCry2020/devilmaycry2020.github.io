@@ -1,0 +1,781 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Smile">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="ch3. 查询处理按照官方文件的描述,PostgreSQL 支持 2011 年 SQL 标准所需的大量功能。查询处理是 PostgreSQL 中最复杂的子系统,它有效地处理了支持的 SQL。本章概述了这种查询处理,特别关注查询优化。 本章包含以下三个部分: 第 1 部分: 第 3.1 节 本节概述了 PostgreSQL 中的查询处理。 第 2 部分: 第 3.2 - 3.4 节 这一部分解释了为">
+<meta property="og:type" content="article">
+<meta property="og:title" content="ch3. 查询处理">
+<meta property="og:url" content="http://smilemzy.com/2025/05/05/DB/PostgreSQL%E6%8C%87%E5%8D%97/%E5%86%85%E5%B9%95%E6%8E%A2%E7%B4%A2_new_release/ch3/ch3/index.html">
+<meta property="og:site_name" content="Smile">
+<meta property="og:description" content="ch3. 查询处理按照官方文件的描述,PostgreSQL 支持 2011 年 SQL 标准所需的大量功能。查询处理是 PostgreSQL 中最复杂的子系统,它有效地处理了支持的 SQL。本章概述了这种查询处理,特别关注查询优化。 本章包含以下三个部分: 第 1 部分: 第 3.1 节 本节概述了 PostgreSQL 中的查询处理。 第 2 部分: 第 3.2 - 3.4 节 这一部分解释了为">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://smilemzy.com/2025/05/05/DB/PostgreSQL%E6%8C%87%E5%8D%97/%E5%86%85%E5%B9%95%E6%8E%A2%E7%B4%A2_new_release/ch3/ch3/img.png">
+<meta property="og:image" content="http://smilemzy.com/2025/05/05/DB/PostgreSQL%E6%8C%87%E5%8D%97/%E5%86%85%E5%B9%95%E6%8E%A2%E7%B4%A2_new_release/ch3/ch3/img_1.png">
+<meta property="og:image" content="http://smilemzy.com/2025/05/05/DB/PostgreSQL%E6%8C%87%E5%8D%97/%E5%86%85%E5%B9%95%E6%8E%A2%E7%B4%A2_new_release/ch3/ch3/img_2.png">
+<meta property="og:image" content="http://smilemzy.com/2025/05/05/DB/PostgreSQL%E6%8C%87%E5%8D%97/%E5%86%85%E5%B9%95%E6%8E%A2%E7%B4%A2_new_release/ch3/ch3/img_3.png">
+<meta property="og:image" content="http://smilemzy.com/2025/05/05/DB/PostgreSQL%E6%8C%87%E5%8D%97/%E5%86%85%E5%B9%95%E6%8E%A2%E7%B4%A2_new_release/ch3/ch3/img_4.png">
+<meta property="og:image" content="http://smilemzy.com/2025/05/05/DB/PostgreSQL%E6%8C%87%E5%8D%97/%E5%86%85%E5%B9%95%E6%8E%A2%E7%B4%A2_new_release/ch3/ch3/img_5.png">
+<meta property="article:published_time" content="2025-05-05T12:24:15.088Z">
+<meta property="article:modified_time" content="2025-05-05T12:52:29.847Z">
+<meta property="article:author" content="Smile">
+<meta property="article:tag" content="book">
+<meta property="article:tag" content="database">
+<meta property="article:tag" content="transactions">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="http://smilemzy.com/2025/05/05/DB/PostgreSQL%E6%8C%87%E5%8D%97/%E5%86%85%E5%B9%95%E6%8E%A2%E7%B4%A2_new_release/ch3/ch3/img.png">
+  
+  
+  
+  <title>ch3. 查询处理 - Smile</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/c/font_1749284_5i9bdhy70f8.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/c/font_1736178_k526ubmyhba.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"smilemzy.com","root":"/","version":"1.9.8","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false},"umami":{"src":null,"website_id":null,"domains":null,"start_time":"2024-01-01T00:00:00.000Z","token":null,"api_server":null}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+
+  
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Smile</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/" target="_self">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/" target="_self">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/" target="_self">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/" target="_self">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/" target="_self">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="ch3. 查询处理"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2025-05-05 20:24" pubdate>
+          2025年5月5日 晚上
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          2.2k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          18 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">ch3. 查询处理</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <h2 id="ch3-查询处理"><a href="#ch3-查询处理" class="headerlink" title="ch3. 查询处理"></a>ch3. 查询处理</h2><p>按照官方文件的描述,PostgreSQL 支持 2011 年 SQL 标准所需的大量功能。查询处理是 PostgreSQL 中最复杂的子系统,它有效地处理了支持的 SQL。本章概述了这种查询处理,特别关注查询优化。</p>
+<p>本章包含以下三个部分:</p>
+<p>第 1 部分: 第 3.1 节</p>
+<p>本节概述了 PostgreSQL 中的查询处理。</p>
+<p>第 2 部分: 第 3.2 - 3.4 节</p>
+<p>这一部分解释了为单表查询获得最优计划所采取的步骤。第 3.2 和 3.3 节分别解释了估算成本和创建计划树的过程,第 3.4 节简要介绍了执行器的操作。</p>
+<p>第 3 部分: 第 3.5 - 3.6 节</p>
+<p>这一部分解释了为多表查询获得最优计划的过程。第 3.5 节描述了三种连接方法: 嵌套循环、合并和哈希连接。第 3.6 节解释了为多表查询创建计划树的过程。</p>
+<p>PostgreSQL 支持三个技术上有趣且实用的特性: 外部数据包装器 (Foreign Data Wrappers, FDW)、并行查询和 JIT 编译。前者将在第 4 章中介绍,后两者超出了本文的范围。</p>
+<blockquote>
+<p>Warning!!</p>
+<p>only 3.1 because of me!</p>
+</blockquote>
+<table>
+<thead>
+<tr>
+<th>Chapter Contents</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><a href="#three-Overview">3.1 概述</a></td>
+</tr>
+<tr>
+<td><a href="#cost-single-table">3.2 单表查询的成本估算</a></td>
+</tr>
+<tr>
+<td><a href="#plan-single-table">3.3 单表查询计划树的创建</a></td>
+</tr>
+<tr>
+<td><a href="#Executor-Performs">3.4 执行器的工作原理</a></td>
+</tr>
+<tr>
+<td><a href="#Join-Operations">3.5 连接操作</a></td>
+</tr>
+<tr>
+<td><a href="#plan-multi-table">3.6 多表查询计划树的创建</a></td>
+</tr>
+</tbody></table>
+<h3 id="3-1-概述"><a href="#3-1-概述" class="headerlink" title="3.1 概述"></a><a name="three-Overview"></a>3.1 概述</h3><p>在PostgreSQL中，尽管从9.6版本开始实现的并行查询使用了多个后台工作者进程，<br>但基本的后台进程负责处理与之相连客户端发出的所有查询。这个后台进程包含五个子系统：</p>
+<ol>
+<li>解析器（Parser）</li>
+</ol>
+<p>解析器将文本形式的SQL语句转换为解析树。</p>
+<ol start="2">
+<li>分析器&#x2F;解析器（Analyzer&#x2F;Analyser）</li>
+</ol>
+<p>分析器&#x2F;解析器对解析树进行语义分析，并生成查询树。</p>
+<ol start="3">
+<li>重写器（Rewriter）</li>
+</ol>
+<p>如果存在这样的规则，重写器会使用规则系统中存储的规则来转换查询树。</p>
+<ol start="4">
+<li>规划器（Planner）</li>
+</ol>
+<p>规划器根据查询树生成执行效率最高的计划树。</p>
+<ol start="5">
+<li>执行器（Executor）</li>
+</ol>
+<p>执行器按照计划树创建的顺序访问表和索引来执行查询。</p>
+<p><img src="/2025/05/05/DB/PostgreSQL%E6%8C%87%E5%8D%97/%E5%86%85%E5%B9%95%E6%8E%A2%E7%B4%A2_new_release/ch3/ch3/img.png" srcset="/img/loading.gif" lazyload alt="img.png"></p>
+<p>本节将对这些子系统进行概览介绍。鉴于规划器（Planner）和执行器（Executor）的复杂性，它们的具体功能将在后续章节中进行详细阐述。</p>
+<blockquote>
+<p>PostgreSQL的查询处理过程在官方文档中有详细说明。<br><a target="_blank" rel="noopener" href="https://www.postgresql.org/docs/current/overview.html">https://www.postgresql.org/docs/current/overview.html</a></p>
+</blockquote>
+<h4 id="3-1-1-Parser"><a href="#3-1-1-Parser" class="headerlink" title="3.1.1. Parser"></a>3.1.1. Parser</h4><p>解析器根据纯文本形式的SQL语句生成解析树，以便后续子系统解读。请看下面的示例查询，不做进一步描述。</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs sql">testdb<span class="hljs-operator">=</span># <span class="hljs-keyword">SELECT</span> id, data <span class="hljs-keyword">FROM</span> tbl_a <span class="hljs-keyword">WHERE</span> id <span class="hljs-operator">&lt;</span> <span class="hljs-number">300</span> <span class="hljs-keyword">ORDER</span> <span class="hljs-keyword">BY</span> data;<br></code></pre></td></tr></table></figure>
+
+<p>解析树是一种树形结构，其根节点是由parsenodes.h中定义的SelectStmt结构。<br>图3.2(b)展示了图3.2(a)中所示查询的解析树。</p>
+<p><img src="/2025/05/05/DB/PostgreSQL%E6%8C%87%E5%8D%97/%E5%86%85%E5%B9%95%E6%8E%A2%E7%B4%A2_new_release/ch3/ch3/img_1.png" srcset="/img/loading.gif" lazyload alt="img_1.png"></p>
+<p>SELECT查询中的各元素及其在解析树中对应的元素编号相同。例如，(1) 是目标列表中的第一项，代表表中的 ‘id’ 列；<br>(4) 是WHERE子句；以此类推。</p>
+<p>解析器在生成解析树时仅检查输入的语法。因此，只有当查询中存在语法错误时，它才会返回错误。</p>
+<p>解析器不检查输入查询的语义。例如，即使查询中包含一个不存在的表名，<br>解析器也不会返回错误。语义检查由分析器&#x2F;解析器完成。</p>
+<h4 id="3-1-2-Analyzer-Analyser"><a href="#3-1-2-Analyzer-Analyser" class="headerlink" title="3.1.2. Analyzer&#x2F;Analyser"></a>3.1.2. Analyzer&#x2F;Analyser</h4><p>分析器&#x2F;分析程序会对解析器生成的解析树执行语义分析，并生成查询树。</p>
+<p>查询树的根节点是由 parsenodes.h  (src&#x2F;include&#x2F;nodes&#x2F;parsenodes.h) 文件定义的 Query 结构体。<br>该结构体包含了与其对应的查询相关元数据，如命令类型（SELECT、INSERT 等），以及多个子节点。<br>每一个子节点组成一个列表或树形结构，用于存储各个具体子句的信息。</p>
+<p>图 3.3 描述了前一小节中图 3.2(a) 所示查询的查询树结构。</p>
+<p><img src="/2025/05/05/DB/PostgreSQL%E6%8C%87%E5%8D%97/%E5%86%85%E5%B9%95%E6%8E%A2%E7%B4%A2_new_release/ch3/ch3/img_2.png" srcset="/img/loading.gif" lazyload alt="img_2.png"></p>
+<p>上述查询树简要说明如下：</p>
+<p>目标列表（targetlist）：是查询结果中的列列表。在此例中，列表包含两列：’id’ 和 ‘data’。<br>如果输入的查询树使用了 ‘*’（星号），分析器&#x2F;分析程序会将其显式替换为所有列。</p>
+<p>范围表（range table）：是查询中使用到的关系列表。在此例中，列表包含了表 ‘tbl_a’ 的信息，<br>如表的OID（对象标识符）和表名。</p>
+<p>连接树（join tree）：存储了FROM子句及WHERE子句的相关信息。</p>
+<p>排序子句（sort clause）：是一个 SortGroupClause 列表，用于定义排序条件。</p>
+<p>查询树的具体细节在官方文档中有详细描述。</p>
+<blockquote>
+<p>查询树<br><a target="_blank" rel="noopener" href="https://www.postgresql.org/docs/current/querytree.html">https://www.postgresql.org/docs/current/querytree.html</a></p>
+</blockquote>
+<h4 id="3-1-3-Rewriter"><a href="#3-1-3-Rewriter" class="headerlink" title="3.1.3. Rewriter"></a>3.1.3. Rewriter</h4><p>重写器是实现规则系统的一个组件。如有必要，它会根据存储在pg_rules系统目录中的规则来转换查询树。<br>规则系统本身是一个非常有趣的机制，但由于篇幅限制，本章将不对规则系统和重写器做详细说明，以避免内容过于冗长。</p>
+<p>PostgreSQL中的视图(view, <a target="_blank" rel="noopener" href="https://www.postgresql.org/docs/current/rules-views.html)%E6%98%AF%E9%80%9A%E8%BF%87%E8%A7%84%E5%88%99%E7%B3%BB%E7%BB%9F%E6%9D%A5">https://www.postgresql.org/docs/current/rules-views.html)是通过规则系统来</a><br>实现的。当使用CREATE VIEW命令定义视图时，相应的规则会自动生成并存储在系统目录中。</p>
+<p>假设已有如下视图定义，并且相应的规则已被存储在pg_rules系统目录中：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs sql">sampledb<span class="hljs-operator">=</span># <span class="hljs-keyword">CREATE</span> <span class="hljs-keyword">VIEW</span> employees_list<br>sampledb<span class="hljs-operator">-</span>#      <span class="hljs-keyword">AS</span> <span class="hljs-keyword">SELECT</span> e.id, e.name, d.name <span class="hljs-keyword">AS</span> department<br>sampledb<span class="hljs-operator">-</span>#            <span class="hljs-keyword">FROM</span> employees <span class="hljs-keyword">AS</span> e, departments <span class="hljs-keyword">AS</span> d <span class="hljs-keyword">WHERE</span> e.department_id <span class="hljs-operator">=</span> d.id;<br></code></pre></td></tr></table></figure>
+
+<p>当发出包含如下视图的查询时，解析器会创建如图3.4(a)所示的解析树。</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs sql">sampledb<span class="hljs-operator">=</span># <span class="hljs-keyword">SELECT</span> <span class="hljs-operator">*</span> <span class="hljs-keyword">FROM</span> employees_list;<br></code></pre></td></tr></table></figure>
+
+<p>此时，重写器会处理范围表节点，将其转换为存储在pg_rules中的对应视图子查询的解析树。</p>
+<p><img src="/2025/05/05/DB/PostgreSQL%E6%8C%87%E5%8D%97/%E5%86%85%E5%B9%95%E6%8E%A2%E7%B4%A2_new_release/ch3/ch3/img_3.png" srcset="/img/loading.gif" lazyload alt="img_3.png"></p>
+<p>由于PostgreSQL采用这种机制实现视图，因此在9.2版本之前视图是不可更新的。但从9.3版本开始，视图可以被更新了；<br>尽管如此，在更新视图时仍存在许多限制。这些具体细节在官方文档中有描述。</p>
+<h4 id="3-1-4-Planner-and-Executor"><a href="#3-1-4-Planner-and-Executor" class="headerlink" title="3.1.4. Planner and Executor"></a>3.1.4. Planner and Executor</h4><p>规划器接收来自重写器的查询树，并生成一个能被执行器最高效处理的（查询）计划树。</p>
+<p>PostgreSQL中的规划器基于纯粹的成本估算优化，不支持基于规则的优化或提示。<br>此规划器是PostgreSQL中最复杂的子系统。因此，本章后续部分将提供对规划器的概述。</p>
+<blockquote>
+<p>pg_hint_plan</p>
+<p>PostgreSQL 在 SQL 中不支持查询优化器提示，并且预计未来也不会支持。如果你希望在查询中使用提示，<br>可以考虑使用名为 pg_hint_plan 的扩展。关于如何使用 pg_hint_plan，请详细参考官方网站。</p>
+</blockquote>
+<p>和其他关系型数据库管理系统（RDBMS）一样，PostgreSQL中的EXPLAIN命令会展示查询的计划树。下面是一个具体的示例：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs sql">testdb<span class="hljs-operator">=</span># EXPLAIN <span class="hljs-keyword">SELECT</span> <span class="hljs-operator">*</span> <span class="hljs-keyword">FROM</span> tbl_a <span class="hljs-keyword">WHERE</span> id <span class="hljs-operator">&lt;</span> <span class="hljs-number">300</span> <span class="hljs-keyword">ORDER</span> <span class="hljs-keyword">BY</span> data;<br>                          QUERY PLAN<br><span class="hljs-comment">---------------------------------------------------------------</span><br> Sort  (cost<span class="hljs-operator">=</span><span class="hljs-number">182.34</span>.<span class="hljs-number">.183</span><span class="hljs-number">.09</span> <span class="hljs-keyword">rows</span><span class="hljs-operator">=</span><span class="hljs-number">300</span> width<span class="hljs-operator">=</span><span class="hljs-number">8</span>)<br>   Sort Key: data<br>   <span class="hljs-operator">-</span><span class="hljs-operator">&gt;</span>  Seq Scan <span class="hljs-keyword">on</span> tbl_a  (cost<span class="hljs-operator">=</span><span class="hljs-number">0.00</span>.<span class="hljs-number">.170</span><span class="hljs-number">.00</span> <span class="hljs-keyword">rows</span><span class="hljs-operator">=</span><span class="hljs-number">300</span> width<span class="hljs-operator">=</span><span class="hljs-number">8</span>)<br>         <span class="hljs-keyword">Filter</span>: (id <span class="hljs-operator">&lt;</span> <span class="hljs-number">300</span>)<br>(<span class="hljs-number">4</span> <span class="hljs-keyword">rows</span>)<br></code></pre></td></tr></table></figure>
+
+<p>This result shows the plan tree shown in Fig. 3.5.</p>
+<p><img src="/2025/05/05/DB/PostgreSQL%E6%8C%87%E5%8D%97/%E5%86%85%E5%B9%95%E6%8E%A2%E7%B4%A2_new_release/ch3/ch3/img_4.png" srcset="/img/loading.gif" lazyload alt="img_4.png"></p>
+<p>计划树由称为计划节点的元素组成，这些元素连接到PlannedStmt结构的plantree列表上，<br>这些元素在plannodes.h中定义。具体细节将在第3.3.3节（及第3.5.4.2节）中进行解释。</p>
+<p>每个计划节点都包含了执行器处理所需的必要信息。对于单表查询而言，执行器会从计划树的末端开始，向根部进行处理。</p>
+<p>例如，图3.5所示的计划树是一个排序节点和顺序扫描节点的列表。因此，执行器首先通过顺序扫描的方式读取表tbl_a，<br>然后对获取的结果进行排序。</p>
+<p>执行器通过第8章所述的缓冲区管理器来读写数据库集群中的表和索引。在处理查询时，<br>执行器会使用预先分配的一些内存区域，如temp_buffers和work_mem，并在必要时创建临时文件。</p>
+<p>此外，在访问元组时，PostgreSQL利用并发控制机制来维护运行事务的一致性和隔离性。<br>并发控制机制在第5章中进行描述。</p>
+<p><img src="/2025/05/05/DB/PostgreSQL%E6%8C%87%E5%8D%97/%E5%86%85%E5%B9%95%E6%8E%A2%E7%B4%A2_new_release/ch3/ch3/img_5.png" srcset="/img/loading.gif" lazyload alt="img_5.png"></p>
+<p>图3.6展示了执行器、缓冲区管理器和临时文件之间的关系。</p>
+<h3 id="3-2-单表查询的成本估算"><a href="#3-2-单表查询的成本估算" class="headerlink" title="3.2 单表查询的成本估算"></a><a name="cost-single-table"></a>3.2 单表查询的成本估算</h3><h3 id="3-3-单表查询计划树的创建"><a href="#3-3-单表查询计划树的创建" class="headerlink" title="3.3 单表查询计划树的创建"></a><a name="plan-single-table"></a>3.3 单表查询计划树的创建</h3><h3 id="3-4-执行器的工作原理"><a href="#3-4-执行器的工作原理" class="headerlink" title="3.4 执行器的工作原理"></a><a name="Executor-Performs"></a>3.4 执行器的工作原理</h3><h3 id="3-5-连接操作"><a href="#3-5-连接操作" class="headerlink" title="3.5 连接操作"></a><a name="Join-Operations"></a>3.5 连接操作</h3><h3 id="3-6-多表查询计划树的创建"><a href="#3-6-多表查询计划树的创建" class="headerlink" title="3.6 多表查询计划树的创建"></a><a name="plan-multi-table"></a>3.6 多表查询计划树的创建</h3>
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/BOOK/" class="category-chain-item">BOOK</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/BOOK/PostgreSQL%E6%8C%87%E5%8D%97%EF%BC%9A%E5%86%85%E5%B9%95%E6%8E%A2%E7%B4%A2/" class="category-chain-item">PostgreSQL指南：内幕探索</a>
+  
+  
+
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/book/" class="print-no-link">#book</a>
+      
+        <a href="/tags/database/" class="print-no-link">#database</a>
+      
+        <a href="/tags/transactions/" class="print-no-link">#transactions</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>ch3. 查询处理</div>
+      <div>http://smilemzy.com/2025/05/05/DB/PostgreSQL指南/内幕探索_new_release/ch3/ch3/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Smile</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2025年5月5日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-cc-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2025/05/05/DB/PostgreSQL%E6%8C%87%E5%8D%97/%E5%86%85%E5%B9%95%E6%8E%A2%E7%B4%A2_new_release/ch4/ch4/" title="ch4. 外部数据包装器">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">ch4. 外部数据包装器</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2025/05/05/DB/PostgreSQL%E6%8C%87%E5%8D%97/%E5%86%85%E5%B9%95%E6%8E%A2%E7%B4%A2_new_release/ch2/ch2/" title="ch2. 进程和内存架构">
+                        <span class="hidden-mobile">ch2. 进程和内存架构</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/5.0.0/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

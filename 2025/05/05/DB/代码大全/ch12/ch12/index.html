@@ -1,0 +1,711 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Smile">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="介绍ch12. 基本数据类型 内容12.1 数值概论使用数时少分错误的建议：1、避免使用神秘数值(magic number)2、如果需要，可以使用硬编码的0和1程序主体中仅能出现的文字量就是0和13、预防除零错误使类型转换变得明显4、避免混合类型的比较5、注意编译器的警告   12.2 整数1、检查整数除法2、检查整数溢出3、检查中间结果溢出   12.3 浮点数1、避免数量级相差巨大的数之间的加">
+<meta property="og:type" content="article">
+<meta property="og:title" content="ch12. 基本数据类型">
+<meta property="og:url" content="http://smilemzy.com/2025/05/05/DB/%E4%BB%A3%E7%A0%81%E5%A4%A7%E5%85%A8/ch12/ch12/index.html">
+<meta property="og:site_name" content="Smile">
+<meta property="og:description" content="介绍ch12. 基本数据类型 内容12.1 数值概论使用数时少分错误的建议：1、避免使用神秘数值(magic number)2、如果需要，可以使用硬编码的0和1程序主体中仅能出现的文字量就是0和13、预防除零错误使类型转换变得明显4、避免混合类型的比较5、注意编译器的警告   12.2 整数1、检查整数除法2、检查整数溢出3、检查中间结果溢出   12.3 浮点数1、避免数量级相差巨大的数之间的加">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://smilemzy.com/2025/05/05/DB/%E4%BB%A3%E7%A0%81%E5%A4%A7%E5%85%A8/ch12/ch12/image.png">
+<meta property="og:image" content="http://smilemzy.com/2025/05/05/DB/%E4%BB%A3%E7%A0%81%E5%A4%A7%E5%85%A8/ch12/ch12/image-1.png">
+<meta property="og:image" content="http://smilemzy.com/2025/05/05/DB/%E4%BB%A3%E7%A0%81%E5%A4%A7%E5%85%A8/ch12/ch12/image-2.png">
+<meta property="og:image" content="http://smilemzy.com/2025/05/05/DB/%E4%BB%A3%E7%A0%81%E5%A4%A7%E5%85%A8/ch12/ch12/image-3.png">
+<meta property="og:image" content="http://smilemzy.com/2025/05/05/DB/%E4%BB%A3%E7%A0%81%E5%A4%A7%E5%85%A8/ch12/ch12/image-4.png">
+<meta property="og:image" content="http://smilemzy.com/2025/05/05/DB/%E4%BB%A3%E7%A0%81%E5%A4%A7%E5%85%A8/ch12/ch12/image-5.png">
+<meta property="og:image" content="http://smilemzy.com/2025/05/05/DB/%E4%BB%A3%E7%A0%81%E5%A4%A7%E5%85%A8/ch12/ch12/image-6.png">
+<meta property="og:image" content="http://smilemzy.com/2025/05/05/DB/%E4%BB%A3%E7%A0%81%E5%A4%A7%E5%85%A8/ch12/ch12/image-7.png">
+<meta property="og:image" content="http://smilemzy.com/2025/05/05/DB/%E4%BB%A3%E7%A0%81%E5%A4%A7%E5%85%A8/ch12/ch12/image-8.png">
+<meta property="og:image" content="http://smilemzy.com/2025/05/05/DB/%E4%BB%A3%E7%A0%81%E5%A4%A7%E5%85%A8/ch12/ch12/image-9.png">
+<meta property="og:image" content="http://smilemzy.com/2025/05/05/DB/%E4%BB%A3%E7%A0%81%E5%A4%A7%E5%85%A8/ch12/ch12/image-10.png">
+<meta property="og:image" content="http://smilemzy.com/2025/05/05/DB/%E4%BB%A3%E7%A0%81%E5%A4%A7%E5%85%A8/ch12/ch12/image-11.png">
+<meta property="og:image" content="http://smilemzy.com/2025/05/05/DB/%E4%BB%A3%E7%A0%81%E5%A4%A7%E5%85%A8/ch12/ch12/image-12.png">
+<meta property="og:image" content="http://smilemzy.com/2025/05/05/DB/%E4%BB%A3%E7%A0%81%E5%A4%A7%E5%85%A8/ch12/ch12/image-13.png">
+<meta property="og:image" content="http://smilemzy.com/2025/05/05/DB/%E4%BB%A3%E7%A0%81%E5%A4%A7%E5%85%A8/ch12/ch12/image-14.png">
+<meta property="og:image" content="http://smilemzy.com/2025/05/05/DB/%E4%BB%A3%E7%A0%81%E5%A4%A7%E5%85%A8/ch12/ch12/image-15.png">
+<meta property="og:image" content="http://smilemzy.com/2025/05/05/DB/%E4%BB%A3%E7%A0%81%E5%A4%A7%E5%85%A8/ch12/ch12/image-16.png">
+<meta property="og:image" content="http://smilemzy.com/2025/05/05/DB/%E4%BB%A3%E7%A0%81%E5%A4%A7%E5%85%A8/ch12/ch12/image-17.png">
+<meta property="og:image" content="http://smilemzy.com/2025/05/05/DB/%E4%BB%A3%E7%A0%81%E5%A4%A7%E5%85%A8/ch12/ch12/image-18.png">
+<meta property="og:image" content="http://smilemzy.com/2025/05/05/DB/%E4%BB%A3%E7%A0%81%E5%A4%A7%E5%85%A8/ch12/ch12/image-19.png">
+<meta property="og:image" content="http://smilemzy.com/2025/05/05/DB/%E4%BB%A3%E7%A0%81%E5%A4%A7%E5%85%A8/ch12/ch12/image-20.png">
+<meta property="og:image" content="http://smilemzy.com/2025/05/05/DB/%E4%BB%A3%E7%A0%81%E5%A4%A7%E5%85%A8/ch12/ch12/image-21.png">
+<meta property="og:image" content="http://smilemzy.com/2025/05/05/DB/%E4%BB%A3%E7%A0%81%E5%A4%A7%E5%85%A8/ch12/ch12/image-22.png">
+<meta property="og:image" content="http://smilemzy.com/2025/05/05/DB/%E4%BB%A3%E7%A0%81%E5%A4%A7%E5%85%A8/ch12/ch12/image-23.png">
+<meta property="og:image" content="http://smilemzy.com/2025/05/05/DB/%E4%BB%A3%E7%A0%81%E5%A4%A7%E5%85%A8/ch12/ch12/image-24.png">
+<meta property="og:image" content="http://smilemzy.com/2025/05/05/DB/%E4%BB%A3%E7%A0%81%E5%A4%A7%E5%85%A8/ch12/ch12/image-25.png">
+<meta property="article:published_time" content="2025-05-05T12:24:15.406Z">
+<meta property="article:modified_time" content="2025-05-05T12:44:21.848Z">
+<meta property="article:author" content="Smile">
+<meta property="article:tag" content="book">
+<meta property="article:tag" content="code">
+<meta property="article:tag" content="programming">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="http://smilemzy.com/2025/05/05/DB/%E4%BB%A3%E7%A0%81%E5%A4%A7%E5%85%A8/ch12/ch12/image.png">
+  
+  
+  
+  <title>ch12. 基本数据类型 - Smile</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/c/font_1749284_5i9bdhy70f8.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/c/font_1736178_k526ubmyhba.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"smilemzy.com","root":"/","version":"1.9.8","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false},"umami":{"src":null,"website_id":null,"domains":null,"start_time":"2024-01-01T00:00:00.000Z","token":null,"api_server":null}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+
+  
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Smile</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/" target="_self">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/" target="_self">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/" target="_self">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/" target="_self">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/" target="_self">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="ch12. 基本数据类型"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2025-05-05 20:24" pubdate>
+          2025年5月5日 晚上
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          864 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          8 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">ch12. 基本数据类型</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <h4 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h4><p>ch12. 基本数据类型</p>
+<h4 id="内容"><a href="#内容" class="headerlink" title="内容"></a>内容</h4><h5 id="12-1-数值概论"><a href="#12-1-数值概论" class="headerlink" title="12.1 数值概论"></a>12.1 数值概论</h5><p>使用数时少分错误的建议：<br>1、避免使用神秘数值(magic number)<br><img src="/2025/05/05/DB/%E4%BB%A3%E7%A0%81%E5%A4%A7%E5%85%A8/ch12/ch12/image.png" srcset="/img/loading.gif" lazyload alt="Alt text"><br>2、如果需要，可以使用硬编码的0和1<br>程序主体中仅能出现的文字量就是0和1<br>3、预防除零错误<br>使类型转换变得明显<br>4、避免混合类型的比较<br>5、注意编译器的警告  </p>
+<h5 id="12-2-整数"><a href="#12-2-整数" class="headerlink" title="12.2 整数"></a>12.2 整数</h5><p>1、检查整数除法<br>2、检查整数溢出<br><img src="/2025/05/05/DB/%E4%BB%A3%E7%A0%81%E5%A4%A7%E5%85%A8/ch12/ch12/image-1.png" srcset="/img/loading.gif" lazyload alt="Alt text"><br>3、检查中间结果溢出  </p>
+<h5 id="12-3-浮点数"><a href="#12-3-浮点数" class="headerlink" title="12.3 浮点数"></a>12.3 浮点数</h5><p><img src="/2025/05/05/DB/%E4%BB%A3%E7%A0%81%E5%A4%A7%E5%85%A8/ch12/ch12/image-2.png" srcset="/img/loading.gif" lazyload alt="Alt text"><br>1、避免数量级相差巨大的数之间的加减运算<br><img src="/2025/05/05/DB/%E4%BB%A3%E7%A0%81%E5%A4%A7%E5%85%A8/ch12/ch12/image-3.png" srcset="/img/loading.gif" lazyload alt="Alt text"><br>2、避免等量判断<br>很多应该相等的浮点数值并不一定相等。<br>方案：先确定可接受的精确度范围，然后用布尔函数判断数值是否接近。<br><img src="/2025/05/05/DB/%E4%BB%A3%E7%A0%81%E5%A4%A7%E5%85%A8/ch12/ch12/image-4.png" srcset="/img/loading.gif" lazyload alt="Alt text"><br>3、处理舍入误差问题<br><img src="/2025/05/05/DB/%E4%BB%A3%E7%A0%81%E5%A4%A7%E5%85%A8/ch12/ch12/image-5.png" srcset="/img/loading.gif" lazyload alt="Alt text"><br>4、检查语言和函数库对特定数据类型的支持  </p>
+<h5 id="12-4-字符和字符串"><a href="#12-4-字符和字符串" class="headerlink" title="12.4 字符和字符串"></a>12.4 字符和字符串</h5><p>1、避免使用神秘字符和神秘字符串<br><img src="/2025/05/05/DB/%E4%BB%A3%E7%A0%81%E5%A4%A7%E5%85%A8/ch12/ch12/image-6.png" srcset="/img/loading.gif" lazyload alt="Alt text"><br><img src="/2025/05/05/DB/%E4%BB%A3%E7%A0%81%E5%A4%A7%E5%85%A8/ch12/ch12/image-7.png" srcset="/img/loading.gif" lazyload alt="Alt text"><br>2、避免off-by-one错误<br>偏差一<br>3、了解你的语言和开发环境是如何支持Unicode的<br>4、在程序声明期中尽早决定国际化&#x2F;本地化策略<br>5、如果你知道只需要支持一种文字的语言，请考虑使用ISO 8859字符集<br>6、如果你需要支持多种语言，请使用Unicode<br>7、采用某种一致的字符串类型转换策略  </p>
+<h6 id="C语言中的字符串"><a href="#C语言中的字符串" class="headerlink" title="C语言中的字符串"></a>C语言中的字符串</h6><p><img src="/2025/05/05/DB/%E4%BB%A3%E7%A0%81%E5%A4%A7%E5%85%A8/ch12/ch12/image-8.png" srcset="/img/loading.gif" lazyload alt="Alt text"><br><img src="/2025/05/05/DB/%E4%BB%A3%E7%A0%81%E5%A4%A7%E5%85%A8/ch12/ch12/image-9.png" srcset="/img/loading.gif" lazyload alt="Alt text"><br><img src="/2025/05/05/DB/%E4%BB%A3%E7%A0%81%E5%A4%A7%E5%85%A8/ch12/ch12/image-10.png" srcset="/img/loading.gif" lazyload alt="Alt text"><br><img src="/2025/05/05/DB/%E4%BB%A3%E7%A0%81%E5%A4%A7%E5%85%A8/ch12/ch12/image-11.png" srcset="/img/loading.gif" lazyload alt="Alt text"></p>
+<h5 id="12-5-布尔变量"><a href="#12-5-布尔变量" class="headerlink" title="12.5 布尔变量"></a>12.5 布尔变量</h5><p>1、用布尔变量对程序加以文档说明<br>2、用布尔变量简化复杂的判断<br>3、如果需要的话，创建你自己的布尔类型  </p>
+<h5 id="12-6-枚举类型"><a href="#12-6-枚举类型" class="headerlink" title="12.6 枚举类型"></a>12.6 枚举类型</h5><p>1、用枚举类型来提高可读性<br>2、用枚举类型来提高可靠性<br>3、用枚举类型来简化修改<br>4、用枚举类型作为布尔变量的替换方案<br>5、检查非法数值<br>6、定义出枚举的第一项和最后一项，以便用于循环边界<br><img src="/2025/05/05/DB/%E4%BB%A3%E7%A0%81%E5%A4%A7%E5%85%A8/ch12/ch12/image-12.png" srcset="/img/loading.gif" lazyload alt="Alt text"><br>7、把枚举类型的第一个元素留做非法值<br><img src="/2025/05/05/DB/%E4%BB%A3%E7%A0%81%E5%A4%A7%E5%85%A8/ch12/ch12/image-13.png" srcset="/img/loading.gif" lazyload alt="Alt text"><br>8、明确定义项目代码编写标准中第一个和最后一个元素的使用规则，并且在使用时保持一致<br>9、警惕给枚举元素明确赋值而带来的失误<br><img src="/2025/05/05/DB/%E4%BB%A3%E7%A0%81%E5%A4%A7%E5%85%A8/ch12/ch12/image-14.png" srcset="/img/loading.gif" lazyload alt="Alt text">  </p>
+<h6 id="如果你的语言里没有枚举类型"><a href="#如果你的语言里没有枚举类型" class="headerlink" title="如果你的语言里没有枚举类型"></a>如果你的语言里没有枚举类型</h6><p><img src="/2025/05/05/DB/%E4%BB%A3%E7%A0%81%E5%A4%A7%E5%85%A8/ch12/ch12/image-15.png" srcset="/img/loading.gif" lazyload alt="Alt text"></p>
+<h5 id="12-7-具名常量"><a href="#12-7-具名常量" class="headerlink" title="12.7 具名常量"></a>12.7 具名常量</h5><p>一旦赋值以后就不能再更改了。<br>单点控制！<br>1、在数组声明中使用具名变量<br>2、避免使用文字量，即使是安全的<br>3、用具有适当作用域的变量或类来模拟具名常量<br>4、统一地使用具名常量  </p>
+<h5 id="12-8-数组"><a href="#12-8-数组" class="headerlink" title="12.8 数组"></a>12.8 数组</h5><p>1、确认所有的数组下标都没有超出数组的边界<br>2、考虑用容器来取代数组，或者将数组作为顺序话结构来处理<br><img src="/2025/05/05/DB/%E4%BB%A3%E7%A0%81%E5%A4%A7%E5%85%A8/ch12/ch12/image-16.png" srcset="/img/loading.gif" lazyload alt="Alt text"><br>3、检察数组边界点<br>4、如果数组是多维的，确认下标的使用顺序是正确的<br>5、提防下标串话<br><img src="/2025/05/05/DB/%E4%BB%A3%E7%A0%81%E5%A4%A7%E5%85%A8/ch12/ch12/image-17.png" srcset="/img/loading.gif" lazyload alt="Alt text"><br>6、在C中结合ARRAY_LENGTH()宏来使用数组<br><img src="/2025/05/05/DB/%E4%BB%A3%E7%A0%81%E5%A4%A7%E5%85%A8/ch12/ch12/image-18.png" srcset="/img/loading.gif" lazyload alt="Alt text">  </p>
+<h5 id="12-9-创建你自己的类型-类型别名"><a href="#12-9-创建你自己的类型-类型别名" class="headerlink" title="12.9 创建你自己的类型(类型别名)"></a>12.9 创建你自己的类型(类型别名)</h5><p><img src="/2025/05/05/DB/%E4%BB%A3%E7%A0%81%E5%A4%A7%E5%85%A8/ch12/ch12/image-19.png" srcset="/img/loading.gif" lazyload alt="Alt text"><br>指导原则：<br>1、给所创建的类型取功能导向的名字<br>2、避免使用预定义类型<br>3、不要重定义一个与定义的类型<br>4、定义替代类型以便于移植<br>5、考虑创建一个类而不是使用typedef<br><img src="/2025/05/05/DB/%E4%BB%A3%E7%A0%81%E5%A4%A7%E5%85%A8/ch12/ch12/image-20.png" srcset="/img/loading.gif" lazyload alt="Alt text"><br><img src="/2025/05/05/DB/%E4%BB%A3%E7%A0%81%E5%A4%A7%E5%85%A8/ch12/ch12/image-21.png" srcset="/img/loading.gif" lazyload alt="Alt text"></p>
+<h5 id="CHECKLIST"><a href="#CHECKLIST" class="headerlink" title="CHECKLIST"></a>CHECKLIST</h5><p><img src="/2025/05/05/DB/%E4%BB%A3%E7%A0%81%E5%A4%A7%E5%85%A8/ch12/ch12/image-22.png" srcset="/img/loading.gif" lazyload alt="Alt text"><br><img src="/2025/05/05/DB/%E4%BB%A3%E7%A0%81%E5%A4%A7%E5%85%A8/ch12/ch12/image-23.png" srcset="/img/loading.gif" lazyload alt="Alt text"><br><img src="/2025/05/05/DB/%E4%BB%A3%E7%A0%81%E5%A4%A7%E5%85%A8/ch12/ch12/image-24.png" srcset="/img/loading.gif" lazyload alt="Alt text"></p>
+<h5 id="Key-Points"><a href="#Key-Points" class="headerlink" title="Key Points"></a>Key Points</h5><p><img src="/2025/05/05/DB/%E4%BB%A3%E7%A0%81%E5%A4%A7%E5%85%A8/ch12/ch12/image-25.png" srcset="/img/loading.gif" lazyload alt="Alt text"></p>
+<h4 id="安装教程"><a href="#安装教程" class="headerlink" title="安装教程"></a>安装教程</h4><ol>
+<li>xxxx</li>
+<li>xxxx</li>
+<li>xxxx</li>
+</ol>
+<h4 id="使用说明"><a href="#使用说明" class="headerlink" title="使用说明"></a>使用说明</h4><ol>
+<li>xxxx</li>
+<li>xxxx</li>
+<li>xxxx</li>
+</ol>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/BOOK/" class="category-chain-item">BOOK</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/BOOK/%E4%BB%A3%E7%A0%81%E5%A4%A7%E5%85%A8/" class="category-chain-item">代码大全</a>
+  
+  
+
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/book/" class="print-no-link">#book</a>
+      
+        <a href="/tags/code/" class="print-no-link">#code</a>
+      
+        <a href="/tags/programming/" class="print-no-link">#programming</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>ch12. 基本数据类型</div>
+      <div>http://smilemzy.com/2025/05/05/DB/代码大全/ch12/ch12/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Smile</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2025年5月5日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-cc-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2025/05/05/DB/%E4%BB%A3%E7%A0%81%E5%A4%A7%E5%85%A8/ch13/ch13/" title="ch13. 不常见的数据类型">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">ch13. 不常见的数据类型</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2025/05/05/DB/%E4%BB%A3%E7%A0%81%E5%A4%A7%E5%85%A8/ch11/ch11/" title="ch11. 变量名的力量">
+                        <span class="hidden-mobile">ch11. 变量名的力量</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/5.0.0/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

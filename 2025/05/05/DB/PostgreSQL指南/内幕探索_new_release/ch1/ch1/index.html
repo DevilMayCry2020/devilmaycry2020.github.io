@@ -1,0 +1,900 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Smile">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="ch1. 数据库集簇、数据库和数据表本章及下一章概括了PostgreSQL的基本知识，以帮助阅读后续章节。本章涵盖了以下主题：      Chapter Contents    1.1 数据库集簇的逻辑结构   1.2 数据库集簇的物理结构   1.3 堆表文件的内部布局   1.4 向表中读写元组的方式   如果您已经熟悉这些主题，您可以跳过本章。 1.1 数据库集簇的逻辑结构数据库集群是由Po">
+<meta property="og:type" content="article">
+<meta property="og:title" content="ch1. 数据库集簇、数据库和数据表">
+<meta property="og:url" content="http://smilemzy.com/2025/05/05/DB/PostgreSQL%E6%8C%87%E5%8D%97/%E5%86%85%E5%B9%95%E6%8E%A2%E7%B4%A2_new_release/ch1/ch1/index.html">
+<meta property="og:site_name" content="Smile">
+<meta property="og:description" content="ch1. 数据库集簇、数据库和数据表本章及下一章概括了PostgreSQL的基本知识，以帮助阅读后续章节。本章涵盖了以下主题：      Chapter Contents    1.1 数据库集簇的逻辑结构   1.2 数据库集簇的物理结构   1.3 堆表文件的内部布局   1.4 向表中读写元组的方式   如果您已经熟悉这些主题，您可以跳过本章。 1.1 数据库集簇的逻辑结构数据库集群是由Po">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://smilemzy.com/2025/05/05/DB/PostgreSQL%E6%8C%87%E5%8D%97/%E5%86%85%E5%B9%95%E6%8E%A2%E7%B4%A2_new_release/ch1/ch1/img.png">
+<meta property="og:image" content="http://smilemzy.com/2025/05/05/DB/PostgreSQL%E6%8C%87%E5%8D%97/%E5%86%85%E5%B9%95%E6%8E%A2%E7%B4%A2_new_release/ch1/ch1/img_1.png">
+<meta property="og:image" content="http://smilemzy.com/2025/05/05/DB/PostgreSQL%E6%8C%87%E5%8D%97/%E5%86%85%E5%B9%95%E6%8E%A2%E7%B4%A2_new_release/ch1/ch1/img_2.png">
+<meta property="og:image" content="http://smilemzy.com/2025/05/05/DB/PostgreSQL%E6%8C%87%E5%8D%97/%E5%86%85%E5%B9%95%E6%8E%A2%E7%B4%A2_new_release/ch1/ch1/img_3.png">
+<meta property="og:image" content="http://smilemzy.com/2025/05/05/DB/PostgreSQL%E6%8C%87%E5%8D%97/%E5%86%85%E5%B9%95%E6%8E%A2%E7%B4%A2_new_release/ch1/ch1/img_4.png">
+<meta property="og:image" content="http://smilemzy.com/2025/05/05/DB/PostgreSQL%E6%8C%87%E5%8D%97/%E5%86%85%E5%B9%95%E6%8E%A2%E7%B4%A2_new_release/ch1/ch1/img_5.png">
+<meta property="article:published_time" content="2025-05-05T12:24:15.047Z">
+<meta property="article:modified_time" content="2025-05-05T12:52:47.646Z">
+<meta property="article:author" content="Smile">
+<meta property="article:tag" content="book">
+<meta property="article:tag" content="database">
+<meta property="article:tag" content="transactions">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="http://smilemzy.com/2025/05/05/DB/PostgreSQL%E6%8C%87%E5%8D%97/%E5%86%85%E5%B9%95%E6%8E%A2%E7%B4%A2_new_release/ch1/ch1/img.png">
+  
+  
+  
+  <title>ch1. 数据库集簇、数据库和数据表 - Smile</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/c/font_1749284_5i9bdhy70f8.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/c/font_1736178_k526ubmyhba.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"smilemzy.com","root":"/","version":"1.9.8","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false},"umami":{"src":null,"website_id":null,"domains":null,"start_time":"2024-01-01T00:00:00.000Z","token":null,"api_server":null}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+
+  
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Smile</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/" target="_self">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/" target="_self">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/" target="_self">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/" target="_self">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/" target="_self">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="ch1. 数据库集簇、数据库和数据表"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2025-05-05 20:24" pubdate>
+          2025年5月5日 晚上
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          3.9k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          33 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">ch1. 数据库集簇、数据库和数据表</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <h2 id="ch1-数据库集簇、数据库和数据表"><a href="#ch1-数据库集簇、数据库和数据表" class="headerlink" title="ch1. 数据库集簇、数据库和数据表"></a>ch1. 数据库集簇、数据库和数据表</h2><p>本章及下一章概括了PostgreSQL的基本知识，以帮助阅读后续章节。本章涵盖了以下主题：  </p>
+<table>
+<thead>
+<tr>
+<th>Chapter Contents</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><a href="#logical-structure">1.1 数据库集簇的逻辑结构</a></td>
+</tr>
+<tr>
+<td><a href="#physical-structure">1.2 数据库集簇的物理结构</a></td>
+</tr>
+<tr>
+<td><a href="#heap-table-layout">1.3 堆表文件的内部布局</a></td>
+</tr>
+<tr>
+<td><a href="#read-write-methods">1.4 向表中读写元组的方式</a></td>
+</tr>
+</tbody></table>
+<p>如果您已经熟悉这些主题，您可以跳过本章。</p>
+<h3 id="1-1-数据库集簇的逻辑结构"><a href="#1-1-数据库集簇的逻辑结构" class="headerlink" title="1.1 数据库集簇的逻辑结构"></a><a name="logical-structure"></a>1.1 数据库集簇的逻辑结构</h3><p>数据库集群是由PostgreSQL服务器管理的一系列数据库的集合。如果您是首次听到这个定义，<br>可能对此概念感到好奇。在PostgreSQL中，“数据库集群”这个词并不意味着“一组数据库服务器”。<br>一个PostgreSQL服务器运行在一个单一主机上并管理着一个单独的数据库集群。</p>
+<p>图1.1展示了数据库集群的逻辑结构。一个数据库是数据库对象的集合。在关系型数据库理论中，<br>数据库对象是一种用于存储或引用数据的数据结构。堆表是一个典型的例子，还有许多其他类型，<br>比如索引、序列、视图、函数等。在PostgreSQL中，数据库自身也是数据库对象，并且在逻辑上相互独立。<br>所有其他的数据库对象（如表、索引等）都归属于各自的数据库。<br><img src="/2025/05/05/DB/PostgreSQL%E6%8C%87%E5%8D%97/%E5%86%85%E5%B9%95%E6%8E%A2%E7%B4%A2_new_release/ch1/ch1/img.png" srcset="/img/loading.gif" lazyload alt="img.png"></p>
+<p>PostgreSQL中的所有数据库对象都通过各自的对象标识符（OID）进行内部管理，这些标识符是无符号<br>的4字节整数。数据库对象及其相应OID之间的关联关系会根据对象的类型存储在相应的系统目录中。<br>例如，数据库的OID存储在pg_database表中，而堆表（普通表）的OID则存储在pg_class表中。<br>您可以通过执行如下类似的查询来找出您想要了解的OID：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs sql">sampledb<span class="hljs-operator">=</span># <span class="hljs-keyword">SELECT</span> datname, oid <span class="hljs-keyword">FROM</span> pg_database <span class="hljs-keyword">WHERE</span> datname <span class="hljs-operator">=</span> <span class="hljs-string">&#x27;sampledb&#x27;</span>;<br> datname  <span class="hljs-operator">|</span>  oid<br><span class="hljs-comment">----------+-------</span><br> sampledb <span class="hljs-operator">|</span> <span class="hljs-number">16384</span><br>(<span class="hljs-number">1</span> <span class="hljs-type">row</span>)<br><br>sampledb<span class="hljs-operator">=</span># <span class="hljs-keyword">SELECT</span> relname, oid <span class="hljs-keyword">FROM</span> pg_class <span class="hljs-keyword">WHERE</span> relname <span class="hljs-operator">=</span> <span class="hljs-string">&#x27;sampletbl&#x27;</span>;<br>  relname  <span class="hljs-operator">|</span>  oid<br><span class="hljs-comment">-----------+-------</span><br> sampletbl <span class="hljs-operator">|</span> <span class="hljs-number">18740</span><br>(<span class="hljs-number">1</span> <span class="hljs-type">row</span>)<br></code></pre></td></tr></table></figure>
+
+<h3 id="1-2-数据库集簇的物理结构"><a href="#1-2-数据库集簇的物理结构" class="headerlink" title="1.2 数据库集簇的物理结构"></a><a name="logical-structure"></a>1.2 数据库集簇的物理结构</h3><p>数据库集群基本上就是一个单一的目录，称为基本目录（base directory）。它包含一些子目录和<br>众多文件。当你执行initdb工具初始化一个新的数据库集群时，会在指定的目录下创建一个基本目录。<br>基本目录的路径通常被设置为环境变量 <em>PGDATA</em> 的值。</p>
+<p>图1.2展示了PostgreSQL中数据库集群的一个示例。一个数据库是基本子目录下的一个子目录，<br>而每个表和索引至少是存储在其所属数据库子目录下的一个文件。还有几个包含特定数据和配置文件的子目录。</p>
+<p>虽然PostgreSQL支持表空间（tablespaces），但这一术语的含义与其他关系型数据库管理系统（RDBMS）有所不同。在PostgreSQL中，表空间是一个包含基本目录之外某些数据的单一目录。</p>
+<p><img src="/2025/05/05/DB/PostgreSQL%E6%8C%87%E5%8D%97/%E5%86%85%E5%B9%95%E6%8E%A2%E7%B4%A2_new_release/ch1/ch1/img_1.png" srcset="/img/loading.gif" lazyload alt="img_1.png"></p>
+<p>在接下来的各个小节中，将详细描述PostgreSQL中数据库集群的结构布局、数据库、与表和索引相关的文件，以及表空间的安排。</p>
+<h4 id="1-2-1-数据库集簇的布局"><a href="#1-2-1-数据库集簇的布局" class="headerlink" title="1.2.1 数据库集簇的布局"></a>1.2.1 数据库集簇的布局</h4><p>数据库集群的布局已在官方文档中进行了描述。文档的一部分列出了主要文件和子目录，如表1.1所示：</p>
+<p>表1.1：基础目录下文件与子目录的布局（出自官方文档）</p>
+<table>
+<thead>
+<tr>
+<th>Files</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>PG_VERSION</td>
+<td>包含PostgreSQL的主要版本号的一个文件。</td>
+</tr>
+<tr>
+<td>pg_hba.conf</td>
+<td>控制PostgreSQL客户端认证的一个文件。</td>
+</tr>
+<tr>
+<td>pg_ident.conf</td>
+<td>控制PostgreSQL用户名映射的一个文件。</td>
+</tr>
+<tr>
+<td>postgresql.conf</td>
+<td>设置配置参数的一个文件。</td>
+</tr>
+<tr>
+<td>postgresql.auto.conf (versions 9.4 or later)</td>
+<td>存储在ALTER SYSTEM设置的配置参数的一个文件。</td>
+</tr>
+<tr>
+<td>postmaster.opts</td>
+<td>记录服务器上次启动时使用的命令行选项的一个文件。</td>
+</tr>
+</tbody></table>
+<table>
+<thead>
+<tr>
+<th>Subdirectories</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>base&#x2F;</td>
+<td>包含每个数据库子目录的子目录。</td>
+</tr>
+<tr>
+<td>global&#x2F;</td>
+<td>包含全局表（如pg_database和pg_control）的子目录。</td>
+</tr>
+<tr>
+<td>pg_commit_ts (versions 9.5 or later)</td>
+<td>包含事务提交时间戳数据的子目录。</td>
+</tr>
+<tr>
+<td>pg_clog (versions 9.6 or earlier)</td>
+<td>包含事务提交状态数据的子目录。在版本10中重命名为pg_xact。CLOG将在第5.4节中描述。</td>
+</tr>
+<tr>
+<td>pg_dynshmem&#x2F;</td>
+<td>包含动态共享内存子系统的文件（从版本9.4开始）。</td>
+</tr>
+<tr>
+<td>pg_logical</td>
+<td>包含逻辑解码的状态数据（从版本9.4开始）。</td>
+</tr>
+<tr>
+<td>pg_multixact</td>
+<td>包含多事务状态数据（用于共享行锁）。</td>
+</tr>
+<tr>
+<td>pg_notify</td>
+<td>包含LISTEN&#x2F;NOTIFY状态数据。</td>
+</tr>
+<tr>
+<td>pg_repslot</td>
+<td>包含复制槽数据（从版本9.4开始）。</td>
+</tr>
+<tr>
+<td>pg_serial</td>
+<td>包含已提交可串行化事务的信息（从版本9.1开始）。</td>
+</tr>
+<tr>
+<td>pg_snapshots</td>
+<td>包含导出快照。PostgreSQL的功能pg_export_snapshot在这个子目录中创建快照信息文件（从版本9.2开始）。</td>
+</tr>
+<tr>
+<td>pg_stat</td>
+<td>包含统计子系统的永久性文件。</td>
+</tr>
+<tr>
+<td>pg_stat_tmp</td>
+<td>包含统计子系统的临时文件。</td>
+</tr>
+<tr>
+<td>pg_subtrans</td>
+<td>包含子事务状态数据。</td>
+</tr>
+<tr>
+<td>pg_tblspc</td>
+<td>包含指向表空间的符号链接。</td>
+</tr>
+<tr>
+<td>pg_twophase</td>
+<td>包含预提交事务的状态文件。</td>
+</tr>
+<tr>
+<td>pg_wal（从版本10开始）</td>
+<td>包含WAL（Write Ahead Logging）段文件。自版本10起，它被重命名为pg_xlog。</td>
+</tr>
+<tr>
+<td>pg_xact（从版本10开始）</td>
+<td>包含事务提交状态数据。自版本10起，它被重命名为pg_clog。CLOG将在第5.4节中描述。</td>
+</tr>
+<tr>
+<td>pg_xlog（从版本9.6或更早版本）</td>
+<td>包含WAL（Write Ahead Logging）段文件。自版本10起，它被重命名为pg_wal。</td>
+</tr>
+</tbody></table>
+<h4 id="1-2-2-数据库的布局"><a href="#1-2-2-数据库的布局" class="headerlink" title="1.2.2 数据库的布局"></a>1.2.2 数据库的布局</h4><p>数据库是基础子目录下的一个子目录。数据库目录的名称与其相应的OID（对象标识符）相同。<br>例如，如果数据库’sampledb’的OID是16384，那么其子目录的名称就是16384。</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs sql">$ cd $PGDATA<br>$ ls <span class="hljs-operator">-</span>ld base<span class="hljs-operator">/</span><span class="hljs-number">16384</span><br>drwx<span class="hljs-comment">------  213 postgres postgres  7242  8 26 16:33 16384</span><br></code></pre></td></tr></table></figure>
+
+<h4 id="1-2-3-表和索引关联文件的布局"><a href="#1-2-3-表和索引关联文件的布局" class="headerlink" title="1.2.3 表和索引关联文件的布局"></a>1.2.3 表和索引关联文件的布局</h4><p>20:50每个大小小于1GB的表或索引都存储在其所属数据库目录下的单个文件中。表和索引在内部通过各自的OID进行管理，<br>而它们的数据文件则通过变量relfilenode进行管理。表和索引的relfilenode值基本上但<strong>不总是</strong>与各自的OID相匹配，<br>具体细节如下所述。</p>
+<p>例如，展示表’sampletbl’的OID和relfilenode如下：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs sql">sampledb<span class="hljs-operator">=</span># <span class="hljs-keyword">SELECT</span> relname, oid, relfilenode <span class="hljs-keyword">FROM</span> pg_class <span class="hljs-keyword">WHERE</span> relname <span class="hljs-operator">=</span> <span class="hljs-string">&#x27;sampletbl&#x27;</span>;<br>  relname  <span class="hljs-operator">|</span>  oid  <span class="hljs-operator">|</span> relfilenode<br><span class="hljs-comment">-----------+-------+-------------</span><br> sampletbl <span class="hljs-operator">|</span> <span class="hljs-number">18740</span> <span class="hljs-operator">|</span>       <span class="hljs-number">18740</span><br>(<span class="hljs-number">1</span> <span class="hljs-type">row</span>)<br></code></pre></td></tr></table></figure>
+
+<p>请看，oid与relfilenode的值在此情况下相等。此外，表“sampletbl”的数据文件路径为“base&#x2F;16384&#x2F;18740”。</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs sql">$ cd $PGDATA<br>$ ls <span class="hljs-operator">-</span>la base<span class="hljs-operator">/</span><span class="hljs-number">16384</span><span class="hljs-operator">/</span><span class="hljs-number">18740</span><br><span class="hljs-operator">-</span>rw<span class="hljs-comment">------- 1 postgres postgres 8192 Apr 21 10:21 base/16384/18740</span><br></code></pre></td></tr></table></figure>
+<p>表和索引的relfilenode值可以通过某些命令改变，比如TRUNCATE、REINDEX、CLUSTER。例如，如果我们截断表’sampletbl’，PostgreSQL会为该表分配一个新的relfilenode（18812），移除旧的数据文件（18740），并创建一个新的（18812）。</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs sql">sampledb<span class="hljs-operator">=</span># <span class="hljs-keyword">TRUNCATE</span> sampletbl;<br><span class="hljs-keyword">TRUNCATE</span> <span class="hljs-keyword">TABLE</span><br><br>sampledb<span class="hljs-operator">=</span># <span class="hljs-keyword">SELECT</span> relname, oid, relfilenode <span class="hljs-keyword">FROM</span> pg_class <span class="hljs-keyword">WHERE</span> relname <span class="hljs-operator">=</span> <span class="hljs-string">&#x27;sampletbl&#x27;</span>;<br>  relname  <span class="hljs-operator">|</span>  oid  <span class="hljs-operator">|</span> relfilenode<br><span class="hljs-comment">-----------+-------+-------------</span><br> sampletbl <span class="hljs-operator">|</span> <span class="hljs-number">18740</span> <span class="hljs-operator">|</span>       <span class="hljs-number">18812</span><br>(<span class="hljs-number">1</span> <span class="hljs-type">row</span>)<br></code></pre></td></tr></table></figure>
+
+<blockquote>
+<p>提示</p>
+<p>在9.0或之后的版本中，内置函数pg_relation_filepath非常有用，因为它可以根据指定的OID或名称返回关系的文件路径名。</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs sql">sampledb<span class="hljs-operator">=</span># <span class="hljs-keyword">SELECT</span> pg_relation_filepath(<span class="hljs-string">&#x27;sampletbl&#x27;</span>);<br>pg_relation_filepath<br><span class="hljs-comment">----------------------</span><br>base<span class="hljs-operator">/</span><span class="hljs-number">16384</span><span class="hljs-operator">/</span><span class="hljs-number">18812</span><br>(<span class="hljs-number">1</span> <span class="hljs-type">row</span>)<br></code></pre></td></tr></table></figure></blockquote>
+<p>当表和索引的文件大小超过1GB时，PostgreSQL会创建一个名为relfilenode.1的新文件并使用它。如果这个新文件也被填满，PostgreSQL将继续创建名为relfilenode.2的另一个新文件，以此类推。</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs sql">$ cd $PGDATA<br>$ ls <span class="hljs-operator">-</span>la <span class="hljs-operator">-</span>h base<span class="hljs-operator">/</span><span class="hljs-number">16384</span><span class="hljs-operator">/</span><span class="hljs-number">19427</span><span class="hljs-operator">*</span><br><span class="hljs-operator">-</span>rw<span class="hljs-comment">------- 1 postgres postgres 1.0G  Apr  21 11:16 data/base/16384/19427</span><br><span class="hljs-operator">-</span>rw<span class="hljs-comment">------- 1 postgres postgres  45M  Apr  21 11:20 data/base/16384/19427.1</span><br></code></pre></td></tr></table></figure>
+<blockquote>
+<p>提示</p>
+<p>表和索引的最大文件大小可以通过构建PostgreSQL时使用的配置选项“–with-segsize”来更改。</p>
+</blockquote>
+<p>在数据库的子目录下，你会注意到每个表都有两个相关联的文件，扩展名为‘_fsm’和‘_vm’，它们分别是空闲空间映射和<br>可见性映射。</p>
+<p>空闲空间映射用来记录表文件内每一页的空闲空间情况，而可见性映射则记录表文件内各页数据的可见性状态。<br>（更多详细内容可参考第5.3.4节和第6.2节。）</p>
+<p>索引仅有空闲空间映射文件，没有可见性映射文件。</p>
+<p>具体示例如下：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs shell"><span class="hljs-meta prompt_">$ </span><span class="language-bash"><span class="hljs-built_in">cd</span> <span class="hljs-variable">$PGDATA</span></span><br><span class="hljs-meta prompt_">$ </span><span class="language-bash"><span class="hljs-built_in">ls</span> -la base/16384/18751*</span><br>-rw------- 1 postgres postgres  8192 Apr 21 10:21 base/16384/18751<br>-rw------- 1 postgres postgres 24576 Apr 21 10:18 base/16384/18751_fsm<br>-rw------- 1 postgres postgres  8192 Apr 21 10:18 base/16384/18751_vm<br></code></pre></td></tr></table></figure>
+<p>空闲空间映射和可见性映射在内部也可能被称为每个关系的数据文件的分叉。其中，空闲空间映射是表或索引数据文件的第一个分叉（分叉编号为1），<br>可见性映射则是表数据文件的第二个分叉（分叉编号为2）。数据文件本身的分叉编号为0。</p>
+<h4 id="1-2-4-表空间"><a href="#1-2-4-表空间" class="headerlink" title="1.2.4 表空间"></a>1.2.4 表空间</h4><p>PostgreSQL中的表空间是一个位于基本目录之外的额外数据区域。此功能在8.0版本中实现。</p>
+<p>图1.3展示了表空间的内部结构及其与主数据区域的关系:<br><img src="/2025/05/05/DB/PostgreSQL%E6%8C%87%E5%8D%97/%E5%86%85%E5%B9%95%E6%8E%A2%E7%B4%A2_new_release/ch1/ch1/img_2.png" srcset="/img/loading.gif" lazyload alt="img_2.png"><br>Fig. 1.3. A Tablespace in the Database Cluster.</p>
+<p>表空间在执行CREATE TABLESPACE语句时指定的目录下创建。在该目录下，会创建一个版本特定的子目录<br>（例如，PG_14_202011044）。版本特定子目录的命名规则如下所示。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs shell">PG _ &#x27;Major version&#x27; _ &#x27;Catalogue version number&#x27;<br></code></pre></td></tr></table></figure>
+<p>例如，如果在目录‘&#x2F;home&#x2F;postgres&#x2F;tblspc’下创建了一个名为’new_tblspc’的表空间，其OID为16386，则在该表空间下会创建一个名为‘PG_14_202011044’的子目录。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs shell"><span class="hljs-meta prompt_">$ </span><span class="language-bash"><span class="hljs-built_in">ls</span> -l /home/postgres/tblspc/</span><br>total 4<br>drwx------ 2 postgres postgres 4096 Apr 21 10:08 PG_14_202011044<br></code></pre></td></tr></table></figure>
+<p>表空间目录通过从pg_tblspc子目录下的符号链接进行寻址。该链接名称与表空间的OID值相同。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs shell"><span class="hljs-meta prompt_">$ </span><span class="language-bash"><span class="hljs-built_in">ls</span> -l <span class="hljs-variable">$PGDATA</span>/pg_tblspc/</span><br>total 0<br>lrwxrwxrwx 1 postgres postgres 21 Apr 21 10:08 16386 -&gt; /home/postgres/tblspc<br></code></pre></td></tr></table></figure>
+<p>如果在该表空间下创建一个新数据库（OID 16387），则其目录将在版本特定的子目录下创建。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs shell"><span class="hljs-meta prompt_">$ </span><span class="language-bash"><span class="hljs-built_in">ls</span> -l /home/postgres/tblspc/PG_14_202011044/</span><br>total 4<br>drwx------ 2 postgres postgres 4096 Apr 21 10:10 16387<br></code></pre></td></tr></table></figure>
+<p>如果在基础目录下创建的数据库中创建一个新表，首先会在版本特定的子目录下创建一个新的目录。<br>新目录的名称与现有数据库的OID相同。接着，新表文件将被放置在所创建的目录下。</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs sql">sampledb<span class="hljs-operator">=</span># <span class="hljs-keyword">CREATE TABLE</span> newtbl (.....) TABLESPACE new_tblspc;<br><br>sampledb<span class="hljs-operator">=</span># <span class="hljs-keyword">SELECT</span> pg_relation_filepath(<span class="hljs-string">&#x27;newtbl&#x27;</span>);<br>             pg_relation_filepath<br><span class="hljs-comment">---------------------------------------------</span><br> pg_tblspc<span class="hljs-operator">/</span><span class="hljs-number">16386</span><span class="hljs-operator">/</span>PG_14_202011044<span class="hljs-operator">/</span><span class="hljs-number">16384</span><span class="hljs-operator">/</span><span class="hljs-number">18894</span><br></code></pre></td></tr></table></figure>
+
+<h3 id="1-3-堆表文件的内部布局"><a href="#1-3-堆表文件的内部布局" class="headerlink" title="1.3 堆表文件的内部布局"></a><a name="heap-table-layout"></a>1.3 堆表文件的内部布局</h3><p>在数据文件（堆表、索引、自由空间映射和可见性映射）内部，它被划分为固定长度的页（或块），<br>默认长度为8192字节（8 KB）。每个文件内的页从0开始顺序编号，这些编号称为块号。如果文件已满，<br>PostgreSQL会在文件末尾添加一个新的空白页以增大文件尺寸。</p>
+<p>页的内部布局取决于数据文件类型。本节将描述表的布局，因为这些信息在后续章节中将会用到。</p>
+<p><img src="/2025/05/05/DB/PostgreSQL%E6%8C%87%E5%8D%97/%E5%86%85%E5%B9%95%E6%8E%A2%E7%B4%A2_new_release/ch1/ch1/img_3.png" srcset="/img/loading.gif" lazyload alt="img_3.png"></p>
+<p>表内的一页包含三种数据：</p>
+<ol>
+<li><p>堆元组（heap tuple） - 堆元组是记录数据本身。<br>堆元组按照从页底部开始的顺序堆叠。 堆元组的内部结构在第5.2节和第9章中有描述，<br>因为这需要了解PostgreSQL中的并发控制（CC）和预写日志（WAL）知识。</p>
+</li>
+<li><p>行指针（line pointer） - 行指针长4字节，持有指向每个堆元组的指针。也被称为项目指针。<br>行指针形成一个简单的数组，起到对元组的索引作用。每个索引从1开始编号，称为偏移量编号。<br>当新元组添加到页上时，也会在数组中新增一个行指针指向新元组。</p>
+</li>
+<li><p>页头数据（header data） - 由PageHeaderData结构定义的页头数据位于页的开头，占24字节，<br>包含了关于该页的一般信息。 结构的主要变量描述如下：</p>
+</li>
+</ol>
+<p>PageHeaderData</p>
+<p>pd_lsn     - 此变量存储最后一次更改此页时所写的XLOG记录的LSN（日志序列号）。<br>它是一个8字节的无符号整数，与WAL（预写日志）机制有关。详情在第9.1.2节描述。</p>
+<p>pd_checksum - 此变量存储该页的校验和值。（请注意，此变量在9.3版本或之后支持；在<br>早期版本中，这部分存储的是页的时间线ID。）</p>
+<p>pd_lower, pd_upper - pd_lower指向行指针的结束位置，pd_upper指向最新堆元组的起始位置。</p>
+<p>pd_special  - 此变量用于索引。在表的页中，它指向页的末尾。（在索引的页中，它指向特殊空间的起始，<br>特殊空间是仅由索引持有的数据区域，根据索引类型（如B树、GiST、GiN等）包含特定数据。）</p>
+<p>页内行指针结束与最新元组起始之间的空隙被称为自由空间或空洞。</p>
+<p>为了在表内唯一标识一个元组，内部使用了元组标识符（TID）。TID由一对值组成：包含该元组的页的块号，<br>以及指向该元组的行指针的偏移量编号。其典型应用场景之一是索引。更多细节请见第1.4.2节。</p>
+<blockquote>
+<p>提示</p>
+<p>The structure PageHeaderData is defined in src&#x2F;include&#x2F;storage&#x2F;bufpage.h.</p>
+<p>在计算机科学领域，这种类型的页被称为槽页（slotted page），行指针则对应于一个槽数组（slot array）。</p>
+</blockquote>
+<p>此外，大小超过约2KB（8KB的大约1&#x2F;4）的堆元组将使用一种称为TOAST（The Oversized-Attribute Storage Technique，大属性存储技术）<br>的方法进行存储和管理。详细信息请参考PostgreSQL文档。</p>
+<h3 id="1-4-向表中读写元组的方式"><a href="#1-4-向表中读写元组的方式" class="headerlink" title="1.4 向表中读写元组的方式"></a><a name="read-write-methods"></a>1.4 向表中读写元组的方式</h3><p>在本章的最后，将描述写入和读取堆元组的方法。</p>
+<h4 id="1-4-1-写入堆元组的过程"><a href="#1-4-1-写入堆元组的过程" class="headerlink" title="1.4.1 写入堆元组的过程"></a>1.4.1 写入堆元组的过程</h4><p>假设一个表由仅包含一个堆元组的一页构成。该页的pd_lower指向第一个行指针，行指针和pd_upper都指向第一个堆元组。<br>参见图1.5(a)。</p>
+<p>当插入第二个元组时，它被放置在第一个元组之后。第二个行指针追加在第一个之后，并指向第二个元组。<br>pd_lower更新为指向第二个行指针，pd_upper则指向第二个堆元组。参见图1.5(b)。<br>此页内的其他头部数据（如pd_lsn、pd_checksum、pd_flags等）也会被更新为合适的值；<br>更多细节在第5.3节和第9.4节中有描述。<br><img src="/2025/05/05/DB/PostgreSQL%E6%8C%87%E5%8D%97/%E5%86%85%E5%B9%95%E6%8E%A2%E7%B4%A2_new_release/ch1/ch1/img_4.png" srcset="/img/loading.gif" lazyload alt="img_4.png"></p>
+<h4 id="1-4-2-读取堆元组的过程"><a href="#1-4-2-读取堆元组的过程" class="headerlink" title="1.4.2 读取堆元组的过程"></a>1.4.2 读取堆元组的过程</h4><p>这里概述两种典型的访问方法：顺序扫描和B-树索引扫描：</p>
+<p>顺序扫描 – 通过遍历每个页中的所有行指针，顺序读取所有页中的所有元组。参见图1.6(a)。</p>
+<p>B-树索引扫描 – 读取包含索引元组的索引文件，每个索引元组由索引键和指向目标堆元组的TID组成。<br>如果找到了具有所需键的索引元组，PostgreSQL将使用获得的TID值读取目标堆元组。(这里未解释如何在B-树索引中查找索引元组的具体方法，<br>因其过程较为常见且篇幅有限。详情请参阅相关资料。) 例如，在图1.6(b)中，<br>获取的索引元组的TID值为‘(块 &#x3D; 7, 偏移 &#x3D; 2)’。这意味着目标堆元组位于表中第7页的第2个元组，<br>因此PostgreSQL可以直接读取所需的堆元组，无需在其他页中进行不必要的扫描。</p>
+<p><img src="/2025/05/05/DB/PostgreSQL%E6%8C%87%E5%8D%97/%E5%86%85%E5%B9%95%E6%8E%A2%E7%B4%A2_new_release/ch1/ch1/img_5.png" srcset="/img/loading.gif" lazyload alt="img_5.png"></p>
+<p>This document does not explain indexes in details.<br>To understand them, I recommend to read the valuable posts shown below:</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs shell">https://postgrespro.com/blog/pgsql<br></code></pre></td></tr></table></figure>
+
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs sql">sampledb<span class="hljs-operator">=</span># <span class="hljs-keyword">SELECT</span> ctid, data <span class="hljs-keyword">FROM</span> sampletbl <span class="hljs-keyword">WHERE</span> ctid <span class="hljs-operator">=</span> <span class="hljs-string">&#x27;(0,1)&#x27;</span>;<br> ctid  <span class="hljs-operator">|</span>   data<br><span class="hljs-comment">-------+-----------</span><br> (<span class="hljs-number">0</span>,<span class="hljs-number">1</span>) <span class="hljs-operator">|</span> AAAAAAAAA<br>(<span class="hljs-number">1</span> <span class="hljs-type">row</span>)<br></code></pre></td></tr></table></figure>
+
+<blockquote>
+<p>Info</p>
+<p>PostgreSQL还支持TID扫描、位图扫描和仅索引扫描。TID扫描是一种直接利用目标元组的TID访问元组的方法。例如，要查找表中第0页的第一个元组，可以执行如下查询：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs sql">sampledb<span class="hljs-operator">=</span># <span class="hljs-keyword">SELECT</span> ctid, data <span class="hljs-keyword">FROM</span> sampletbl <span class="hljs-keyword">WHERE</span> ctid <span class="hljs-operator">=</span> <span class="hljs-string">&#x27;(0,1)&#x27;</span>;<br>ctid  <span class="hljs-operator">|</span>   data<br><span class="hljs-comment">-------+-----------</span><br>(<span class="hljs-number">0</span>,<span class="hljs-number">1</span>) <span class="hljs-operator">|</span> AAAAAAAAA<br>(<span class="hljs-number">1</span> <span class="hljs-type">row</span>)<br></code></pre></td></tr></table></figure>
+<p>Index-Only-Scan will be described in details in Section 7.2.</p>
+</blockquote>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/BOOK/" class="category-chain-item">BOOK</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/BOOK/PostgreSQL%E6%8C%87%E5%8D%97%EF%BC%9A%E5%86%85%E5%B9%95%E6%8E%A2%E7%B4%A2/" class="category-chain-item">PostgreSQL指南：内幕探索</a>
+  
+  
+
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/book/" class="print-no-link">#book</a>
+      
+        <a href="/tags/database/" class="print-no-link">#database</a>
+      
+        <a href="/tags/transactions/" class="print-no-link">#transactions</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>ch1. 数据库集簇、数据库和数据表</div>
+      <div>http://smilemzy.com/2025/05/05/DB/PostgreSQL指南/内幕探索_new_release/ch1/ch1/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Smile</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2025年5月5日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-cc-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2025/05/05/DB/PostgreSQL%E6%8C%87%E5%8D%97/%E5%86%85%E5%B9%95%E6%8E%A2%E7%B4%A2_new_release/ch10/ch10/" title="ch10. Base Backup and Point-In-Time Recovery (PITR)">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">ch10. Base Backup and Point-In-Time Recovery (PITR)</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2025/05/05/DB/PostgreSQL%E6%8A%80%E6%9C%AF%E5%86%85%E5%B9%95/%E4%BA%8B%E5%8A%A1%E5%A4%84%E7%90%86%E6%B7%B1%E5%BA%A6%E6%8E%A2%E7%B4%A2/flB/flB/" title="">
+                        <span class="hidden-mobile"></span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/5.0.0/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

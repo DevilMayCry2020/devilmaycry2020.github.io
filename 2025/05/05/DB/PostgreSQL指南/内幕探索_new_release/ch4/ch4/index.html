@@ -1,0 +1,774 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Smile">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="ch4. 外部数据包装器2003年，SQL标准增加了一项访问远程数据的规范，称为SQL外部数据管理（SQL&#x2F;MED, https:&#x2F;&#x2F;wiki.postgresql.org&#x2F;wiki&#x2F;SQL&#x2F;MED）。PostgreSQL从9.1版本开始就一直在开发这项功能，以实现SQL&#x2F;MED的部分功能。 在SQL&#x2F;MED中，位于远程服务器上的表被称为外部表。PostgreSQL的">
+<meta property="og:type" content="article">
+<meta property="og:title" content="ch4. 外部数据包装器">
+<meta property="og:url" content="http://smilemzy.com/2025/05/05/DB/PostgreSQL%E6%8C%87%E5%8D%97/%E5%86%85%E5%B9%95%E6%8E%A2%E7%B4%A2_new_release/ch4/ch4/index.html">
+<meta property="og:site_name" content="Smile">
+<meta property="og:description" content="ch4. 外部数据包装器2003年，SQL标准增加了一项访问远程数据的规范，称为SQL外部数据管理（SQL&#x2F;MED, https:&#x2F;&#x2F;wiki.postgresql.org&#x2F;wiki&#x2F;SQL&#x2F;MED）。PostgreSQL从9.1版本开始就一直在开发这项功能，以实现SQL&#x2F;MED的部分功能。 在SQL&#x2F;MED中，位于远程服务器上的表被称为外部表。PostgreSQL的">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://smilemzy.com/2025/05/05/DB/PostgreSQL%E6%8C%87%E5%8D%97/%E5%86%85%E5%B9%95%E6%8E%A2%E7%B4%A2_new_release/ch4/ch4/img.png">
+<meta property="og:image" content="http://smilemzy.com/2025/05/05/DB/PostgreSQL%E6%8C%87%E5%8D%97/%E5%86%85%E5%B9%95%E6%8E%A2%E7%B4%A2_new_release/ch4/ch4/img_1.png">
+<meta property="og:image" content="http://smilemzy.com/2025/05/05/DB/PostgreSQL%E6%8C%87%E5%8D%97/%E5%86%85%E5%B9%95%E6%8E%A2%E7%B4%A2_new_release/ch4/ch4/img_2.png">
+<meta property="og:image" content="http://smilemzy.com/2025/05/05/DB/PostgreSQL%E6%8C%87%E5%8D%97/%E5%86%85%E5%B9%95%E6%8E%A2%E7%B4%A2_new_release/ch4/ch4/img_3.png">
+<meta property="og:image" content="http://smilemzy.com/2025/05/05/DB/PostgreSQL%E6%8C%87%E5%8D%97/%E5%86%85%E5%B9%95%E6%8E%A2%E7%B4%A2_new_release/ch4/ch4/img_4.png">
+<meta property="article:published_time" content="2025-05-05T12:24:15.100Z">
+<meta property="article:modified_time" content="2025-05-05T12:52:17.325Z">
+<meta property="article:author" content="Smile">
+<meta property="article:tag" content="book">
+<meta property="article:tag" content="database">
+<meta property="article:tag" content="transactions">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="http://smilemzy.com/2025/05/05/DB/PostgreSQL%E6%8C%87%E5%8D%97/%E5%86%85%E5%B9%95%E6%8E%A2%E7%B4%A2_new_release/ch4/ch4/img.png">
+  
+  
+  
+  <title>ch4. 外部数据包装器 - Smile</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/c/font_1749284_5i9bdhy70f8.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/c/font_1736178_k526ubmyhba.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"smilemzy.com","root":"/","version":"1.9.8","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false},"umami":{"src":null,"website_id":null,"domains":null,"start_time":"2024-01-01T00:00:00.000Z","token":null,"api_server":null}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+
+  
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Smile</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/" target="_self">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/" target="_self">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/" target="_self">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/" target="_self">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/" target="_self">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="ch4. 外部数据包装器"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2025-05-05 20:24" pubdate>
+          2025年5月5日 晚上
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          2.3k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          20 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">ch4. 外部数据包装器</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <h2 id="ch4-外部数据包装器"><a href="#ch4-外部数据包装器" class="headerlink" title="ch4. 外部数据包装器"></a>ch4. 外部数据包装器</h2><p>2003年，SQL标准增加了一项访问远程数据的规范，称为SQL外部数据管理（SQL&#x2F;MED, <a target="_blank" rel="noopener" href="https://wiki.postgresql.org/wiki/SQL/MED%EF%BC%89%E3%80%82PostgreSQL%E4%BB%8E9.1%E7%89%88%E6%9C%AC">https://wiki.postgresql.org/wiki/SQL/MED）。PostgreSQL从9.1版本</a><br>开始就一直在开发这项功能，以实现SQL&#x2F;MED的部分功能。</p>
+<p>在SQL&#x2F;MED中，位于远程服务器上的表被称为外部表。PostgreSQL的<br>外部数据包装器（Foreign Data Wrappers, FDW）利用SQL&#x2F;MED来管理这些外部表，这些外部表在使用上与本地表相似。</p>
+<p><img src="/2025/05/05/DB/PostgreSQL%E6%8C%87%E5%8D%97/%E5%86%85%E5%B9%95%E6%8E%A2%E7%B4%A2_new_release/ch4/ch4/img.png" srcset="/img/loading.gif" lazyload alt="img.png"></p>
+<p>在安装了必需的扩展并进行了恰当的设置后，你就能访问远程服务器上的外部表了。举个例子，假设存在两个远程服务器，<br>一个是运行PostgreSQL的，包含表foreign_pg_tbl；另一个是运行MySQL的，包含表foreign_my_tbl。在这种情况下，<br>你可以通过在本地服务器上执行以下SELECT查询来访问这些远程表：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs sql">localdb<span class="hljs-operator">=</span># <span class="hljs-comment">-- foreign_pg_tbl is on the remote postgresql server. </span><br>localdb<span class="hljs-operator">-</span># <span class="hljs-keyword">SELECT</span> <span class="hljs-built_in">count</span>(<span class="hljs-operator">*</span>) <span class="hljs-keyword">FROM</span> foreign_pg_tbl;<br> count <br><span class="hljs-comment">-------</span><br> <span class="hljs-number">20000</span><br><br>localdb<span class="hljs-operator">=</span># <span class="hljs-comment">-- foreign_my_tbl is on the remote mysql server. </span><br>localdb<span class="hljs-operator">-</span># <span class="hljs-keyword">SELECT</span> <span class="hljs-built_in">count</span>(<span class="hljs-operator">*</span>) <span class="hljs-keyword">FROM</span> foreign_my_tbl;<br> count <br><span class="hljs-comment">-------</span><br> <span class="hljs-number">10000</span><br></code></pre></td></tr></table></figure>
+
+<p>你也可以像操作本地表那样，对存储在不同服务器上的外部表执行联接操作。</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs sql">localdb<span class="hljs-operator">=</span># <span class="hljs-keyword">SELECT</span> <span class="hljs-built_in">count</span>(<span class="hljs-operator">*</span>) <span class="hljs-keyword">FROM</span> foreign_pg_tbl <span class="hljs-keyword">AS</span> p, foreign_my_tbl <span class="hljs-keyword">AS</span> m <span class="hljs-keyword">WHERE</span> p.id <span class="hljs-operator">=</span> m.id;<br> count <br><span class="hljs-comment">-------</span><br> <span class="hljs-number">10000</span><br></code></pre></td></tr></table></figure>
+
+<p>已经开发了许多外部数据包装器（FDW, <a target="_blank" rel="noopener" href="https://wiki.postgresql.org/wiki/Foreign_data_wrappers%EF%BC%89%E6%89%A9%E5%B1%95%EF%BC%8C">https://wiki.postgresql.org/wiki/Foreign_data_wrappers）扩展，</a><br>并在Postgres维基(<a target="_blank" rel="noopener" href="https://www.postgresql.org/docs/current/postgres-fdw.html)%E4%B8%8A%E5%88%97%E5%87%BA%E3%80%82%E7%84%B6%E8%80%8C%EF%BC%8C%E5%87%A0%E4%B9%8E%E6%89%80%E6%9C%89%E7%9A%84%E6%89%A9%E5%B1%95%E9%83%BD%E6%9C%AA%E8%83%BD%E5%BE%97%E5%88%B0%E5%A6%A5%E5%96%84%E7%BB%B4%E6%8A%A4%EF%BC%8C">https://www.postgresql.org/docs/current/postgres-fdw.html)上列出。然而，几乎所有的扩展都未能得到妥善维护，</a><br>例外的是postgres_fdw，它是由PostgreSQL全球开发集团官方开发和维护的扩展，用于访问远程的PostgreSQL服务器。</p>
+<table>
+<thead>
+<tr>
+<th>Chapter Contents</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><a href="#4-Overview">4.1 概述</a></td>
+</tr>
+<tr>
+<td><a href="#postgres_fdw">4.2 postgres_fdw</a></td>
+</tr>
+</tbody></table>
+<h3 id="4-1-概述"><a href="#4-1-概述" class="headerlink" title="4.1 概述"></a><a name="4-Overview"></a>4.1 概述</h3><p>为了使用FDW特性，你需要安装合适的扩展并执行一些设置命令，<br>如CREATE FOREIGN TABLE、CREATE SERVER和CREATE USER MAPPING。<br>（具体操作详情，请参考官方文档。<a target="_blank" rel="noopener" href="https://www.postgresql.org/docs/current/postgres-fdw.html#AEN180314%EF%BC%89">https://www.postgresql.org/docs/current/postgres-fdw.html#AEN180314）</a></p>
+<p>在进行了适当的配置后，在查询处理期间，扩展中定义的函数会被调用来访问外部表。</p>
+<p>图4.2简要说明了FDW在PostgreSQL中是如何运作的。</p>
+<p><img src="/2025/05/05/DB/PostgreSQL%E6%8C%87%E5%8D%97/%E5%86%85%E5%B9%95%E6%8E%A2%E7%B4%A2_new_release/ch4/ch4/img_1.png" srcset="/img/loading.gif" lazyload alt="img_1.png"></p>
+<p>(1) 分析器&#x2F;分析程序根据输入的SQL创建查询树。<br>(2) 规划器（或执行器）连接到远程服务器。<br>(3) 如果use_remote_estimate选项设置为‘on’（默认为‘off’），规划器会执行EXPLAIN命令以估算每个计划路径的成本。<br>(4) 规划器根据计划树生成一个纯文本的SQL语句，这一过程内部称为反解析（deparse）。<br>(5) 执行器将纯文本的SQL语句发送到远程服务器并接收结果。  </p>
+<p>然后，执行器根据需要处理接收到的数据。例如，如果执行的是多表查询，<br>执行器会对接收到的数据与其他表进行连接处理。</p>
+<p>各项处理的具体细节将在后续章节中进行描述。</p>
+<h4 id="4-1-1-Creating-a-Query-Tree"><a href="#4-1-1-Creating-a-Query-Tree" class="headerlink" title="4.1.1. Creating a Query Tree"></a>4.1.1. Creating a Query Tree</h4><p>分析器&#x2F;分析程序利用存储在pg_catalog.pg_class和pg_catalog.pg_foreign_table目录中的外部表定义<br>来创建输入SQL的查询树。<br>这些外部表是通过CREATE FOREIGN TABLE或IMPORT FOREIGN SCHEMA命令创建并存储的。</p>
+<h4 id="4-1-2-Connecting-to-the-Remote-Server"><a href="#4-1-2-Connecting-to-the-Remote-Server" class="headerlink" title="4.1.2. Connecting to the Remote Server"></a>4.1.2. Connecting to the Remote Server</h4><p>为了连接到远程服务器，规划器（或执行器）会使用适当的库来建立与远程数据库服务器的连接。<br>例如，若要连接到远程的PostgreSQL服务器，postgres_fdw扩展就会使用libpq库。而对于连接MySQL服务器，<br>由EnterpriseDB开发的mysql_fdw扩展则会采用libmysqlclient库。</p>
+<p>连接参数，诸如用户名、服务器IP地址和端口号等，是通过CREATE USER MAPPING和CREATE SERVER命令存储在<br>pg_catalog.pg_user_mapping和pg_catalog.pg_foreign_server目录中的。</p>
+<h4 id="4-1-3-Creating-a-Plan-Tree-Using-EXPLAIN-Commands-Optional"><a href="#4-1-3-Creating-a-Plan-Tree-Using-EXPLAIN-Commands-Optional" class="headerlink" title="4.1.3. Creating a Plan Tree Using EXPLAIN Commands (Optional)"></a>4.1.3. Creating a Plan Tree Using EXPLAIN Commands (Optional)</h4><p>PostgreSQL的FDW支持获取外部表的统计信息，以便估计查询的计划树。一些FDW扩展，<br>如postgres_fdw、mysql_fdw、tds_fdw和jdbc2_fdw，都会利用这些统计信息。</p>
+<p>如果通过ALTER SERVER命令将use_remote_estimate选项设置为‘on’，规划器将通过执行EXPLAIN命令向远程服务器<br>查询计划的成本。否则，默认情况下会使用嵌入的常量值。</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs sql">localdb<span class="hljs-operator">=</span># <span class="hljs-keyword">ALTER</span> SERVER remote_server_name OPTIONS (use_remote_estimate <span class="hljs-string">&#x27;on&#x27;</span>);<br></code></pre></td></tr></table></figure>
+
+<p>虽然一些扩展利用了EXPLAIN命令的值，但只有postgres_fdw能够反映EXPLAIN命令的结果，<br>因为PostgreSQL的EXPLAIN命令会返回启动成本和总成本。</p>
+<p>EXPLAIN命令的执行结果并不能被其他数据库管理系统（DBMS）的FDW扩展用于规划目的。<br>例如，MySQL的EXPLAIN命令仅返回行的估计数量。<br>然而，PostgreSQL的查询优化器需要更多如第3章所述的信息来估算成本。</p>
+<h4 id="4-1-4-Deparesing"><a href="#4-1-4-Deparesing" class="headerlink" title="4.1.4. Deparesing"></a>4.1.4. Deparesing</h4><p>为了生成计划树，规划器会根据外部表在计划树中的扫描路径生成一段纯文本的SQL语句。<br>例如，图4.3展示了一个SELECT语句的计划树结构。</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs sql">localdb<span class="hljs-operator">=</span># <span class="hljs-keyword">SELECT</span> <span class="hljs-operator">*</span> <span class="hljs-keyword">FROM</span> tbl_a <span class="hljs-keyword">AS</span> a <span class="hljs-keyword">WHERE</span> a.id <span class="hljs-operator">&lt;</span> <span class="hljs-number">10</span>;<br></code></pre></td></tr></table></figure>
+
+<p>图4.3展示的是，在源自PlannedStmt的计划树中，ForeignScan节点存储了一段纯文本的SELECT语句。在这里，postgres_fdw<br>从已经过解析和分析而创建的查询树中重新生成这段纯文本的SELECT语句，<br>这一过程在PostgreSQL中被称为反解析(deparsing)。</p>
+<p><img src="/2025/05/05/DB/PostgreSQL%E6%8C%87%E5%8D%97/%E5%86%85%E5%B9%95%E6%8E%A2%E7%B4%A2_new_release/ch4/ch4/img_2.png" srcset="/img/loading.gif" lazyload alt="img_2.png"></p>
+<p>mysql_fdw 的使用会根据查询树重新创建一个针对MySQL的SELECT文本。<br>而redis_fdw或rw_redis_fdw的使用，则用于生成一个SELECT命令。</p>
+<h4 id="4-1-5-Sending-SQL-Statements-and-Receiving-Result"><a href="#4-1-5-Sending-SQL-Statements-and-Receiving-Result" class="headerlink" title="4.1.5. Sending SQL Statements and Receiving Result"></a>4.1.5. Sending SQL Statements and Receiving Result</h4><p>在解析之后，执行器会将解析后的SQL语句发送到远程服务器并接收结果。</p>
+<p>向远程服务器发送SQL语句的方法取决于每个扩展的开发者。例如，mysql_fdw发送SQL语句时不使用事务。<br>在mysql_fdw中执行SELECT查询的典型SQL语句序列如下所示（图4.4）。</p>
+<p><img src="/2025/05/05/DB/PostgreSQL%E6%8C%87%E5%8D%97/%E5%86%85%E5%B9%95%E6%8E%A2%E7%B4%A2_new_release/ch4/ch4/img_3.png" srcset="/img/loading.gif" lazyload alt="img_3.png"></p>
+<p>(5-1) 将SQL_MODE设置为‘ANSI_QUOTES’。<br>(5-2) 向远程服务器发送SELECT语句。<br>(5-3) 从远程服务器接收结果。<br>在此过程中，mysql_fdw会将结果转换为PostgreSQL可读的数据格式。  </p>
+<p>所有FDW扩展都实现了将结果转换为PostgreSQL可读数据的功能。  </p>
+<p>Actual log of the remote server: </p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs sql">mysql<span class="hljs-operator">&gt;</span> <span class="hljs-keyword">SELECT</span> command_type,argument <span class="hljs-keyword">FROM</span> mysql.general_log;<br><span class="hljs-operator">+</span><span class="hljs-comment">--------------+-----------------------------------------------------------------------+</span><br><span class="hljs-operator">|</span> command_type <span class="hljs-operator">|</span> argument                                                              <span class="hljs-operator">|</span><br><span class="hljs-operator">+</span><span class="hljs-comment">--------------+-----------------------------------------------------------------------+</span><br>... snip ...<br><br><span class="hljs-operator">|</span> Query        <span class="hljs-operator">|</span> <span class="hljs-keyword">SET</span> sql_mode<span class="hljs-operator">=</span><span class="hljs-string">&#x27;ANSI_QUOTES&#x27;</span>                                            <span class="hljs-operator">|</span><br><span class="hljs-operator">|</span> <span class="hljs-keyword">Prepare</span>      <span class="hljs-operator">|</span> <span class="hljs-keyword">SELECT</span> `id`, `data` <span class="hljs-keyword">FROM</span> `localdb`.`tbl_a` <span class="hljs-keyword">WHERE</span> ((`id` <span class="hljs-operator">&lt;</span> <span class="hljs-number">10</span>))        <span class="hljs-operator">|</span><br><span class="hljs-operator">|</span> <span class="hljs-keyword">Close</span> stmt   <span class="hljs-operator">|</span>                                                                       <span class="hljs-operator">|</span><br><span class="hljs-operator">+</span><span class="hljs-comment">--------------+-----------------------------------------------------------------------+</span><br></code></pre></td></tr></table></figure>
+
+<p>在postgres_fdw中，SQL命令的序列更为复杂。执行SELECT查询时，<br>postgres_fdw中典型的SQL语句序列如下所示（图4.5）。</p>
+<p><img src="/2025/05/05/DB/PostgreSQL%E6%8C%87%E5%8D%97/%E5%86%85%E5%B9%95%E6%8E%A2%E7%B4%A2_new_release/ch4/ch4/img_4.png" srcset="/img/loading.gif" lazyload alt="img_4.png"></p>
+<p>(5-1) 开启远程事务。<br>远程事务的默认隔离级别是REPEATABLE READ；如果本地事务的隔离级别设置为SERIALIZABLE，<br>那么远程事务也会被设置为SERIALIZABLE。<br>(5-2)至(5-4) 声明游标。<br>SQL语句基本上作为游标来执行。<br>(5-5) 执行FETCH命令以获取结果。<br>默认情况下，FETCH命令每次获取100行数据。<br>(5-6) 从远程服务器接收结果。<br>(5-7) 关闭游标。<br>(5-8) 提交远程事务。  </p>
+<p> Actual log of the remote server</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs shell">LOG:  statement: START TRANSACTION ISOLATION LEVEL REPEATABLE READ<br>LOG:  parse &lt;unnamed&gt;: DECLARE c1 CURSOR FOR SELECT id, data FROM public.tbl_a WHERE ((id &lt; 10))<br>LOG:  bind &lt;unnamed&gt;: DECLARE c1 CURSOR FOR SELECT id, data FROM public.tbl_a WHERE ((id &lt; 10))<br>LOG:  execute &lt;unnamed&gt;: DECLARE c1 CURSOR FOR SELECT id, data FROM public.tbl_a WHERE ((id &lt; 10))<br>LOG:  statement: FETCH 100 FROM c1<br>LOG:  statement: CLOSE c1<br>LOG:  statement: COMMIT TRANSACTION<br></code></pre></td></tr></table></figure>
+
+<blockquote>
+<p>The default remote transaction isolation level in postgres_fdw.</p>
+<p>关于为什么默认的远程事务隔离级别设置为REPEATABLE READ的原因，在官方文档中有详细解释。(<a target="_blank" rel="noopener" href="https://www.postgresql.org/docs/current/postgres-fdw.html#id-1.11.7.43.12">https://www.postgresql.org/docs/current/postgres-fdw.html#id-1.11.7.43.12</a>)</p>
+<p>当本地事务采用SERIALIZABLE隔离级别时，远程事务也将使用SERIALIZABLE隔离级别；<br>否则，它将使用REPEATABLE READ隔离级别。这样的选择确保了如果查询在远程服务器上对多个表进行扫描，<br>所有扫描都将获得快照一致性的结果。其后果是，在同一事务中的连续查询将看到来自远程服务器的相同数据，<br>即便由于其他活动导致远程服务器上有并发更新发生也是如此。</p>
+</blockquote>
+<h3 id="4-2-HOW-THE-POSTGRES-FDW-EXTENSION-PERFORMS"><a href="#4-2-HOW-THE-POSTGRES-FDW-EXTENSION-PERFORMS" class="headerlink" title="4.2 HOW THE POSTGRES_FDW EXTENSION PERFORMS"></a><a name="postgres_fdw"></a>4.2 HOW THE POSTGRES_FDW EXTENSION PERFORMS</h3><p>postgres_fdw扩展是一个特别的模块，由PostgreSQL全球开发集团官方维护，其源代码包含在PostgreSQL的源代码树中。</p>
+<p>postgres_fdw随着时间逐步得到改进。表4.1展示了从官方文档中摘录的与postgres_fdw相关的发行说明。</p>
+<table>
+<thead>
+<tr>
+<th>Version</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>9.3</td>
+<td>postgres_fdw模块发布。</td>
+</tr>
+<tr>
+<td>9.6</td>
+<td>考虑在远程服务器上执行排序。 <br> 考虑在远程服务器上执行连接操作。 <br> 当可行时，完全在远程服务器上执行UPDATE或DELETE。 <br> 允许设置抓取大小作为服务器或表选项。</td>
+</tr>
+<tr>
+<td>10</td>
+<td>尽可能将聚合函数推送到远程服务器。</td>
+</tr>
+<tr>
+<td>11</td>
+<td>支持将聚合操作推送到作为分区的外部表。<br> 	支持使用JOIN在远程服务器上执行UPDATE和DELETE。</td>
+</tr>
+<tr>
+<td>12</td>
+<td>在更多情况下允许ORDER BY排序和LIMIT子句下推。</td>
+</tr>
+<tr>
+<td>14</td>
+<td>允许TRUNCATE操作应用于外部表。<br> 	允许TRUNCATE操作应用于外部表。<br> 添加函数postgres_fdw_get_connections()以报告打开的外部服务器连接。</td>
+</tr>
+</tbody></table>
+<p>上一节介绍了postgres_fdw如何处理单表查询，<br>接下来的子节将阐述其如何处理多表查询、排序操作及聚合函数。</p>
+<p>本小节主要关注于SELECT语句的处理，但需注意，postgres_fdw同样能够处理其它数据操作语言<br>（DML，包括INSERT、UPDATE和DELETE）语句。</p>
+<blockquote>
+<p>Note: PostgreSQL’s FDW does not detect deadlock</p>
+</blockquote>
+<p>postgres_fdw扩展及FDW特性并不支持分布式锁管理器和分布式死锁检测功能。因此，死锁情况很容易产生。</p>
+<p>例如，如果客户端A正在更新本地表tbl_local和外部表tbl_remote，同时客户端B正在更新tbl_remote和tbl_local，<br>那么这两个事务就形成了死锁状态，但PostgreSQL无法检测到这一死锁。因此，这些事务无法提交成功。 </p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs sql">localdb<span class="hljs-operator">=</span># <span class="hljs-comment">-- Client A</span><br>localdb<span class="hljs-operator">=</span># <span class="hljs-keyword">BEGIN</span>;<br><span class="hljs-keyword">BEGIN</span><br>localdb<span class="hljs-operator">=</span># <span class="hljs-keyword">UPDATE</span> tbl_local <span class="hljs-keyword">SET</span> data <span class="hljs-operator">=</span> <span class="hljs-number">0</span> <span class="hljs-keyword">WHERE</span> id <span class="hljs-operator">=</span> <span class="hljs-number">1</span>;<br><span class="hljs-keyword">UPDATE</span> <span class="hljs-number">1</span><br>localdb<span class="hljs-operator">=</span># <span class="hljs-keyword">UPDATE</span> tbl_remote <span class="hljs-keyword">SET</span> data <span class="hljs-operator">=</span> <span class="hljs-number">0</span> <span class="hljs-keyword">WHERE</span> id <span class="hljs-operator">=</span> <span class="hljs-number">1</span>;<br><span class="hljs-keyword">UPDATE</span> <span class="hljs-number">1</span><br></code></pre></td></tr></table></figure>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs sql">localdb<span class="hljs-operator">=</span># <span class="hljs-comment">-- Client B</span><br>localdb<span class="hljs-operator">=</span># <span class="hljs-keyword">BEGIN</span>;<br><span class="hljs-keyword">BEGIN</span><br>localdb<span class="hljs-operator">=</span># <span class="hljs-keyword">UPDATE</span> tbl_remote <span class="hljs-keyword">SET</span> data <span class="hljs-operator">=</span> <span class="hljs-number">0</span> <span class="hljs-keyword">WHERE</span> id <span class="hljs-operator">=</span> <span class="hljs-number">1</span>;<br><span class="hljs-keyword">UPDATE</span> <span class="hljs-number">1</span><br>localdb<span class="hljs-operator">=</span># <span class="hljs-keyword">UPDATE</span> tbl_local <span class="hljs-keyword">SET</span> data <span class="hljs-operator">=</span> <span class="hljs-number">0</span> <span class="hljs-keyword">WHERE</span> id <span class="hljs-operator">=</span> <span class="hljs-number">1</span>;<br><span class="hljs-keyword">UPDATE</span> <span class="hljs-number">1</span><br></code></pre></td></tr></table></figure>
+
+<h4 id="4-2-1-Multi-Table-Query"><a href="#4-2-1-Multi-Table-Query" class="headerlink" title="4.2.1. Multi-Table Query"></a>4.2.1. Multi-Table Query</h4>
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/BOOK/" class="category-chain-item">BOOK</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/BOOK/PostgreSQL%E6%8C%87%E5%8D%97%EF%BC%9A%E5%86%85%E5%B9%95%E6%8E%A2%E7%B4%A2/" class="category-chain-item">PostgreSQL指南：内幕探索</a>
+  
+  
+
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/book/" class="print-no-link">#book</a>
+      
+        <a href="/tags/database/" class="print-no-link">#database</a>
+      
+        <a href="/tags/transactions/" class="print-no-link">#transactions</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>ch4. 外部数据包装器</div>
+      <div>http://smilemzy.com/2025/05/05/DB/PostgreSQL指南/内幕探索_new_release/ch4/ch4/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Smile</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2025年5月5日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-cc-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2025/05/05/DB/PostgreSQL%E6%8C%87%E5%8D%97/%E5%86%85%E5%B9%95%E6%8E%A2%E7%B4%A2_new_release/ch5/ch5/" title="ch5. 并发控制">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">ch5. 并发控制</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2025/05/05/DB/PostgreSQL%E6%8C%87%E5%8D%97/%E5%86%85%E5%B9%95%E6%8E%A2%E7%B4%A2_new_release/ch3/ch3/" title="ch3. 查询处理">
+                        <span class="hidden-mobile">ch3. 查询处理</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/5.0.0/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

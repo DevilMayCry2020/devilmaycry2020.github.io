@@ -1,0 +1,920 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Smile">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="ch13. Row-Level Locks本章主要内容如下：    Chapter Contents    13.1 Lock Design   13.2 Row-Level Locking Modes   13.3 Multitransactions   13.4 Wait Queue   13.5 No-Wait Locks   13.6 Deadlocks   13.1 Lock Desig">
+<meta property="og:type" content="article">
+<meta property="og:title" content="ch13. Row-Level Locks">
+<meta property="og:url" content="http://smilemzy.com/2025/05/05/DB/PostgreSQL14_Internals/ch13/ch13/index.html">
+<meta property="og:site_name" content="Smile">
+<meta property="og:description" content="ch13. Row-Level Locks本章主要内容如下：    Chapter Contents    13.1 Lock Design   13.2 Row-Level Locking Modes   13.3 Multitransactions   13.4 Wait Queue   13.5 No-Wait Locks   13.6 Deadlocks   13.1 Lock Desig">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://smilemzy.com/2025/05/05/DB/PostgreSQL14_Internals/ch13/ch13/img.png">
+<meta property="og:image" content="http://smilemzy.com/2025/05/05/DB/PostgreSQL14_Internals/ch13/ch13/img_1.png">
+<meta property="og:image" content="http://smilemzy.com/2025/05/05/DB/PostgreSQL14_Internals/ch13/ch13/img_2.png">
+<meta property="og:image" content="http://smilemzy.com/2025/05/05/DB/PostgreSQL14_Internals/ch13/ch13/img_3.png">
+<meta property="og:image" content="http://smilemzy.com/2025/05/05/DB/PostgreSQL14_Internals/ch13/ch13/img_4.png">
+<meta property="og:image" content="http://smilemzy.com/2025/05/05/DB/PostgreSQL14_Internals/ch13/ch13/img_5.png">
+<meta property="og:image" content="http://smilemzy.com/2025/05/05/DB/PostgreSQL14_Internals/ch13/ch13/img_6.png">
+<meta property="og:image" content="http://smilemzy.com/2025/05/05/DB/PostgreSQL14_Internals/ch13/ch13/img_7.png">
+<meta property="og:image" content="http://smilemzy.com/2025/05/05/DB/PostgreSQL14_Internals/ch13/ch13/img_8.png">
+<meta property="og:image" content="http://smilemzy.com/2025/05/05/DB/PostgreSQL14_Internals/ch13/ch13/img_9.png">
+<meta property="og:image" content="http://smilemzy.com/2025/05/05/DB/PostgreSQL14_Internals/ch13/ch13/img_10.png">
+<meta property="og:image" content="http://smilemzy.com/2025/05/05/DB/PostgreSQL14_Internals/ch13/ch13/img_11.png">
+<meta property="og:image" content="http://smilemzy.com/2025/05/05/DB/PostgreSQL14_Internals/ch13/ch13/img.png">
+<meta property="og:image" content="http://smilemzy.com/2025/05/05/DB/PostgreSQL14_Internals/ch13/ch13/img_1.png">
+<meta property="og:image" content="http://smilemzy.com/2025/05/05/DB/PostgreSQL14_Internals/ch13/ch13/img_2.png">
+<meta property="article:published_time" content="2025-05-05T12:24:14.488Z">
+<meta property="article:modified_time" content="2025-05-05T12:57:26.026Z">
+<meta property="article:author" content="Smile">
+<meta property="article:tag" content="book">
+<meta property="article:tag" content="database">
+<meta property="article:tag" content="transactions">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="http://smilemzy.com/2025/05/05/DB/PostgreSQL14_Internals/ch13/ch13/img.png">
+  
+  
+  
+  <title>ch13. Row-Level Locks - Smile</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/c/font_1749284_5i9bdhy70f8.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/c/font_1736178_k526ubmyhba.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"smilemzy.com","root":"/","version":"1.9.8","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false},"umami":{"src":null,"website_id":null,"domains":null,"start_time":"2024-01-01T00:00:00.000Z","token":null,"api_server":null}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+
+  
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Smile</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/" target="_self">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/" target="_self">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/" target="_self">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/" target="_self">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/" target="_self">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="ch13. Row-Level Locks"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2025-05-05 20:24" pubdate>
+          2025年5月5日 晚上
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          6k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          51 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">ch13. Row-Level Locks</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <h2 id="ch13-Row-Level-Locks"><a href="#ch13-Row-Level-Locks" class="headerlink" title="ch13. Row-Level Locks"></a>ch13. Row-Level Locks</h2><p>本章主要内容如下：</p>
+<table>
+<thead>
+<tr>
+<th>Chapter Contents</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><a href="#lock-design">13.1 Lock Design</a></td>
+</tr>
+<tr>
+<td><a href="#row-level-Locks">13.2 Row-Level Locking Modes</a></td>
+</tr>
+<tr>
+<td><a href="#multixact">13.3 Multitransactions</a></td>
+</tr>
+<tr>
+<td><a href="#row-wait-queue">13.4 Wait Queue</a></td>
+</tr>
+<tr>
+<td><a href="#No-Wait-Locks">13.5 No-Wait Locks</a></td>
+</tr>
+<tr>
+<td><a href="#row-deadlock">13.6 Deadlocks</a></td>
+</tr>
+</tbody></table>
+<h3 id="13-1-Lock-Design"><a href="#13-1-Lock-Design" class="headerlink" title="13.1 Lock Design"></a><a name="lock-design"></a>13.1 Lock Design</h3><p>得益于快照隔离，读取时无需对堆元组加锁。但是，不允许两个写事务同时修改同一行。在这种情况下，必须对行加锁，但为此重锁并不是一个好的选择：每个重锁都会占用服务器共享内存中的空间 (数百字节，更别提所有支持的基础设施了)，而且 PostgreSQL 的内部机制也不适用于处理大量并发的重锁。</p>
+<p>一些数据库系统通过锁升级来解决这个问题：如果行级锁太多，它们会被更细粒度的单个锁替换 (例如，页级锁或表级锁)。这简化了实现，但极大限制了系统的吞吐量。</p>
+<p>在 PostgreSQL 中，某个特定的行是否被锁定的信息仅保存在其当前堆元组的元组头中。行级锁实际上是堆页面中的属性，而不是实际的锁，并且不会以任何方式反映在 RAM 中。</p>
+<p>行通常在被更新或删除时进行加锁。在这两种情况下，行的当前版本都被标记为已删除。用于此目的的属性是在 xmax 字段中指定的当前事务 ID，同时也是这个 ID 表明该行被锁定了 (与额外的提示位相结合)。如果一个事务想要修改一行，但是在其当前版本的 xmax 字段上看到一个活跃的事务 ID，那么它必须等待这个事务完成。一旦事务结束，所有的锁都会被释放，等待的事务便可以继续。</p>
+<p>此机制允许按需锁定任意数量的行，而无需额外成本。</p>
+<p>这种方案的缺点是其他进程无法形成队列，因为 RAM 中不包含关于这种锁的信息。因此，仍然需要重锁：等待行释放的进程会请求当前正在处理该行的事务 ID 上的锁。一旦事务完成，这一行便再次可用。因此，重锁的数量与并发进程的数量成正比，而不是被修改的行数。</p>
+<h3 id="13-2-Row-Level-Locking-Modes"><a href="#13-2-Row-Level-Locking-Modes" class="headerlink" title="13.2 Row-Level Locking Modes"></a><a name="row-level-Locks"></a>13.2 Row-Level Locking Modes</h3><p>行级锁支持四种模式 1。其中两种实现了独占锁，一次只能由一个事务获取，而另外两种提供了共享锁，可以同时由多个事务持有。</p>
+<p>以下是这些模式的兼容性矩阵：</p>
+<p><img src="/2025/05/05/DB/PostgreSQL14_Internals/ch13/ch13/img.png" srcset="/img/loading.gif" lazyload alt="img.png"></p>
+<p>####13.2.1 Exclusive Modes<br>Update 模式允许修改任何元组字段，甚至删除整个元组，而 No Key Update 模式只允许那些不涉及与唯一索引相关字段的更改 (换句话说，外键必须不受影响)。</p>
+<p>UPDATE 命令会自动选择可能最弱的锁定模式；键通常保持不变，因此行通常在 No Key Update 模式下被锁定。</p>
+<p>让我们创建一个函数，使用 pageinspect 显示我们感兴趣的一些元组元数据，即 xmax 字段和若干提示位：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-operator">=</span><span class="hljs-operator">&gt;</span> <span class="hljs-keyword">CREATE</span> <span class="hljs-keyword">FUNCTION</span> row_locks(relname text, pageno <span class="hljs-type">integer</span>)<br><span class="hljs-keyword">RETURNS</span> <span class="hljs-keyword">TABLE</span>(<br>ctid tid, xmax text,<br>lock_only text, is_multi text,<br>keys_upd text, keyshr text,<br>shr text<br>)<br><span class="hljs-keyword">AS</span> $$<br><span class="hljs-keyword">SELECT</span> (pageno,lp)::text::tid,<br>t_xmax,<br><span class="hljs-keyword">CASE</span> <span class="hljs-keyword">WHEN</span> t_infomask <span class="hljs-operator">&amp;</span> <span class="hljs-number">128</span> <span class="hljs-operator">=</span> <span class="hljs-number">128</span> <span class="hljs-keyword">THEN</span> <span class="hljs-string">&#x27;t&#x27;</span> <span class="hljs-keyword">END</span>,<br><span class="hljs-keyword">CASE</span> <span class="hljs-keyword">WHEN</span> t_infomask <span class="hljs-operator">&amp;</span> <span class="hljs-number">4096</span> <span class="hljs-operator">=</span> <span class="hljs-number">4096</span> <span class="hljs-keyword">THEN</span> <span class="hljs-string">&#x27;t&#x27;</span> <span class="hljs-keyword">END</span>,<br><span class="hljs-keyword">CASE</span> <span class="hljs-keyword">WHEN</span> t_infomask2 <span class="hljs-operator">&amp;</span> <span class="hljs-number">8192</span> <span class="hljs-operator">=</span> <span class="hljs-number">8192</span> <span class="hljs-keyword">THEN</span> <span class="hljs-string">&#x27;t&#x27;</span> <span class="hljs-keyword">END</span>,<br><span class="hljs-keyword">CASE</span> <span class="hljs-keyword">WHEN</span> t_infomask <span class="hljs-operator">&amp;</span> <span class="hljs-number">16</span> <span class="hljs-operator">=</span> <span class="hljs-number">16</span> <span class="hljs-keyword">THEN</span> <span class="hljs-string">&#x27;t&#x27;</span> <span class="hljs-keyword">END</span>,<br><span class="hljs-keyword">CASE</span> <span class="hljs-keyword">WHEN</span> t_infomask <span class="hljs-operator">&amp;</span> <span class="hljs-number">16</span><span class="hljs-operator">+</span><span class="hljs-number">64</span> <span class="hljs-operator">=</span> <span class="hljs-number">16</span><span class="hljs-operator">+</span><span class="hljs-number">64</span> <span class="hljs-keyword">THEN</span> <span class="hljs-string">&#x27;t&#x27;</span> <span class="hljs-keyword">END</span><br><span class="hljs-keyword">FROM</span> heap_page_items(get_raw_page(relname,pageno))<br><span class="hljs-keyword">ORDER</span> <span class="hljs-keyword">BY</span> lp;<br>$$ <span class="hljs-keyword">LANGUAGE</span> <span class="hljs-keyword">sql</span>;<br><br></code></pre></td></tr></table></figure>
+
+<p>现在在 accounts 表上开启一个事务，以更新第一个帐户的余额 (键保持不变) 和第二个帐户的 ID (键更新了)：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-operator">=</span><span class="hljs-operator">&gt;</span> <span class="hljs-keyword">BEGIN</span>;<br><span class="hljs-operator">=</span><span class="hljs-operator">&gt;</span> <span class="hljs-keyword">UPDATE</span> accounts <span class="hljs-keyword">SET</span> amount <span class="hljs-operator">=</span> amount <span class="hljs-operator">+</span> <span class="hljs-number">100.00</span> <span class="hljs-keyword">WHERE</span> id <span class="hljs-operator">=</span> <span class="hljs-number">1</span>;<br><span class="hljs-operator">=</span><span class="hljs-operator">&gt;</span> <span class="hljs-keyword">UPDATE</span> accounts <span class="hljs-keyword">SET</span> id <span class="hljs-operator">=</span> <span class="hljs-number">20</span> <span class="hljs-keyword">WHERE</span> id <span class="hljs-operator">=</span> <span class="hljs-number">2</span>;<br></code></pre></td></tr></table></figure>
+<p>页面现在包含以下元数据：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-operator">=</span><span class="hljs-operator">&gt;</span> <span class="hljs-keyword">SELECT</span> <span class="hljs-operator">*</span> <span class="hljs-keyword">FROM</span> row_locks(<span class="hljs-string">&#x27;accounts&#x27;</span>,<span class="hljs-number">0</span>) LIMIT <span class="hljs-number">2</span>;<br>ctid <span class="hljs-operator">|</span> xmax <span class="hljs-operator">|</span> lock_only <span class="hljs-operator">|</span> is_multi <span class="hljs-operator">|</span> keys_upd <span class="hljs-operator">|</span> keyshr <span class="hljs-operator">|</span> shr<br>−−−−−−−<span class="hljs-operator">+</span>−−−−−−−−<span class="hljs-operator">+</span>−−−−−−−−−−−<span class="hljs-operator">+</span>−−−−−−−−−−<span class="hljs-operator">+</span>−−−−−−−−−−<span class="hljs-operator">+</span>−−−−−−−−<span class="hljs-operator">+</span>−−−−−<br>(<span class="hljs-number">0</span>,<span class="hljs-number">1</span>) <span class="hljs-operator">|</span> <span class="hljs-number">134980</span> <span class="hljs-operator">|</span> <span class="hljs-operator">|</span> <span class="hljs-operator">|</span> <span class="hljs-operator">|</span> <span class="hljs-operator">|</span><br>(<span class="hljs-number">0</span>,<span class="hljs-number">2</span>) <span class="hljs-operator">|</span> <span class="hljs-number">134980</span> <span class="hljs-operator">|</span> <span class="hljs-operator">|</span> <span class="hljs-operator">|</span> t <span class="hljs-operator">|</span> <span class="hljs-operator">|</span><br>(<span class="hljs-number">2</span> <span class="hljs-keyword">rows</span>)<br></code></pre></td></tr></table></figure>
+<p>锁定模式由 keys_updated 提示位定义。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs shell">=&gt; ROLLBACK;<br></code></pre></td></tr></table></figure>
+
+<p>SELECT FOR 命令使用与锁定属性相同的 xmax 字段，但在这种情况下还必须设置 xmax_lock_only 提示位。这个提示位表示这条元组被锁定而不是被删除，这意味着它仍然是当前版本：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-operator">=</span><span class="hljs-operator">&gt;</span> <span class="hljs-keyword">BEGIN</span>;<br><span class="hljs-operator">=</span><span class="hljs-operator">&gt;</span> <span class="hljs-keyword">SELECT</span> <span class="hljs-operator">*</span> <span class="hljs-keyword">FROM</span> accounts <span class="hljs-keyword">WHERE</span> id <span class="hljs-operator">=</span> <span class="hljs-number">1</span> <span class="hljs-keyword">FOR</span> <span class="hljs-keyword">NO</span> KEY <span class="hljs-keyword">UPDATE</span>;<br><span class="hljs-operator">=</span><span class="hljs-operator">&gt;</span> <span class="hljs-keyword">SELECT</span> <span class="hljs-operator">*</span> <span class="hljs-keyword">FROM</span> accounts <span class="hljs-keyword">WHERE</span> id <span class="hljs-operator">=</span> <span class="hljs-number">2</span> <span class="hljs-keyword">FOR</span> <span class="hljs-keyword">UPDATE</span>;<br><span class="hljs-operator">=</span><span class="hljs-operator">&gt;</span> <span class="hljs-keyword">SELECT</span> <span class="hljs-operator">*</span> <span class="hljs-keyword">FROM</span> row_locks(<span class="hljs-string">&#x27;accounts&#x27;</span>,<span class="hljs-number">0</span>) LIMIT <span class="hljs-number">2</span>;<br>ctid  <span class="hljs-operator">|</span>  xmax  <span class="hljs-operator">|</span> lock_only <span class="hljs-operator">|</span> is_multi <span class="hljs-operator">|</span> keys_upd <span class="hljs-operator">|</span> keyshr <span class="hljs-operator">|</span> shr<br>−−−−−−<span class="hljs-operator">+</span>−−−−−−−−<span class="hljs-operator">+</span>−−−−−−−−−−−<span class="hljs-operator">+</span>−−−−−−−−−−<span class="hljs-operator">+</span>−−−−−−−−−−<span class="hljs-operator">+</span>−−−−−−−−<span class="hljs-operator">+</span>−−−−−<br>(<span class="hljs-number">0</span>,<span class="hljs-number">1</span>) <span class="hljs-operator">|</span> <span class="hljs-number">134981</span> <span class="hljs-operator">|</span>      t    <span class="hljs-operator">|</span>          <span class="hljs-operator">|</span>          <span class="hljs-operator">|</span>        <span class="hljs-operator">|</span><br>(<span class="hljs-number">0</span>,<span class="hljs-number">2</span>) <span class="hljs-operator">|</span> <span class="hljs-number">134981</span> <span class="hljs-operator">|</span>      t    <span class="hljs-operator">|</span>          <span class="hljs-operator">|</span>     t    <span class="hljs-operator">|</span>        <span class="hljs-operator">|</span><br>(<span class="hljs-number">2</span> <span class="hljs-keyword">rows</span>)<br><span class="hljs-operator">=</span><span class="hljs-operator">&gt;</span> <span class="hljs-keyword">ROLLBACK</span>;<br></code></pre></td></tr></table></figure>
+
+<p>####13.2.2 Shared Modes<br>当需要读取行时，可以使用共享模式，但必须禁止其他事务对这一行的更改。Key Share 模式允许更新除键属性之外的任何元组字段。</p>
+<p>在所有共享模式中，PostgreSQL 内核仅使用 Key Share 模式，这在检查外键时使用。由于它与 No Key Update 独占模式兼容，因此外键检查不会干扰非键属性的并发更新。至于应用，可以使用任何它们喜欢的共享模式。</p>
+<p>再次强调：简单的 SELECT 命令从不使用行级锁。</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-operator">=</span><span class="hljs-operator">&gt;</span> <span class="hljs-keyword">BEGIN</span>;<br><span class="hljs-operator">=</span><span class="hljs-operator">&gt;</span> <span class="hljs-keyword">SELECT</span> <span class="hljs-operator">*</span> <span class="hljs-keyword">FROM</span> accounts <span class="hljs-keyword">WHERE</span> id <span class="hljs-operator">=</span> <span class="hljs-number">1</span> <span class="hljs-keyword">FOR</span> KEY SHARE;<br><span class="hljs-operator">=</span><span class="hljs-operator">&gt;</span> <span class="hljs-keyword">SELECT</span> <span class="hljs-operator">*</span> <span class="hljs-keyword">FROM</span> accounts <span class="hljs-keyword">WHERE</span> id <span class="hljs-operator">=</span> <span class="hljs-number">2</span> <span class="hljs-keyword">FOR</span> SHARE;<br></code></pre></td></tr></table></figure>
+<p>以下是我们可以在堆元组中看到的：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-operator">=</span><span class="hljs-operator">&gt;</span> <span class="hljs-keyword">SELECT</span> <span class="hljs-operator">*</span> <span class="hljs-keyword">FROM</span> row_locks(<span class="hljs-string">&#x27;accounts&#x27;</span>,<span class="hljs-number">0</span>) LIMIT <span class="hljs-number">2</span>;<br>ctid  <span class="hljs-operator">|</span> xmax   <span class="hljs-operator">|</span> lock_only <span class="hljs-operator">|</span> is_multi <span class="hljs-operator">|</span> keys_upd <span class="hljs-operator">|</span> keyshr <span class="hljs-operator">|</span> shr<br>−−−−−−<span class="hljs-operator">+</span>−−−−−−−−<span class="hljs-operator">+</span>−−−−−−−−−−−<span class="hljs-operator">+</span>−−−−−−−−−−<span class="hljs-operator">+</span>−−−−−−−−−−<span class="hljs-operator">+</span>−−−−−−−−<span class="hljs-operator">+</span>−−−−−<br>(<span class="hljs-number">0</span>,<span class="hljs-number">1</span>) <span class="hljs-operator">|</span> <span class="hljs-number">134982</span> <span class="hljs-operator">|</span> t         <span class="hljs-operator">|</span>          <span class="hljs-operator">|</span>          <span class="hljs-operator">|</span> t      <span class="hljs-operator">|</span><br>(<span class="hljs-number">0</span>,<span class="hljs-number">2</span>) <span class="hljs-operator">|</span> <span class="hljs-number">134982</span> <span class="hljs-operator">|</span> t         <span class="hljs-operator">|</span>          <span class="hljs-operator">|</span>          <span class="hljs-operator">|</span> t      <span class="hljs-operator">|</span> t<br>(<span class="hljs-number">2</span> <span class="hljs-keyword">rows</span>)<br><br></code></pre></td></tr></table></figure>
+
+<p>这两个操作都设置了 xmax_keyshr_lock 位，但你可以通过其他提示位识别 Share 模式。</p>
+<h3 id="13-3-Multitransactions"><a href="#13-3-Multitransactions" class="headerlink" title="13.3 Multitransactions"></a><a name="multixact"></a>13.3 Multitransactions</h3><p>正如我们所见，锁定属性由 xmax 字段表示，该字段被设置为获取锁的事务 ID。那么，当多个事务同时持有共享锁时，这个属性是如何设置的呢？</p>
+<p>在处理共享锁时，PostgreSQL 会使用所谓的组事务 3。组事务是被分配了单独 ID 的一组事务。关于组内成员及其锁定模式的详细信息存储在 PGDATA&#x2F;pg_multixact 目录下。为了更快地访问，锁定的页面会缓存在服务器的共享内存中 4；所有更改都会被记录以确保容错性。</p>
+<p>组事务 ID 与常规的事务 ID 长度相同，均是 32 位，但它们是独立分发的。这意味着事务和组事务可能具有相同的 ID。为了区分两者，PostgreSQL 使用了一个额外的提示位：xmax_is_multi。</p>
+<p>让我们增加由另一个事务获取的独占锁 (Key Share 和 No Key Update 模式兼容)：</p>
+<p><img src="/2025/05/05/DB/PostgreSQL14_Internals/ch13/ch13/img_1.png" srcset="/img/loading.gif" lazyload alt="img_1.png"></p>
+<p>xmax_is_multi 位表明第一行使用的是组事务 ID 而不是常规 ID。</p>
+<p>在不深入实现细节的情况下，让我们使用 pgrowlocks 扩展显示所有可能的行级锁信息：</p>
+<p><img src="/2025/05/05/DB/PostgreSQL14_Internals/ch13/ch13/img_2.png" srcset="/img/loading.gif" lazyload alt="img_2.png"></p>
+<p>这看起来很像查询 pg_locks 视图，但 pgrowlocks 函数必须访问堆页面，因为 RAM 并不包含关于行级锁的信息。</p>
+<p><img src="/2025/05/05/DB/PostgreSQL14_Internals/ch13/ch13/img_3.png" srcset="/img/loading.gif" lazyload alt="img_3.png"></p>
+<p>由于组事务 ID 是 32 位的，因此与常规事务 ID 一样，它们也会因为计数器限制而发生回卷。所以，PostgreSQL 必须以类似于冻结的方式处理组事务 ID：用新的组事务 ID 替换老的 (或者如果当时只有一个事务持有锁，则使用常规事务 ID 替换) 5。</p>
+<p>但常规事务 ID 仅在 xmin 字段中被冻结 (非空的 xmax 字段表示元组已过期，并将很快被删除)，对于组事务，必须冻结 xmax 字段：当前行版本可能会被新事务在共享模式下反复锁定。</p>
+<p>组事务的冻结可以通过服务器参数进行管理，类似于为常规冻结提供的参数：vacuum_multixact_freeze_min_age、vacuum_multixact_freeze_table_age、autovacuum_multixact_freeze_max_age 以及 vacuum_multixact_failsafe_age。</p>
+<h3 id="13-4-Wait-Queue"><a href="#13-4-Wait-Queue" class="headerlink" title="13.4 Wait Queue"></a><a name="row-wait-queue"></a>13.4 Wait Queue</h3><p>####13.4.1 Exclusive Modes<br>虽然行级锁只是一个属性，但是队列的排列方式并不是那么简单。当某个事务准备修改一行时，它必须遵循以下步骤：</p>
+<pre><code class="hljs">1. 如果 xmax 字段和提示位表明该行以不兼容的模式被锁定，那么获取正在被修改元组的独占重锁。
+
+2. 如有必要，通过请求 xmax 事务 ID 上的锁 (如果 xmax 包含组事务 ID，则请求多个事务)，直到所有不兼容的锁都被释放。
+
+3. 将自己的 ID 写入到元组头中的 xmax 中，并设置所需的提示位。
+
+4. 如果元组锁是在第一步中获取的，则释放它。
+</code></pre>
+<p>元组锁是另一种重锁，具有 tuple 类型 (不要与常规行级锁混淆)。</p>
+<p>似乎步骤 1 和步骤 4 看起来是多余的，只需简单地等待所有锁定的事务结束就足够了。但是，如果多个事务试图更新同一行，那么所有的事务都将等待当前正在处理此行的事务。一旦完成，它们会发现自己陷入了竞争，去争夺锁定该行的权利，一些”倒霉”的事务可能不得不无限期地等待。这种情况被称为资源饥饿。</p>
+<p>元组锁识别队列中的第一个事务，并保证它将是下一个获得锁的事务。</p>
+<p>你可以观察这一点。因为 PostgreSQL 在其操作过程中获取了许多不同的锁，每个锁都在 pg_locks 表中以一个单独的行表示，因此我将在 pg_locks 上创建另一个视图。它将以更简洁的形式显示这些信息，只保留那些我们当前感兴趣的锁 (与 accounts 表和事务本身相关的锁，除了任何虚拟事务 ID 上的锁) ：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><code class="hljs shell">=&gt; CREATE VIEW locks_accounts AS<br>SELECT pid,<br>locktype,<br>CASE locktype<br>WHEN &#x27;relation&#x27; THEN relation::regclass::text<br>WHEN &#x27;transactionid&#x27; THEN transactionid::text<br>WHEN &#x27;tuple&#x27; THEN relation::regclass||&#x27;(&#x27;||page||&#x27;,&#x27;||tuple||&#x27;)&#x27;<br>END AS lockid,<br>mode,<br>granted<br>FROM pg_locks<br>WHERE locktype in (&#x27;relation&#x27;,&#x27;transactionid&#x27;,&#x27;tuple&#x27;)<br>AND (locktype != &#x27;relation&#x27; OR relation = &#x27;accounts&#x27;::regclass)<br>ORDER BY 1, 2, 3;<br></code></pre></td></tr></table></figure>
+
+<p>让我们开启第一个事务并更新一行：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs shell">=&gt; BEGIN;<br>=&gt; SELECT txid_current(), pg_backend_pid();<br>txid_current | pg_backend_pid<br>−−−−−−−−−−−−−+−−−−−−−−−−−−−−−−<br>122863       | 30723<br>(1 row)<br>=&gt; UPDATE accounts SET amount = amount + 100.00 WHERE id = 1;<br></code></pre></td></tr></table></figure>
+
+<p>该事务已完成工作流的所有四个步骤，现在正持有表上的锁：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs shell">=&gt; SELECT * FROM locks_accounts WHERE pid = 30723;<br> pid    | locktype      | lockid   | mode             | granted<br> −−−−−−−+−−−−−−−−−−−−−−−+−−−−−−−−−−+−−−−−−−−−−−−−−−−−−+−−−−−−−−−<br> 30723  | relation      | accounts | RowExclusiveLock | t<br> 30723  | transactionid | 122863   | ExclusiveLock    | t<br> (2 rows)<br></code></pre></td></tr></table></figure>
+
+<p>启动第二个事务并尝试更新同一行。该事务将挂起，在等待锁：</p>
+<p><img src="/2025/05/05/DB/PostgreSQL14_Internals/ch13/ch13/img_4.png" srcset="/img/loading.gif" lazyload alt="img_4.png"></p>
+<p>第二个事务只进行到第二步。因此，除了锁定表及其自身 ID 之外，它还添加了两个锁，这两个锁也在 pg_locks 视图中反映了出来：第一步获取的元组锁和第二步请求的第二个事务 ID 的锁：</p>
+<p>第三个事务将停在第一步。它尝试获取元组上的锁，并在此处停下：<br><img src="/2025/05/05/DB/PostgreSQL14_Internals/ch13/ch13/img_5.png" srcset="/img/loading.gif" lazyload alt="img_5.png"></p>
+<p>第四个以及所有后续尝试更新这一行的事务在这方面与第三个事务没有区别：所有事务都将等待相同的元组锁。</p>
+<p><img src="/2025/05/05/DB/PostgreSQL14_Internals/ch13/ch13/img_6.png" srcset="/img/loading.gif" lazyload alt="img_6.png"></p>
+<p>要获取当前等待的全貌，可以使用锁定进程的信息扩展 pg_stat_activity 视图：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs shell">=&gt; SELECT pid,<br>wait_event_type,<br>wait_event,<br>pg_blocking_pids(pid)<br>FROM pg_stat_activity<br>WHERE pid IN (30723,30794,30865,30936);<br></code></pre></td></tr></table></figure>
+<p><img src="/2025/05/05/DB/PostgreSQL14_Internals/ch13/ch13/img_7.png" srcset="/img/loading.gif" lazyload alt="img_7.png"></p>
+<p>如果中止第一个事务，一切将按预期进行：所有后续事务将在不跳过队列的情况下向前移动一步。</p>
+<p>然而，第一个事务更有可能被提交。在可重复读或可序列化隔离级别下，这将导致序列化失败，因此第二个事务将不得不被中止 7 (队列中所有后续的事务也将被中止)。但在读已提交隔离级别下，修改的行会被重新读取，并重试其更新操作。</p>
+<p>因此，提交第一个事务：</p>
+<p>第二个事务醒来并成功完成了工作流的第三步和第四步：</p>
+<p><img src="/2025/05/05/DB/PostgreSQL14_Internals/ch13/ch13/img_8.png" srcset="/img/loading.gif" lazyload alt="img_8.png"></p>
+<p>一旦第二个事务释放了元组锁，第三个事务也会被唤醒，但它发现新元组的 xmax 字段已经包含了一个不同的 ID。</p>
+<p>至此，上述工作流结束了。在读已提交隔离级别下，还会进行一次尝试锁定行的操作，但没有遵循概述的步骤。第三个事务现在正在等待第二个事务完成，而没有尝试获取元组锁：</p>
+<p>第四个事务同样：</p>
+<p><img src="/2025/05/05/DB/PostgreSQL14_Internals/ch13/ch13/img_9.png" srcset="/img/loading.gif" lazyload alt="img_9.png"></p>
+<p>现在，第三个和第四个事务都在等待第二个事务完成，有陷入竞争状态的风险。队列实际上已经瓦解了。</p>
+<p><img src="/2025/05/05/DB/PostgreSQL14_Internals/ch13/ch13/img_10.png" srcset="/img/loading.gif" lazyload alt="img_10.png"></p>
+<p>如果其他事务在队列还在的时候加入了队列，那么所有事务都会被拖入到这场竞争中。</p>
+<p>结论是：在多个并发进程中更新同一行不是一个好主意。在高负载下，这个热点很快就会变成一个瓶颈，导致性能问题。</p>
+<p>让我们提交所有已开启的事务。</p>
+<p><img src="/2025/05/05/DB/PostgreSQL14_Internals/ch13/ch13/img_11.png" srcset="/img/loading.gif" lazyload alt="img_11.png"></p>
+<p>####13.4.2 Shared Modes<br>PostgreSQL 仅在进行参照完整性检查时获取共享锁。在高负载应用中使用共享锁可能会导致资源饥饿，而两级锁定模型无法防止这种情况的发生。</p>
+<p>让我们回顾一下事务锁定一行应采取的步骤：</p>
+<pre><code class="hljs">1. 如果 xmax 字段和提示位表明该行以不兼容的模式被锁定，那么获取正在被修改元组的独占重锁。
+
+2. 如有必要，通过请求 xmax 事务 ID 上的锁 (如果 xmax 包含组事务 ID，则请求多个事务)，直到所有不兼容的锁都被释放。
+
+3. 将自己的 ID 写入到元组头中的 xmax 中，并设置所需的提示位。
+
+4. 如果元组锁是在第一步中获取的，则释放它。
+</code></pre>
+<p>前两步意味着，如果锁定模式兼容，事务将跳过队列。</p>
+<p>让我们从头开始我们的实验。</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-operator">=</span><span class="hljs-operator">&gt;</span> <span class="hljs-keyword">TRUNCATE</span> accounts;<br><span class="hljs-operator">=</span><span class="hljs-operator">&gt;</span> <span class="hljs-keyword">INSERT INTO</span> accounts(id, client, amount)<br><span class="hljs-keyword">VALUES</span><br>(<span class="hljs-number">1</span>,<span class="hljs-string">&#x27;alice&#x27;</span>,<span class="hljs-number">100.00</span>),<br>(<span class="hljs-number">2</span>,<span class="hljs-string">&#x27;bob&#x27;</span>,<span class="hljs-number">200.00</span>),<br>(<span class="hljs-number">3</span>,<span class="hljs-string">&#x27;charlie&#x27;</span>,<span class="hljs-number">300.00</span>);<br></code></pre></td></tr></table></figure>
+
+<p>开启第一个事务：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-operator">=</span><span class="hljs-operator">&gt;</span> <span class="hljs-keyword">BEGIN</span>;<br><span class="hljs-operator">=</span><span class="hljs-operator">&gt;</span> <span class="hljs-keyword">SELECT</span> txid_current(), pg_backend_pid();<br> txid_current <span class="hljs-operator">|</span> pg_backend_pid<br>−−−−−−−−−−−−−−<span class="hljs-operator">+</span>−−−−−−−−−−−−−−−−<br>       <span class="hljs-number">122869</span> <span class="hljs-operator">|</span>          <span class="hljs-number">30723</span><br>(<span class="hljs-number">1</span> <span class="hljs-type">row</span>)<br></code></pre></td></tr></table></figure>
+
+<p>这一行现在以共享模式锁定：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-operator">=</span><span class="hljs-operator">&gt;</span> <span class="hljs-keyword">SELECT</span> <span class="hljs-operator">*</span> <span class="hljs-keyword">FROM</span> accounts <span class="hljs-keyword">WHERE</span> id <span class="hljs-operator">=</span> <span class="hljs-number">1</span> <span class="hljs-keyword">FOR</span> SHARE;<br></code></pre></td></tr></table></figure>
+<p>第二个事务尝试更新同一行，但无法做到：Share 模式和 No Key Update 模式不兼容：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-operator">=</span><span class="hljs-operator">&gt;</span> <span class="hljs-keyword">BEGIN</span>;<br><span class="hljs-operator">=</span><span class="hljs-operator">&gt;</span> <span class="hljs-keyword">SELECT</span> txid_current(), pg_backend_pid();<br> txid_current <span class="hljs-operator">|</span> pg_backend_pid<br>−−−−−−−−−−−−−−<span class="hljs-operator">+</span>−−−−−−−−−−−−−−−−<br>       <span class="hljs-number">122870</span> <span class="hljs-operator">|</span>          <span class="hljs-number">30794</span><br>(<span class="hljs-number">1</span> <span class="hljs-type">row</span>)<br><span class="hljs-operator">=</span><span class="hljs-operator">&gt;</span> <span class="hljs-keyword">UPDATE</span> accounts <span class="hljs-keyword">SET</span> amount <span class="hljs-operator">=</span> amount <span class="hljs-operator">+</span> <span class="hljs-number">100.00</span> <span class="hljs-keyword">WHERE</span> id <span class="hljs-operator">=</span> <span class="hljs-number">1</span>;<br></code></pre></td></tr></table></figure>
+
+<p>等待第一个事务完成的同时，第二个事务像之前的例子一样持有元组锁：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-operator">=</span><span class="hljs-operator">&gt;</span> <span class="hljs-keyword">SELECT</span> <span class="hljs-operator">*</span> <span class="hljs-keyword">FROM</span> locks_accounts <span class="hljs-keyword">WHERE</span> pid <span class="hljs-operator">=</span> <span class="hljs-number">30794</span>;<br>  pid  <span class="hljs-operator">|</span>   locktype    <span class="hljs-operator">|</span>    lockid     <span class="hljs-operator">|</span>       mode       <span class="hljs-operator">|</span> granted<br>−−−−−−−<span class="hljs-operator">+</span>−−−−−−−−−−−−−−−<span class="hljs-operator">+</span>−−−−−−−−−−−−−−−<span class="hljs-operator">+</span>−−−−−−−−−−−−−−−−−−<span class="hljs-operator">+</span>−−−−−−−−−<br> <span class="hljs-number">30794</span> <span class="hljs-operator">|</span> relation      <span class="hljs-operator">|</span> accounts      <span class="hljs-operator">|</span> RowExclusiveLock <span class="hljs-operator">|</span> t<br> <span class="hljs-number">30794</span> <span class="hljs-operator">|</span> transactionid <span class="hljs-operator">|</span> <span class="hljs-number">122869</span>        <span class="hljs-operator">|</span> ShareLock        <span class="hljs-operator">|</span> f<br> <span class="hljs-number">30794</span> <span class="hljs-operator">|</span> transactionid <span class="hljs-operator">|</span> <span class="hljs-number">122870</span>        <span class="hljs-operator">|</span> ExclusiveLock    <span class="hljs-operator">|</span> t<br> <span class="hljs-number">30794</span> <span class="hljs-operator">|</span> tuple         <span class="hljs-operator">|</span> accounts(<span class="hljs-number">0</span>,<span class="hljs-number">1</span>) <span class="hljs-operator">|</span> ExclusiveLock    <span class="hljs-operator">|</span> t<br>(<span class="hljs-number">4</span> <span class="hljs-keyword">rows</span>)<br></code></pre></td></tr></table></figure>
+
+<p><img src="/2025/05/05/DB/PostgreSQL14_Internals/ch13/ch13/img.png" srcset="/img/loading.gif" lazyload alt="img.png"></p>
+<p>现在让第三个事务以共享模式锁定该行。这种锁与已获取的锁兼容，因此这个事务跳过了队列：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-operator">=</span><span class="hljs-operator">&gt;</span> <span class="hljs-keyword">BEGIN</span>;<br><span class="hljs-operator">=</span><span class="hljs-operator">&gt;</span> <span class="hljs-keyword">SELECT</span> txid_current(), pg_backend_pid();<br> txid_current <span class="hljs-operator">|</span> pg_backend_pid<br>−−−−−−−−−−−−−−<span class="hljs-operator">+</span>−−−−−−−−−−−−−−−−<br>       <span class="hljs-number">122871</span> <span class="hljs-operator">|</span>          <span class="hljs-number">30865</span><br>(<span class="hljs-number">1</span> <span class="hljs-type">row</span>)<br><span class="hljs-operator">=</span><span class="hljs-operator">&gt;</span> <span class="hljs-keyword">SELECT</span> <span class="hljs-operator">*</span> <span class="hljs-keyword">FROM</span> accounts <span class="hljs-keyword">WHERE</span> id <span class="hljs-operator">=</span> <span class="hljs-number">1</span> <span class="hljs-keyword">FOR</span> SHARE;<br></code></pre></td></tr></table></figure>
+
+<p>现在有两个事务锁定了同一行：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-operator">=</span><span class="hljs-operator">&gt;</span> <span class="hljs-keyword">SELECT</span> <span class="hljs-operator">*</span> <span class="hljs-keyword">FROM</span> pgrowlocks(<span class="hljs-string">&#x27;accounts&#x27;</span>) \gx<br>−[ RECORD <span class="hljs-number">1</span> ]−−−−−−−−−−−−−−−<br>locked_row <span class="hljs-operator">|</span> (<span class="hljs-number">0</span>,<span class="hljs-number">1</span>)<br>locker     <span class="hljs-operator">|</span> <span class="hljs-number">2</span><br>multi      <span class="hljs-operator">|</span> t<br>xids       <span class="hljs-operator">|</span> &#123;<span class="hljs-number">122869</span>,<span class="hljs-number">122871</span>&#125;<br>modes      <span class="hljs-operator">|</span> &#123;Share,Share&#125;<br>pids       <span class="hljs-operator">|</span> &#123;<span class="hljs-number">30723</span>,<span class="hljs-number">30865</span>&#125;<br></code></pre></td></tr></table></figure>
+
+<p><img src="/2025/05/05/DB/PostgreSQL14_Internals/ch13/ch13/img_1.png" srcset="/img/loading.gif" lazyload alt="img_1.png"></p>
+<p>如果第一个事务在此时完成，第二个事务醒来后发现该行仍被锁定，并回到队列中，但这次它将发现自己位于第三个事务之后：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-operator">=</span><span class="hljs-operator">&gt;</span> <span class="hljs-keyword">COMMIT</span>;<br><br><span class="hljs-operator">=</span><span class="hljs-operator">&gt;</span> <span class="hljs-keyword">SELECT</span> <span class="hljs-operator">*</span> <span class="hljs-keyword">FROM</span> locks_accounts <span class="hljs-keyword">WHERE</span> pid <span class="hljs-operator">=</span> <span class="hljs-number">30794</span>;<br>  pid  <span class="hljs-operator">|</span>   locktype    <span class="hljs-operator">|</span>    lockid     <span class="hljs-operator">|</span>       mode       <span class="hljs-operator">|</span> granted<br>−−−−−−−<span class="hljs-operator">+</span>−−−−−−−−−−−−−−−<span class="hljs-operator">+</span>−−−−−−−−−−−−−−−<span class="hljs-operator">+</span>−−−−−−−−−−−−−−−−−−<span class="hljs-operator">+</span>−−−−−−−−−<br> <span class="hljs-number">30794</span> <span class="hljs-operator">|</span> relation      <span class="hljs-operator">|</span> accounts      <span class="hljs-operator">|</span> RowExclusiveLock <span class="hljs-operator">|</span> t<br> <span class="hljs-number">30794</span> <span class="hljs-operator">|</span> transactionid <span class="hljs-operator">|</span> <span class="hljs-number">122870</span>        <span class="hljs-operator">|</span> ExclusiveLock    <span class="hljs-operator">|</span> t<br> <span class="hljs-number">30794</span> <span class="hljs-operator">|</span> transactionid <span class="hljs-operator">|</span> <span class="hljs-number">122871</span>        <span class="hljs-operator">|</span> ShareLock        <span class="hljs-operator">|</span> f<br> <span class="hljs-number">30794</span> <span class="hljs-operator">|</span> tuple         <span class="hljs-operator">|</span> accounts(<span class="hljs-number">0</span>,<span class="hljs-number">1</span>) <span class="hljs-operator">|</span> ExclusiveLock    <span class="hljs-operator">|</span> t<br>(<span class="hljs-number">4</span> <span class="hljs-keyword">rows</span>)<br></code></pre></td></tr></table></figure>
+
+<p>只有当第三个事务完成时，第二个事务才能进行更新 (除非在此时间间隔内出现了其他共享锁)。</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-operator">=</span><span class="hljs-operator">&gt;</span> <span class="hljs-keyword">COMMIT</span>;<br><br><span class="hljs-keyword">UPDATE</span> <span class="hljs-number">1</span><br><span class="hljs-operator">=</span><span class="hljs-operator">&gt;</span> <span class="hljs-keyword">COMMIT</span>;<br></code></pre></td></tr></table></figure>
+
+<p>外键检查不太可能引起任何问题，因为键属性通常保持不变，Key Share 可以与 No Key Update 一起使用。但在大多数情况下，你应该避免在应用中使用共享行级锁。</p>
+<h3 id="13-5-No-Wait-Locks"><a href="#13-5-No-Wait-Locks" class="headerlink" title="13.5 No-Wait Locks"></a><a name="No-Wait-Locks"></a>13.5 No-Wait Locks</h3><p>SQL 命令通常会等待所请求的资源被释放。但有时如果无法立即获取到锁，取消操作是有意义的。为此，像 SELECT ，LOCK 和 ALTER 命令提供了 NOWAIT 子句。</p>
+<p>让我们锁定一行：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-operator">=</span><span class="hljs-operator">&gt;</span> <span class="hljs-keyword">BEGIN</span>;<br><span class="hljs-operator">=</span><span class="hljs-operator">&gt;</span> <span class="hljs-keyword">UPDATE</span> accounts <span class="hljs-keyword">SET</span> amount <span class="hljs-operator">=</span> amount <span class="hljs-operator">+</span> <span class="hljs-number">100.00</span> <span class="hljs-keyword">WHERE</span> id <span class="hljs-operator">=</span> <span class="hljs-number">1</span>;<br></code></pre></td></tr></table></figure>
+
+<p>如果请求的资源已被锁定，带有 NOWAIT 子句的命令将立即完成并报错：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-operator">=</span><span class="hljs-operator">&gt;</span> <span class="hljs-keyword">SELECT</span> <span class="hljs-operator">*</span> <span class="hljs-keyword">FROM</span> accounts<br><span class="hljs-keyword">FOR</span> <span class="hljs-keyword">UPDATE</span> NOWAIT;<br>ERROR: could <span class="hljs-keyword">not</span> obtain lock <span class="hljs-keyword">on</span> <span class="hljs-type">row</span> <span class="hljs-keyword">in</span> relation &quot;accounts&quot;<br></code></pre></td></tr></table></figure>
+
+<p>此类错误可以被应用代码捕获并处理。</p>
+<p>UPDATE 和 DELETE 命令没有 NOWAIT 子句。作为替代，你可以尝试使用 SELECT FOR UPDATE NOWAIT 命令锁定行，然后在尝试成功的情况下更新或删除它。</p>
+<p>在一些罕见的情况下，跳过已经被锁定的行并立即开始处理可用的行可能会更方便。这正是带有 SKIP LOCKED 子句的 SELECT FOR 语句所执行的操作：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-operator">=</span><span class="hljs-operator">&gt;</span> <span class="hljs-keyword">SELECT</span> <span class="hljs-operator">*</span> <span class="hljs-keyword">FROM</span> accounts<br><span class="hljs-keyword">ORDER</span> <span class="hljs-keyword">BY</span> id<br><span class="hljs-keyword">FOR</span> <span class="hljs-keyword">UPDATE</span> <span class="hljs-keyword">SKIP</span> LOCKED<br>LIMIT <span class="hljs-number">1</span>;<br> id <span class="hljs-operator">|</span> client <span class="hljs-operator">|</span> amount<br>−−−−<span class="hljs-operator">+</span>−−−−−−−−<span class="hljs-operator">+</span>−−−−−−−−<br>  <span class="hljs-number">2</span> <span class="hljs-operator">|</span> bob    <span class="hljs-operator">|</span> <span class="hljs-number">200.00</span><br>(<span class="hljs-number">1</span> <span class="hljs-type">row</span>)<br></code></pre></td></tr></table></figure>
+<p>在这个例中，第一行 (已被锁定) 被跳过了，查询锁定并返回了第二行。</p>
+<p>此方法使我们能够批量处理行或配置事件队列的并行处理。然而，避免为该命令创建其他用例 — 大多数任务可以使用更简单的方式来处理。</p>
+<p>最后需要提及的是，你可以通过设置超时来避免长时间等待：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-operator">=</span><span class="hljs-operator">&gt;</span> <span class="hljs-keyword">SET</span> lock_timeout <span class="hljs-operator">=</span> <span class="hljs-string">&#x27;1s&#x27;</span>;<br><span class="hljs-operator">=</span><span class="hljs-operator">&gt;</span> <span class="hljs-keyword">ALTER TABLE</span> accounts <span class="hljs-keyword">DROP</span> <span class="hljs-keyword">COLUMN</span> amount;<br>ERROR: canceling statement due <span class="hljs-keyword">to</span> lock timeout<br></code></pre></td></tr></table></figure>
+
+<p>由于未能在一秒钟内获取锁，该命令以报错结束。超时不仅可以在会话级别设置，还可以在更低级别设置，例如，对于某个特定的事务。</p>
+<p>这种方法在高负载下执行需要独占锁的命令时，可以防止在表处理期间出现长时间的等待。如果发生错误，可以在一段时间后重试此命令。</p>
+<pre><code class="hljs">statement_timeout 限制了操作执行的总时间，lock_timeout 参数定义了等待锁花费的最长时间。
+</code></pre>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-operator">=</span><span class="hljs-operator">&gt;</span> <span class="hljs-keyword">ROLLBACK</span>;<br></code></pre></td></tr></table></figure>
+<h3 id="13-6-Deadlocks"><a href="#13-6-Deadlocks" class="headerlink" title="13.6 Deadlocks"></a><a name="row-deadlock"></a>13.6 Deadlocks</h3><p>有时，一个事务可能需要另一个事务当前正在使用的资源，而后者又可能在等待第三个事务锁定的资源，依此类推。这样的事务使用重锁排队。</p>
+<p>但是，偶尔已在队列中的事务可能需要另一个资源，因此它必须再次加入同一个队列，并等待这个资源释放。这时便发生了死锁 9：队列现在有一个无法自行解决的循环依赖。</p>
+<p>为了更好地可视化，让我们画一个等待图。它的节点表示活跃进程，而以箭头表示的边从等待锁的进程指向持有这些锁的进程。如果图中有一个循环，即一个节点可以沿着箭头到达自己，则意味着发生了死锁。</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs text">此处的插图显示的是事务而不是进程。这种替代通常是可接受的，因为一个事务由一个进程执行，并且锁只能在事务内获取。但通常来说，谈论进程更为正确，因为有些锁在事务完成时可能不会立即释放。<br></code></pre></td></tr></table></figure>
+
+<p>如果发生了死锁，并且没有任何参与者设置了超时，那么事务将永远相互等待。这就是为什么锁管理器 10 执行自动死锁检测的原因。</p>
+<p>然而，这种检测需要一些代价，不应该在每次请求锁时都浪费 (毕竟，死锁并不会经常发生)。</p>
+<p><img src="/2025/05/05/DB/PostgreSQL14_Internals/ch13/ch13/img_2.png" srcset="/img/loading.gif" lazyload alt="img_2.png"></p>
+<p>因此，如果进程尝试获取锁失败，并在加入队列后进入休眠状态，PostgreSQL 会自动设置一个由 deadlock_timeout 参数 11 定义的超时时间。如果资源在此期间就变得可用，那么很好，这样就可以避免额外的检测成本。但是，如果在 deadlock_timeout 时间单位之后，仍然在等待，等待进程就会醒来并发起检测。12</p>
+<p>这种检测实际上是构建一个等待图，并在其中搜索循环 13。为了”冻结”图的当前状态，PostgreSQL 将在整个检测期间停止对所有重锁的处理。</p>
+<p>如果没有检测到死锁，进程将再次进入休眠状态；迟早会轮到它。</p>
+<p>如果检测到死锁，其中一个事务将被强制终止，从而释放这个事务的锁并使其他事务能够继续执行。在大多数情况下，是发起检测的事务被中断，但如果循环中包括一个 autovacuum 进程，并且当前没有在冻结元组以防止回卷，那么服务器会终止 autovacuum 进程，因为它的优先级较低。</p>
+<p>死锁通常表明应用程序设计不良。要发现这种情况，需要注意两件事：服务器日志中相应的消息以及 pg_stat_database 表中不断增加的 deadlocks 的值。</p>
+<h4 id="13-6-1-行更新导致的死锁"><a href="#13-6-1-行更新导致的死锁" class="headerlink" title="13.6.1 行更新导致的死锁"></a>13.6.1 行更新导致的死锁</h4><p>虽然死锁最终是由重锁导致的，但通常是以不同顺序获取的行级锁导致了死锁。</p>
+<p>假设一个事务打算在两个帐户之间转移 100 美元。首先从第一个账户中提取这笔款项：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-operator">=</span><span class="hljs-operator">&gt;</span> <span class="hljs-keyword">BEGIN</span>;<br><span class="hljs-operator">=</span><span class="hljs-operator">&gt;</span> <span class="hljs-keyword">UPDATE</span> accounts <span class="hljs-keyword">SET</span> amount <span class="hljs-operator">=</span> amount <span class="hljs-operator">-</span> <span class="hljs-number">100.00</span> <span class="hljs-keyword">WHERE</span> id <span class="hljs-operator">=</span> <span class="hljs-number">1</span>;<br><span class="hljs-keyword">UPDATE</span> <span class="hljs-number">1</span><br></code></pre></td></tr></table></figure>
+<p>与此同时，另一个事务打算从第二个帐户转移 10 美元到第一个帐户中。首先从第二个账户中提取这笔款项：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-operator">=</span><span class="hljs-operator">&gt;</span> <span class="hljs-keyword">BEGIN</span>;<br><span class="hljs-operator">=</span><span class="hljs-operator">&gt;</span> <span class="hljs-keyword">UPDATE</span> accounts <span class="hljs-keyword">SET</span> amount <span class="hljs-operator">=</span> amount <span class="hljs-operator">-</span> <span class="hljs-number">10.00</span> <span class="hljs-keyword">WHERE</span> id <span class="hljs-operator">=</span> <span class="hljs-number">2</span>;<br><span class="hljs-keyword">UPDATE</span> <span class="hljs-number">1</span><br></code></pre></td></tr></table></figure>
+<p>现在，第一个事务尝试增加第二个账户中的金额，但发现相应的行已被锁定：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-operator">=</span><span class="hljs-operator">&gt;</span> <span class="hljs-keyword">UPDATE</span> accounts <span class="hljs-keyword">SET</span> amount <span class="hljs-operator">=</span> amount <span class="hljs-operator">+</span> <span class="hljs-number">100.00</span> <span class="hljs-keyword">WHERE</span> id <span class="hljs-operator">=</span> <span class="hljs-number">2</span>;<br></code></pre></td></tr></table></figure>
+
+<p>然后第二个事务尝试更新第一个帐户，但也被锁定了：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-operator">=</span><span class="hljs-operator">&gt;</span> <span class="hljs-keyword">UPDATE</span> accounts <span class="hljs-keyword">SET</span> amount <span class="hljs-operator">=</span> amount <span class="hljs-operator">+</span> <span class="hljs-number">10.00</span> <span class="hljs-keyword">WHERE</span> id <span class="hljs-operator">=</span> <span class="hljs-number">1</span>;<br></code></pre></td></tr></table></figure>
+
+<p>这种循环等待永远无法自行解决。由于无法在一秒内获得资源，第一个事务启动死锁检测，并被服务器中止：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs text">ERROR: deadlock detected<br>DETAIL: Process 30423 waits for ShareLock on transaction 122877;<br>blocked by process 30723.<br>Process 30723 waits for ShareLock on transaction 122876; blocked by<br>process 30423.<br>HINT: See server log for query details.<br>CONTEXT: while updating tuple (0,2) in relation &quot;accounts&quot;<br></code></pre></td></tr></table></figure>
+<p>现在第二个事务可以继续进行，它被唤醒并执行更新：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-keyword">UPDATE</span> <span class="hljs-number">1</span><br></code></pre></td></tr></table></figure>
+
+<p>让我们结束事务。</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-operator">=</span><span class="hljs-operator">&gt;</span> <span class="hljs-keyword">ROLLBACK</span>;<br><br><span class="hljs-operator">=</span><span class="hljs-operator">&gt;</span> <span class="hljs-keyword">ROLLBACK</span>;<br></code></pre></td></tr></table></figure>
+
+<p>执行此类操作的正确方式是以相同的顺序锁定资源。例如，在这个特定案例中，账户可以根据它们的编号按升序进行锁定。</p>
+<h4 id="13-6-2-两条-UPDATE-语句之间的死锁"><a href="#13-6-2-两条-UPDATE-语句之间的死锁" class="headerlink" title="13.6.2 两条 UPDATE 语句之间的死锁"></a>13.6.2 两条 UPDATE 语句之间的死锁</h4><p>在某些情况下，死锁似乎是不可能的，但确实会发生。</p>
+<p>我们通常认为 SQL 命令是原子的，但它真的是原子的吗？让我们仔细看看 UPDATE：这个命令在更新行的时候才锁定它们，而不是立即全部锁定，而且这种锁定并不是同时发生的。因此如果有一个 UPDATE 命令以一种顺序修改多行，而另一个 UPDATE 命令以不同的顺序执行相同的操作，就可能会发生死锁。</p>
+<p>让我们复现这个场景。首先，我们在 amount 列上降序创建索引：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-operator">=</span><span class="hljs-operator">&gt;</span> <span class="hljs-keyword">CREATE</span> INDEX <span class="hljs-keyword">ON</span> accounts(amount <span class="hljs-keyword">DESC</span>);<br></code></pre></td></tr></table></figure>
+
+<p>为了能够观察这个过程，我们可以编写一个函数以放慢速度：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-operator">=</span><span class="hljs-operator">&gt;</span> <span class="hljs-keyword">CREATE</span> <span class="hljs-keyword">FUNCTION</span> inc_slow(n <span class="hljs-type">numeric</span>)<br><span class="hljs-keyword">RETURNS</span> <span class="hljs-type">numeric</span><br><span class="hljs-keyword">AS</span> $$<br>  <span class="hljs-keyword">SELECT</span> pg_sleep(<span class="hljs-number">1</span>);<br>  <span class="hljs-keyword">SELECT</span> n <span class="hljs-operator">+</span> <span class="hljs-number">100.00</span>;<br>$$ <span class="hljs-keyword">LANGUAGE</span> <span class="hljs-keyword">sql</span>;<br></code></pre></td></tr></table></figure>
+<p>第一个 UPDATE 命令将更新所有元组。执行计划依赖于对整个表的顺序扫描。</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-operator">=</span><span class="hljs-operator">&gt;</span> EXPLAIN (costs off)<br><span class="hljs-keyword">UPDATE</span> accounts <span class="hljs-keyword">SET</span> amount <span class="hljs-operator">=</span> inc_slow(amount);<br>       QUERY PLAN<br>−−−−−−−−−−−−−−−−−−−−−−−−−−−<br> <span class="hljs-keyword">Update</span> <span class="hljs-keyword">on</span> accounts<br>  −<span class="hljs-operator">&gt;</span> Seq Scan <span class="hljs-keyword">on</span> accounts<br>(<span class="hljs-number">2</span> <span class="hljs-keyword">rows</span>)<br></code></pre></td></tr></table></figure>
+
+<p>为了确保堆页面基于 amount 列以升序存储行，我们需要截断表并重新插入行：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-operator">=</span><span class="hljs-operator">&gt;</span> <span class="hljs-keyword">TRUNCATE</span> accounts;<br><span class="hljs-operator">=</span><span class="hljs-operator">&gt;</span> <span class="hljs-keyword">INSERT INTO</span> accounts(id, client, amount)<br><span class="hljs-keyword">VALUES</span><br>  (<span class="hljs-number">1</span>,<span class="hljs-string">&#x27;alice&#x27;</span>,<span class="hljs-number">100.00</span>),<br>  (<span class="hljs-number">2</span>,<span class="hljs-string">&#x27;bob&#x27;</span>,<span class="hljs-number">200.00</span>),<br>  (<span class="hljs-number">3</span>,<span class="hljs-string">&#x27;charlie&#x27;</span>,<span class="hljs-number">300.00</span>);<br><span class="hljs-operator">=</span><span class="hljs-operator">&gt;</span> ANALYZE accounts;<br><span class="hljs-operator">=</span><span class="hljs-operator">&gt;</span> <span class="hljs-keyword">SELECT</span> ctid, <span class="hljs-operator">*</span> <span class="hljs-keyword">FROM</span> accounts;<br>  ctid <span class="hljs-operator">|</span> id <span class="hljs-operator">|</span> client  <span class="hljs-operator">|</span> amount<br>−−−−−−−<span class="hljs-operator">+</span>−−−−<span class="hljs-operator">+</span>−−−−−−−−−<span class="hljs-operator">+</span>−−−−−−−−<br> (<span class="hljs-number">0</span>,<span class="hljs-number">1</span>) <span class="hljs-operator">|</span>  <span class="hljs-number">1</span> <span class="hljs-operator">|</span> alice	  <span class="hljs-operator">|</span> <span class="hljs-number">100.00</span><br> (<span class="hljs-number">0</span>,<span class="hljs-number">2</span>) <span class="hljs-operator">|</span>  <span class="hljs-number">2</span> <span class="hljs-operator">|</span> bob     <span class="hljs-operator">|</span> <span class="hljs-number">200.00</span><br> (<span class="hljs-number">0</span>,<span class="hljs-number">3</span>) <span class="hljs-operator">|</span>  <span class="hljs-number">3</span> <span class="hljs-operator">|</span> charlie <span class="hljs-operator">|</span> <span class="hljs-number">300.00</span><br>(<span class="hljs-number">3</span> <span class="hljs-keyword">rows</span>)<br></code></pre></td></tr></table></figure>
+<p>顺序扫描将以相同的顺序更新行 (但对于大表来说并非总是如此)。</p>
+<p>开始更新：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-operator">=</span><span class="hljs-operator">&gt;</span> <span class="hljs-keyword">UPDATE</span> accounts <span class="hljs-keyword">SET</span> amount <span class="hljs-operator">=</span> inc_slow(amount);<br></code></pre></td></tr></table></figure>
+
+<p>同时，我们将在另一个会话中禁止顺序扫描：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-operator">=</span><span class="hljs-operator">&gt;</span> <span class="hljs-keyword">SET</span> enable_seqscan <span class="hljs-operator">=</span> off;<br></code></pre></td></tr></table></figure>
+
+<p>因此，规划器为下一个 UPDATE 命令选择了索引扫描。</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-operator">=</span><span class="hljs-operator">&gt;</span> EXPLAIN (costs off)<br><span class="hljs-keyword">UPDATE</span> accounts <span class="hljs-keyword">SET</span> amount <span class="hljs-operator">=</span> inc_slow(amount)<br><span class="hljs-keyword">WHERE</span> amount <span class="hljs-operator">&gt;</span> <span class="hljs-number">100.00</span>;<br>                       QUERY PLAN<br>−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−<br> <span class="hljs-keyword">Update</span> <span class="hljs-keyword">on</span> accounts<br>   −<span class="hljs-operator">&gt;</span> Index Scan <span class="hljs-keyword">using</span> accounts_amount_idx <span class="hljs-keyword">on</span> accounts<br>       Index Cond: (amount <span class="hljs-operator">&gt;</span> <span class="hljs-number">100.00</span>)<br>(<span class="hljs-number">3</span> <span class="hljs-keyword">rows</span>)<br></code></pre></td></tr></table></figure>
+<p>第二行和第三行满足条件；由于索引是降序的，因此行将以相反的顺序被更新。</p>
+<p>让我们开始下一个更新：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-operator">=</span><span class="hljs-operator">&gt;</span> <span class="hljs-keyword">UPDATE</span> accounts <span class="hljs-keyword">SET</span> amount <span class="hljs-operator">=</span> inc_slow(amount)<br><span class="hljs-keyword">WHERE</span> amount <span class="hljs-operator">&gt;</span> <span class="hljs-number">100.00</span>;<br></code></pre></td></tr></table></figure>
+<p>pgrowlocks 扩展显示第一个操作已经更新了第一行 (0,1)，而第二个操作已成功更新了最后一行 (0,3):</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-operator">=</span><span class="hljs-operator">&gt;</span> <span class="hljs-keyword">SELECT</span> locked_row, locker, modes <span class="hljs-keyword">FROM</span> pgrowlocks(<span class="hljs-string">&#x27;accounts&#x27;</span>);<br> locked_row <span class="hljs-operator">|</span> locker <span class="hljs-operator">|</span>       modes<br>−−−−−−−−−−−−<span class="hljs-operator">+</span>−−−−−−−−<span class="hljs-operator">+</span>−−−−−−−−−−−−−−−−−−−<br> (<span class="hljs-number">0</span>,<span class="hljs-number">1</span>)      <span class="hljs-operator">|</span> <span class="hljs-number">122883</span> <span class="hljs-operator">|</span> &#123;&quot;No Key Update&quot;&#125;    ← <span class="hljs-keyword">first</span><br> (<span class="hljs-number">0</span>,<span class="hljs-number">3</span>)      <span class="hljs-operator">|</span> <span class="hljs-number">122884</span> <span class="hljs-operator">|</span> &#123;&quot;No Key Update&quot;&#125;    ← <span class="hljs-keyword">second</span><br>(<span class="hljs-number">2</span> <span class="hljs-keyword">rows</span>)<br></code></pre></td></tr></table></figure>
+<p>又过了一秒。第一个操作已经更新了第二行，另一个操作也希望这样做，但这是不允许的。</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-operator">=</span><span class="hljs-operator">&gt;</span> <span class="hljs-keyword">SELECT</span> locked_row, locker, modes <span class="hljs-keyword">FROM</span> pgrowlocks(<span class="hljs-string">&#x27;accounts&#x27;</span>);<br> locked_row <span class="hljs-operator">|</span> locker <span class="hljs-operator">|</span>       modes<br>−−−−−−−−−−−−<span class="hljs-operator">+</span>−−−−−−−−<span class="hljs-operator">+</span>−−−−−−−−−−−−−−−−−−−<br> (<span class="hljs-number">0</span>,<span class="hljs-number">1</span>)      <span class="hljs-operator">|</span> <span class="hljs-number">122883</span> <span class="hljs-operator">|</span> &#123;&quot;No Key Update&quot;&#125;<br> (<span class="hljs-number">0</span>,<span class="hljs-number">2</span>)      <span class="hljs-operator">|</span> <span class="hljs-number">122883</span> <span class="hljs-operator">|</span> &#123;&quot;No Key Update&quot;&#125;    ← the <span class="hljs-keyword">first</span> <span class="hljs-keyword">one</span> wins<br> (<span class="hljs-number">0</span>,<span class="hljs-number">3</span>)      <span class="hljs-operator">|</span> <span class="hljs-number">122884</span> <span class="hljs-operator">|</span> &#123;&quot;No Key Update&quot;&#125;<br>(<span class="hljs-number">3</span> <span class="hljs-keyword">rows</span>)<br></code></pre></td></tr></table></figure>
+<p>现在，第一个操作想要更新表的最后一行，但它已经被第二个操作锁定。于是发生了死锁。</p>
+<p>其中一个事务被中止：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs sql">ERROR: deadlock detected<br>DETAIL: Process <span class="hljs-number">30794</span> waits <span class="hljs-keyword">for</span> ShareLock <span class="hljs-keyword">on</span> transaction <span class="hljs-number">122883</span>;<br>blocked <span class="hljs-keyword">by</span> process <span class="hljs-number">30723.</span><br>Process <span class="hljs-number">30723</span> waits <span class="hljs-keyword">for</span> ShareLock <span class="hljs-keyword">on</span> transaction <span class="hljs-number">122884</span>; blocked <span class="hljs-keyword">by</span><br>process <span class="hljs-number">30794.</span><br>HINT: See server log <span class="hljs-keyword">for</span> query details.<br>CONTEXT: while updating tuple (<span class="hljs-number">0</span>,<span class="hljs-number">2</span>) <span class="hljs-keyword">in</span> relation &quot;accounts&quot;<br></code></pre></td></tr></table></figure>
+<p>另一个事务执行完成：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-keyword">UPDATE</span> <span class="hljs-number">3</span><br></code></pre></td></tr></table></figure>
+<p>尽管这种情况看似不可能，但在高负载系统中执行批量行更新时，确实会发生。</p>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/BOOK/" class="category-chain-item">BOOK</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/BOOK/PostgreSQL14-Internals/" class="category-chain-item">PostgreSQL14_Internals</a>
+  
+  
+
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/book/" class="print-no-link">#book</a>
+      
+        <a href="/tags/database/" class="print-no-link">#database</a>
+      
+        <a href="/tags/transactions/" class="print-no-link">#transactions</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>ch13. Row-Level Locks</div>
+      <div>http://smilemzy.com/2025/05/05/DB/PostgreSQL14_Internals/ch13/ch13/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Smile</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2025年5月5日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-cc-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2025/05/05/DB/PostgreSQL14_Internals/ch14/ch14/" title="ch14. Miscellaneous Locks">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">ch14. Miscellaneous Locks</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2025/05/05/DB/PostgreSQL14_Internals/ch12/ch12/" title="ch12. Relation-Level Locks">
+                        <span class="hidden-mobile">ch12. Relation-Level Locks</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/5.0.0/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

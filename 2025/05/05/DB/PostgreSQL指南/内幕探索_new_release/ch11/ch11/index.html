@@ -1,0 +1,828 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Smile">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="ch11. Streaming Replication同步流复制功能在9.1版本中得以实现。这是一种单一主多从类型的复制，其中“主”和“从”通常分别称为主服务器和备用服务器。 这一本土复制特性基于日志传送，这是一种通用的复制技术，主服务器会持续将WAL（预写日志）数据发送到备用服务器，备用服务器随后立即重放接收到的数据。 本章节专注于流复制的工作原理，并涵盖以下内容： 流复制是如何启动的。数据是如">
+<meta property="og:type" content="article">
+<meta property="og:title" content="ch11. Streaming Replication">
+<meta property="og:url" content="http://smilemzy.com/2025/05/05/DB/PostgreSQL%E6%8C%87%E5%8D%97/%E5%86%85%E5%B9%95%E6%8E%A2%E7%B4%A2_new_release/ch11/ch11/index.html">
+<meta property="og:site_name" content="Smile">
+<meta property="og:description" content="ch11. Streaming Replication同步流复制功能在9.1版本中得以实现。这是一种单一主多从类型的复制，其中“主”和“从”通常分别称为主服务器和备用服务器。 这一本土复制特性基于日志传送，这是一种通用的复制技术，主服务器会持续将WAL（预写日志）数据发送到备用服务器，备用服务器随后立即重放接收到的数据。 本章节专注于流复制的工作原理，并涵盖以下内容： 流复制是如何启动的。数据是如">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://smilemzy.com/2025/05/05/DB/PostgreSQL%E6%8C%87%E5%8D%97/%E5%86%85%E5%B9%95%E6%8E%A2%E7%B4%A2_new_release/ch11/ch11/img.png">
+<meta property="og:image" content="http://smilemzy.com/2025/05/05/DB/PostgreSQL%E6%8C%87%E5%8D%97/%E5%86%85%E5%B9%95%E6%8E%A2%E7%B4%A2_new_release/ch11/ch11/img_1.png">
+<meta property="og:image" content="http://smilemzy.com/2025/05/05/DB/PostgreSQL%E6%8C%87%E5%8D%97/%E5%86%85%E5%B9%95%E6%8E%A2%E7%B4%A2_new_release/ch11/ch11/img_2.png">
+<meta property="og:image" content="http://smilemzy.com/2025/05/05/DB/PostgreSQL%E6%8C%87%E5%8D%97/%E5%86%85%E5%B9%95%E6%8E%A2%E7%B4%A2_new_release/ch11/ch11/img_3.png">
+<meta property="article:published_time" content="2025-05-05T12:24:15.072Z">
+<meta property="article:modified_time" content="2025-05-05T12:51:19.608Z">
+<meta property="article:author" content="Smile">
+<meta property="article:tag" content="book">
+<meta property="article:tag" content="database">
+<meta property="article:tag" content="transactions">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="http://smilemzy.com/2025/05/05/DB/PostgreSQL%E6%8C%87%E5%8D%97/%E5%86%85%E5%B9%95%E6%8E%A2%E7%B4%A2_new_release/ch11/ch11/img.png">
+  
+  
+  
+  <title>ch11. Streaming Replication - Smile</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/c/font_1749284_5i9bdhy70f8.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/c/font_1736178_k526ubmyhba.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"smilemzy.com","root":"/","version":"1.9.8","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false},"umami":{"src":null,"website_id":null,"domains":null,"start_time":"2024-01-01T00:00:00.000Z","token":null,"api_server":null}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+
+  
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Smile</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/" target="_self">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/" target="_self">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/" target="_self">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/" target="_self">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/" target="_self">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="ch11. Streaming Replication"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2025-05-05 20:24" pubdate>
+          2025年5月5日 晚上
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          4k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          34 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">ch11. Streaming Replication</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <h2 id="ch11-Streaming-Replication"><a href="#ch11-Streaming-Replication" class="headerlink" title="ch11. Streaming Replication"></a>ch11. Streaming Replication</h2><p>同步流复制功能在9.1版本中得以实现。这是一种单一主多从类型的复制，其中“主”和“从”通常分别称为主服务器和备用服务器。</p>
+<p>这一本土复制特性基于日志传送，这是一种通用的复制技术，主服务器会持续将WAL（预写日志）数据发送到备用服务器，<br>备用服务器随后立即重放接收到的数据。</p>
+<p>本章节专注于流复制的工作原理，并涵盖以下内容：</p>
+<p>流复制是如何启动的。<br>数据是如何在主服务器和备用服务器之间传输的。<br>主服务器是如何管理多个备用服务器的。<br>主服务器是如何检测备用服务器故障的。  </p>
+<p>通过这一章节的探讨，您可以深入理解PostgreSQL中流复制的核心机制及其在高可用性和数据保护策略中的应用。</p>
+<table>
+<thead>
+<tr>
+<th>Chapter Contents</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><a href="#stream-rep">11.1. Starting the Streaming Replication</a></td>
+</tr>
+<tr>
+<td><a href="#conduct-strp">11.2. How to Conduct Streaming Replication</a></td>
+</tr>
+<tr>
+<td><a href="#multi-standy">11.3. Managing Multiple-Standby Servers</a></td>
+</tr>
+<tr>
+<td><a href="#fail-standy-server">11.4. Detecting Failures of Standby Servers</a></td>
+</tr>
+</tbody></table>
+<blockquote>
+<p>info </p>
+<p>虽然最初的复制特性，仅支持异步复制，是在9.0版本中引入的，但在9.1版本中，<br>这一实现被替换为一个新的实现方式，用以支持同步复制，这一新实现至今仍在使用中。</p>
+</blockquote>
+<h3 id="11-1-Starting-the-Streaming-Replication"><a href="#11-1-Starting-the-Streaming-Replication" class="headerlink" title="11.1. Starting the Streaming Replication"></a><a name="stream-rep"></a>11.1. Starting the Streaming Replication</h3><p>在流复制中，三种类型的进程协同工作：</p>
+<ol>
+<li>在主服务器上的walsender进程负责将WAL（预写日志）数据发送到备用服务器。  </li>
+<li>在备用服务器上的walreceiver进程负责接收并重放这些WAL数据。  </li>
+<li>同样在备用服务器上，一个startup进程负责启动walreceiver进程。</li>
+</ol>
+<p>walsender和walreceiver通过单个TCP连接进行通信。</p>
+<p>流复制的启动顺序如图11.1所示：</p>
+<p><img src="/2025/05/05/DB/PostgreSQL%E6%8C%87%E5%8D%97/%E5%86%85%E5%B9%95%E6%8E%A2%E7%B4%A2_new_release/ch11/ch11/img.png" srcset="/img/loading.gif" lazyload alt="img.png"></p>
+<pre><code class="hljs">(1) 启动主服务器和备用服务器。
+
+(2) 备用服务器启动startup进程。
+
+(3) 备用服务器启动walreceiver进程。
+
+(4) walreceiver向主服务器发送连接请求。如果主服务器没有运行，walreceiver会周期性地发送这些请求。
+
+(5) 当主服务器接收到连接请求时，它启动一个walsender进程，并在walsender和walreceiver之间建立TCP连接。
+
+(6) walreceiver发送备用服务器数据库集群的最新LSN（日志序列号）。在信息技术领域，这一过程被称为握手。
+
+(7) 如果备用服务器的最新LSN小于主服务器的最新LSN（即，备用LSN &lt; 主LSN），
+则walsender会从备用的LSN开始向前发送WAL数据，直到主服务器的LSN。
+这些WAL数据来源于主服务器pg_wal子目录中存储的日志段（在9.6或更早版本中为pg_xlog）。
+接着，备用服务器重放接收到的WAL数据。在这个阶段，备用服务器逐渐与主服务器同步，因此称为追赶（catch-up）阶段。
+
+(8) 流复制开始正常工作。
+</code></pre>
+<p>每个walsender进程会维护一个状态，该状态适合与之相连的walreceiver或应用程序的工作阶段。<br>以下是walsender进程可能处于的几种状态：</p>
+<ol>
+<li>启动阶段（start-up）：从启动walsender进程到握手结束。参见图11.1的步骤(5)至(6)。  </li>
+<li>追赶阶段（catch-up）：在追赶主服务器数据的过程中。参见图11.1的步骤(7)。  </li>
+<li>流送阶段（streaming）：当流复制正在正常工作时。参见图11.1的步骤(8)。  </li>
+<li>备份阶段（backup）：在为备份工具（如pg_basebackup实用程序）发送整个数据库集群文件期间。</li>
+</ol>
+<p>视图pg_stat_replication显示所有正在运行的walsender的状态。下面是一个示例：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs sql">testdb<span class="hljs-operator">=</span># <span class="hljs-keyword">SELECT</span> application_name,state <span class="hljs-keyword">FROM</span> pg_stat_replication;<br> application_name <span class="hljs-operator">|</span>   state<br><span class="hljs-comment">------------------+-----------</span><br> standby1         <span class="hljs-operator">|</span> streaming<br> standby2         <span class="hljs-operator">|</span> streaming<br> pg_basebackup    <span class="hljs-operator">|</span> backup<br>(<span class="hljs-number">3</span> <span class="hljs-keyword">rows</span>)<br></code></pre></td></tr></table></figure>
+
+<p>如上结果所示，有两个walsender进程正在运行，用于向连接的备用服务器发送WAL数据，<br>还有一个walsender进程正在运行，用于为pg_basebackup实用工具发送数据库集群的所有文件。</p>
+<blockquote>
+<p>如果备用服务器在长时间停止后重新启动，会发生什么情况呢？</p>
+<p>在9.3或更早的版本中，如果备用服务器所需的主服务器WAL段已经被回收，那么备用服务器就无法赶上主服务器了。<br>针对这个问题，没有十分可靠的解决方案，只能通过设置较大的wal_keep_segments配置参数值来减少这种情况发生的可能性，<br>但这只是一个权宜之计。</p>
+<p>而在9.4或之后的版本中，可以通过使用“复制槽（replication slot）”来预防这个问题。复制槽是一项扩展WAL数据发送<br>灵活性的功能，主要服务于逻辑复制，同时也为解决这个问题提供了方案——通过暂停回收过程，可以在复制槽中保留含有<br>未发送数据的WAL段文件，从而避免了因WAL段被删除而导致备用服务器无法追赶上主服务器的问题。详细信息请参考官方文档。<br><a target="_blank" rel="noopener" href="https://www.postgresql.org/docs/current/warm-standby.html#STREAMING-REPLICATION-SLOTS">https://www.postgresql.org/docs/current/warm-standby.html#STREAMING-REPLICATION-SLOTS</a></p>
+</blockquote>
+<h3 id="11-2-How-to-Conduct-Streaming-Replication"><a href="#11-2-How-to-Conduct-Streaming-Replication" class="headerlink" title="11.2. How to Conduct Streaming Replication"></a><a name="conduct-strp"></a>11.2. How to Conduct Streaming Replication</h3><p>流复制有两个方面：日志传送和数据库同步。日志传送是流复制的主要方面，因为主服务器会在写入WAL（预写日志）数据的同时，<br>将其发送给所有连接的备用服务器。数据库同步则是同步复制所必需的，此时主服务器需与每个备用服务器通信，<br>以确保它们的数据库集群保持同步。</p>
+<p>为了准确理解流复制的工作原理，我们需要了解一个主服务器是如何管理多个备用服务器的。<br>本节将从简单情况（即，单一主服务器单一备用服务器系统）开始讨论，随后在下节中探讨一般情况<br>（单一主服务器多备用服务器系统）。</p>
+<h4 id="11-2-1-Communication-Between-a-Primary-and-a-Synchronous-Standby"><a href="#11-2-1-Communication-Between-a-Primary-and-a-Synchronous-Standby" class="headerlink" title="11.2.1. Communication Between a Primary and a Synchronous Standby"></a>11.2.1. Communication Between a Primary and a Synchronous Standby</h4><p><strong>主服务器与同步备用服务器间的通信</strong>  </p>
+<p>假设备用服务器处于同步复制模式中，但配置参数hot_standby被禁用，<br>并且wal_level设置为‘replica’。主服务器的主要参数如下所示：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs shell">synchronous_standby_names = &#x27;standby1&#x27;<br>hot_standby = off<br>wal_level = replica<br></code></pre></td></tr></table></figure>
+
+<p>此外，在第9.5节中提到的写入WAL（Write-Ahead Log）数据的三个触发器中，我们这里重点关注事务提交。</p>
+<p>假设主服务器上的一个后端进程以自动提交模式发出一个简单的INSERT语句。该后端开始一个事务，发出INSERT语句，<br>然后立即提交事务。让我们进一步探讨这个提交操作将如何完成。请参见图11.2中的以下序列图：</p>
+<p><img src="/2025/05/05/DB/PostgreSQL%E6%8C%87%E5%8D%97/%E5%86%85%E5%B9%95%E6%8E%A2%E7%B4%A2_new_release/ch11/ch11/img_1.png" srcset="/img/loading.gif" lazyload alt="img_1.png"></p>
+<pre><code class="hljs">(1) 后端进程通过执行XLogInsert()和XLogFlush()函数，将WAL数据写入并刷新到WAL段文件中。
+
+(2) walsender进程将写入WAL段的WAL数据发送给walreceiver进程。
+
+(3) 发送WAL数据后，后端进程继续等待来自备用服务器的ACK响应。更准确地说，
+后端进程通过执行内部函数SyncRepWaitForLSN()获取一个闩锁，并等待其释放。
+
+(4) 备用服务器上的walreceiver使用write()系统调用将接收到的WAL数据写入备用服务器的WAL段，
+并向walsender返回一个ACK响应。
+
+(5) walreceiver使用如fsync()的系统调用将WAL数据刷新到WAL段，再向walsender返回另一个ACK响应，
+并通知启动进程有关WAL数据已更新的信息。
+
+(6) 启动进程重放已写入WAL段的WAL数据。
+
+(7) 当walsender从walreceiver接收到ACK响应时，它会释放后端进程的闩锁，随后后端进程的提交或回滚动作将完成。
+闩锁释放的时间取决于synchronous_commit参数的设定。
+如果synchronous_commit设置为&#39;on&#39;（默认值），则在收到步骤(5)的ACK时释放闩锁；
+如果设置为&#39;remote_write&#39;，则在收到步骤(4)的ACK时释放闩锁。
+</code></pre>
+<p>每个ACK响应都会向主服务器传达备用服务器的内部状态信息，它包含以下四项内容：</p>
+<ol>
+<li>最新WAL数据已被写入的位置（LSN）。  </li>
+<li>最新WAL数据已被刷新到磁盘的位置（LSN）。  </li>
+<li>在启动进程中最新WAL数据已被重放的位置（LSN）。  </li>
+<li>发送此响应的时间戳。</li>
+</ol>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs c">XLogWalRcvSendReply(<span class="hljs-type">void</span>)@src/backend/replication/walreceiver.c<br>	<span class="hljs-comment">/* Construct a new message */</span><br>	writePtr = LogstreamResult.Write;<br>	flushPtr = LogstreamResult.Flush;<br>	applyPtr = GetXLogReplayRecPtr(<span class="hljs-literal">NULL</span>);<br><br>	resetStringInfo(&amp;reply_message);<br>	pq_sendbyte(&amp;reply_message, <span class="hljs-string">&#x27;r&#x27;</span>);<br>	pq_sendint64(&amp;reply_message, writePtr);<br>	pq_sendint64(&amp;reply_message, flushPtr);<br>	pq_sendint64(&amp;reply_message, applyPtr);<br>	pq_sendint64(&amp;reply_message, GetCurrentTimestamp());<br>	pq_sendbyte(&amp;reply_message, requestReply ? <span class="hljs-number">1</span> : <span class="hljs-number">0</span>);<br></code></pre></td></tr></table></figure>
+
+<p>walreceiver不仅在WAL数据被写入和刷新后返回ACK响应，还会定期作为备用服务器的心跳信号返回ACK。<br>因此，主服务器始终能准确掌握所有连接的备用服务器的状态。</p>
+<p>可以通过执行以下查询来显示连接的备用服务器的LSN相关信息：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs sql">testdb<span class="hljs-operator">=</span># <span class="hljs-keyword">SELECT</span> application_name <span class="hljs-keyword">AS</span> host,<br>        write_location <span class="hljs-keyword">AS</span> write_LSN, flush_location <span class="hljs-keyword">AS</span> flush_LSN, <br>        replay_location <span class="hljs-keyword">AS</span> replay_LSN <span class="hljs-keyword">FROM</span> pg_stat_replication;<br><br>   host   <span class="hljs-operator">|</span> write_lsn <span class="hljs-operator">|</span> flush_lsn <span class="hljs-operator">|</span> replay_lsn <br><span class="hljs-comment">----------+-----------+-----------+------------</span><br> standby1 <span class="hljs-operator">|</span> <span class="hljs-number">0</span><span class="hljs-operator">/</span><span class="hljs-number">5000280</span> <span class="hljs-operator">|</span> <span class="hljs-number">0</span><span class="hljs-operator">/</span><span class="hljs-number">5000280</span> <span class="hljs-operator">|</span> <span class="hljs-number">0</span><span class="hljs-operator">/</span><span class="hljs-number">5000280</span><br> standby2 <span class="hljs-operator">|</span> <span class="hljs-number">0</span><span class="hljs-operator">/</span><span class="hljs-number">5000280</span> <span class="hljs-operator">|</span> <span class="hljs-number">0</span><span class="hljs-operator">/</span><span class="hljs-number">5000280</span> <span class="hljs-operator">|</span> <span class="hljs-number">0</span><span class="hljs-operator">/</span><span class="hljs-number">5000280</span><br>(<span class="hljs-number">2</span> <span class="hljs-keyword">rows</span>)<br></code></pre></td></tr></table></figure>
+
+<blockquote>
+<p>info</p>
+<p>心跳间隔由参数wal_receiver_status_interval设置，默认为10秒。</p>
+</blockquote>
+<h4 id="11-2-2-Behavior-When-a-Failure-Occurs"><a href="#11-2-2-Behavior-When-a-Failure-Occurs" class="headerlink" title="11.2.2. Behavior When a Failure Occurs"></a>11.2.2. Behavior When a Failure Occurs</h4><p><strong>故障发生时的行为</strong></p>
+<p>在本小节中，我将描述当同步备用服务器发生故障时主服务器的行为，以及如何处理这种情况。</p>
+<p>即使同步备用服务器发生故障，无法再返回ACK响应，主服务器也将无限期地等待响应。这意味着正在运行的事务无法提交，<br>后续的查询处理也无法开始。换句话说，主服务器的所有操作实际上都停止了。<br>（流复制不支持在超时后自动恢复为异步模式的功能。）</p>
+<p>避免这种情况有两种方法。一种是使用多个备用服务器来提高系统可用性。<br>另一种是手动将同步模式切换为异步模式，执行以下步骤：</p>
+<p>(1) 将参数synchronous_standby_names设置为空字符串。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs shell">synchronous_standby_names = &#x27;&#x27;<br></code></pre></td></tr></table></figure>
+
+<p>(2) 使用reload选项执行pg_ctl命令。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs shell"><span class="hljs-meta prompt_">postgres&gt; </span><span class="language-bash">pg_ctl -D <span class="hljs-variable">$PGDATA</span> reload</span><br></code></pre></td></tr></table></figure>
+
+<p>此过程不影响已连接的客户端。主服务器将继续处理事务，客户端与其各自后端进程之间的所有会话都将保持不变。</p>
+<h3 id="11-3-Managing-Multiple-Standby-Servers"><a href="#11-3-Managing-Multiple-Standby-Servers" class="headerlink" title="11.3. Managing Multiple-Standby Servers"></a><a name="multi-standy"></a>11.3. Managing Multiple-Standby Servers</h3><p>在这一部分，我将描述在多备用服务器环境下流复制的工作方式。</p>
+<h4 id="11-3-1-sync-priority-and-sync-state"><a href="#11-3-1-sync-priority-and-sync-state" class="headerlink" title="11.3.1. sync_priority and sync_state"></a>11.3.1. sync_priority and sync_state</h4><p>主服务器为所有受管的备用服务器分配sync_priority和sync_state属性，并根据各自的值对待每个备用服务器。<br>（即使主服务器仅管理一个备用服务器，也会分配这些值；这在前一节中未提及。）</p>
+<p>sync_priority属性表示备用服务器在同步模式下的优先级。值越低，优先级越高。特殊值0表示备用服务器处于“异步模式”。<br>备用服务器的优先级按照在主服务器配置参数synchronous_standby_names中列出的顺序分配。<br>例如，在以下配置中，standby1和standby2的优先级分别是1和2。</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs sql">synchronous_standby_names <span class="hljs-operator">=</span> <span class="hljs-string">&#x27;standby1, standby2&#x27;</span><br></code></pre></td></tr></table></figure>
+
+<p>（未在此参数中列出的备用服务器处于异步模式，并且优先级为0。）</p>
+<p>sync_state是备用服务器的状态。此属性指示备用服务器的状态，可以是以下值之一：</p>
+<ol>
+<li>sync：备用服务器处于同步模式，并且是当前正在工作的最高优先级备用服务器。  </li>
+<li>potential：备用服务器处于同步模式，但属于较低优先级，当前正在工作。如果当前的同步备用服务器发生故障，<br>该备用服务器将被提升为sync状态。  </li>
+<li>async：备用服务器处于异步模式。（它永远不会处于sync或potential状态。）</li>
+</ol>
+<p>可以通过执行以下查询来显示备用服务器的优先级和状态：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs sql">testdb<span class="hljs-operator">=</span># <span class="hljs-keyword">SELECT</span> application_name <span class="hljs-keyword">AS</span> host, <br>         sync_priority, sync_state <span class="hljs-keyword">FROM</span> pg_stat_replication;<br>   host   <span class="hljs-operator">|</span> sync_priority <span class="hljs-operator">|</span> sync_state<br><span class="hljs-comment">----------+---------------+------------</span><br> standby1 <span class="hljs-operator">|</span>             <span class="hljs-number">1</span> <span class="hljs-operator">|</span> sync<br> standby2 <span class="hljs-operator">|</span>             <span class="hljs-number">2</span> <span class="hljs-operator">|</span> potential<br>(<span class="hljs-number">2</span> <span class="hljs-keyword">rows</span>)<br></code></pre></td></tr></table></figure>
+<h4 id="11-3-2-How-the-Primary-Manages-Multiple-standbys"><a href="#11-3-2-How-the-Primary-Manages-Multiple-standbys" class="headerlink" title="11.3.2. How the Primary Manages Multiple-standbys"></a>11.3.2. How the Primary Manages Multiple-standbys</h4><p>主服务器仅等待来自同步备用服务器的ACK响应。换句话说，主服务器仅确认同步备用服务器对WAL数据的写入和刷新。<br>因此，流复制确保只有同步备用服务器与主服务器保持一致和同步的状态。</p>
+<p>图11.3展示了一个场景，其中潜在备用服务器的ACK响应比主备用服务器的响应更早返回。在这种情况下，主服务器不会完成<br>当前事务的提交操作，而是继续等待主备用服务器的ACK响应。一旦收到主备用服务器的响应，后端进程就会释放闩锁并完成<br>当前事务的处理。</p>
+<p><img src="/2025/05/05/DB/PostgreSQL%E6%8C%87%E5%8D%97/%E5%86%85%E5%B9%95%E6%8E%A2%E7%B4%A2_new_release/ch11/ch11/img_2.png" srcset="/img/loading.gif" lazyload alt="img_2.png"></p>
+<pre><code class="hljs">备用服务器standby1和standby2的sync_state分别是sync和potential。
+(1) 即使已经收到了潜在备用服务器的ACK响应，主服务器的后端进程仍会继续等待来自同步备用服务器的ACK响应。  
+(2) 收到来自同步备用服务器的ACK响应后，主服务器的后端进程释放闩锁并完成当前事务的处理。  
+</code></pre>
+<p>相反的情况是（即，主备用服务器的ACK响应比潜在备用服务器的响应更早返回），<br>主服务器会立即完成当前事务的提交操作，而不确保潜在备用服务器是否已经写入并刷新了WAL数据。</p>
+<h4 id="11-3-3-Behavior-When-a-Failure-Occurs"><a href="#11-3-3-Behavior-When-a-Failure-Occurs" class="headerlink" title="11.3.3. Behavior When a Failure Occurs"></a>11.3.3. Behavior When a Failure Occurs</h4><p>再次来看，当备用服务器发生故障时，主服务器是如何表现的。</p>
+<p>如果潜在备用服务器或异步备用服务器发生故障，主服务器将终止与该故障备用服务器相连的walsender进程，<br>并继续所有处理。换句话说，主服务器上的事务处理不会受到这两种类型备用服务器故障的影响。</p>
+<p>如果同步备用服务器发生故障，主服务器同样会终止与该故障备用服务器相连的walsender进程，并用优先级最高的潜在<br>备用服务器替换掉故障的同步备用服务器。见图11.4。与上述故障情况不同的是，从故障发生到同步备用服务器被替换期间，<br>主服务器上的查询处理将会暂停。（因此，备用服务器的故障检测是提高复制系统可用性的非常重要的功能。<br>故障检测将在下一节中描述。）</p>
+<p><img src="/2025/05/05/DB/PostgreSQL%E6%8C%87%E5%8D%97/%E5%86%85%E5%B9%95%E6%8E%A2%E7%B4%A2_new_release/ch11/ch11/img_3.png" srcset="/img/loading.gif" lazyload alt="img_3.png"></p>
+<p>无论如何，如果有一个或多个备用服务器以同步模式运行，<br>主服务器始终只会保持一个同步备用服务器，并且这个同步备用服务器始终与主服务器保持一致和同步的状态。</p>
+<h3 id="11-4-Detecting-Failures-of-Standby-Servers"><a href="#11-4-Detecting-Failures-of-Standby-Servers" class="headerlink" title="11.4. Detecting Failures of Standby Servers"></a><a name="fail-standy-server"></a>11.4. Detecting Failures of Standby Servers</h3><p><strong>备用服务器故障检测</strong></p>
+<p>流复制使用两种常见的故障检测程序，这些程序不需要任何特殊硬件。</p>
+<p>(1) 备用服务器进程故障检测：</p>
+<p>当检测到walsender与walreceiver之间的连接断开时，主服务器会立即判定备用服务器或walreceiver进程存在故障。<br>当底层网络功能因无法写入或读取walreceiver的套接字接口而返回错误时，主服务器也会立即判断其发生故障。  </p>
+<p>(2) 硬件及网络故障检测：</p>
+<p>如果在参数wal_sender_timeout（默认为60秒）设定的时间内walreceiver没有返回任何信息，<br>主服务器将判定备用服务器存在故障。<br>与上述故障不同，即使备用服务器由于某些故障（例如，备用服务器硬件故障、网络故障等）无法发送任何响应，<br>主服务器确认备用服务器故障也需要一定时间，最长可达wal_sender_timeout秒。  </p>
+<p>根据故障类型，通常故障发生后可以立即被检测到。然而，故障发生与其被检测到之间可能存在时间延迟。<br>特别是，如果同步备用服务器发生后一种类型的故障，即使可能存在多个工作正常的潜在备用服务器，<br>主服务器上的所有事务处理也会在检测到备用服务器故障之前暂停。</p>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/BOOK/" class="category-chain-item">BOOK</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/BOOK/PostgreSQL%E6%8C%87%E5%8D%97%EF%BC%9A%E5%86%85%E5%B9%95%E6%8E%A2%E7%B4%A2/" class="category-chain-item">PostgreSQL指南：内幕探索</a>
+  
+  
+
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/book/" class="print-no-link">#book</a>
+      
+        <a href="/tags/database/" class="print-no-link">#database</a>
+      
+        <a href="/tags/transactions/" class="print-no-link">#transactions</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>ch11. Streaming Replication</div>
+      <div>http://smilemzy.com/2025/05/05/DB/PostgreSQL指南/内幕探索_new_release/ch11/ch11/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Smile</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2025年5月5日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-cc-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2025/05/05/DB/PostgreSQL%E6%8C%87%E5%8D%97/%E5%86%85%E5%B9%95%E6%8E%A2%E7%B4%A2_new_release/ch2/ch2/" title="ch2. 进程和内存架构">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">ch2. 进程和内存架构</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2025/05/05/DB/PostgreSQL%E6%8C%87%E5%8D%97/%E5%86%85%E5%B9%95%E6%8E%A2%E7%B4%A2_new_release/ch10/ch10/" title="ch10. Base Backup and Point-In-Time Recovery (PITR)">
+                        <span class="hidden-mobile">ch10. Base Backup and Point-In-Time Recovery (PITR)</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/5.0.0/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>
