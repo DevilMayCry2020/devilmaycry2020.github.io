@@ -1,0 +1,789 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Smile">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="ch12. Relation-Level Locks本章主要内容如下：    Chapter Contents    12.1 About Locks   12.2 Heavyweight Locks   12.3 Locks on Transaction IDs   12.4 Relation-Level Locks   12.5 Wait Queue   12.1 About Locks锁用于">
+<meta property="og:type" content="article">
+<meta property="og:title" content="ch12. Relation-Level Locks">
+<meta property="og:url" content="http://smilemzy.com/2025/05/05/DB/PostgreSQL14_Internals/ch12/ch12/index.html">
+<meta property="og:site_name" content="Smile">
+<meta property="og:description" content="ch12. Relation-Level Locks本章主要内容如下：    Chapter Contents    12.1 About Locks   12.2 Heavyweight Locks   12.3 Locks on Transaction IDs   12.4 Relation-Level Locks   12.5 Wait Queue   12.1 About Locks锁用于">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://smilemzy.com/2025/05/05/DB/PostgreSQL14_Internals/ch12/ch12/img.png">
+<meta property="og:image" content="http://smilemzy.com/2025/05/05/DB/PostgreSQL14_Internals/ch12/ch12/img_1.png">
+<meta property="og:image" content="http://smilemzy.com/2025/05/05/DB/PostgreSQL14_Internals/ch12/ch12/img_2.png">
+<meta property="og:image" content="http://smilemzy.com/2025/05/05/DB/PostgreSQL14_Internals/ch12/ch12/img_3.png">
+<meta property="og:image" content="http://smilemzy.com/2025/05/05/DB/PostgreSQL14_Internals/ch12/ch12/img_4.png">
+<meta property="article:published_time" content="2025-05-05T12:24:14.476Z">
+<meta property="article:modified_time" content="2025-05-05T12:57:34.910Z">
+<meta property="article:author" content="Smile">
+<meta property="article:tag" content="book">
+<meta property="article:tag" content="database">
+<meta property="article:tag" content="transactions">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="http://smilemzy.com/2025/05/05/DB/PostgreSQL14_Internals/ch12/ch12/img.png">
+  
+  
+  
+  <title>ch12. Relation-Level Locks - Smile</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/c/font_1749284_5i9bdhy70f8.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/c/font_1736178_k526ubmyhba.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"smilemzy.com","root":"/","version":"1.9.8","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false},"umami":{"src":null,"website_id":null,"domains":null,"start_time":"2024-01-01T00:00:00.000Z","token":null,"api_server":null}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+
+  
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Smile</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/" target="_self">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/" target="_self">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/" target="_self">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/" target="_self">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/" target="_self">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="ch12. Relation-Level Locks"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2025-05-05 20:24" pubdate>
+          2025年5月5日 晚上
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          3.4k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          29 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">ch12. Relation-Level Locks</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <h2 id="ch12-Relation-Level-Locks"><a href="#ch12-Relation-Level-Locks" class="headerlink" title="ch12. Relation-Level Locks"></a>ch12. Relation-Level Locks</h2><p>本章主要内容如下：</p>
+<table>
+<thead>
+<tr>
+<th>Chapter Contents</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><a href="#About-Locks">12.1 About Locks</a></td>
+</tr>
+<tr>
+<td><a href="#Heavyweight-Locks">12.2 Heavyweight Locks</a></td>
+</tr>
+<tr>
+<td><a href="#xid-lock">12.3 Locks on Transaction IDs</a></td>
+</tr>
+<tr>
+<td><a href="#relation-lock">12.4 Relation-Level Locks</a></td>
+</tr>
+<tr>
+<td><a href="#wait-queue">12.5 Wait Queue</a></td>
+</tr>
+</tbody></table>
+<h3 id="12-1-About-Locks"><a href="#12-1-About-Locks" class="headerlink" title="12.1 About Locks"></a><a name="About-Locks"></a>12.1 About Locks</h3><p>锁用于控制对共享资源的并发访问。</p>
+<p>并发访问意味着多个进程试图同时获取同一个资源。这些进程是并行执行 (如果硬件允许) 还是以分时模式顺序执行并没有区别。如果没有并发访问<br>，那么就没有必要获取锁 (例如，共享缓冲区缓存需要加锁，而本地缓存则可以不需要锁)。</p>
+<p>在访问资源之前，进程必须获取该资源上的锁；操作完成之后，必须释放这个锁，以使资源可以供其他进程使用。如果锁由数据库系统管理，那么会自动维护操作的既定顺序；<br>如果锁由应用程序控制，则必须由应用程序本身来执行协议。</p>
+<p>在底层，锁只是一个定义了锁状态 (是否已获得) 的共享内存块；它还可以提供一些附加信息，比如进程号或获取时间。</p>
+<blockquote>
+<p>正如你所猜测的，共享内存段本身就是一种资源。对此类资源的并发访问由操作系统提供的同步原语 (例如信号量或互斥锁) 控制。<br>它们用于保证访问共享资源的代码严格连续执行。在最底层，这些原语基于原子 CPU 指令 (比如 test-and-set 或 compare-and-swap)。</p>
+</blockquote>
+<p>一般来说，我们可以使用锁来保护任何资源，只要它可以被明确识别并分配一个特定的锁地址。</p>
+<p>例如，我们可以锁定一个数据库对象，比如表 (通过系统表中的 oid 标识)、数据页 (通过文件名和该文件中的位置标识)、行版本 (通过页面和该页面内的偏移量标识)。我们还可以锁定内存结构，例如哈希表或者缓冲区 (通过分配的 ID 标识)。 我们甚至可以锁定没有物理表示的抽象资源。</p>
+<p>但锁并不总是能够立即获取到：资源可能已经被其他人锁定。然后，进程要么加入队列 (如果这种特定的锁类型允许的话)，要么稍后再试。无论哪种方式，它都必须等待锁被释放。</p>
+<p>我需要特别指出两个可能极大影响锁定效率的因素。</p>
+<ol>
+<li>粒度，或者说锁的”粒度大小”。在资源形成层次结构时很重要。</li>
+</ol>
+<p>例如，表由页面组成，而页面又由元组组成。所有这些对象都可以被锁保护。表级锁是粗粒度的；即使进程需要访问不同的页面或者行，<br>表级锁也禁止并发访问。行级锁是细粒度的，所以没有这个缺点；但是，锁的数量会增加。为了避免锁相关的元数据占用过多的内存，PostgreSQL<br>可以使用多种方式，其中之一是锁升级：如果细粒度锁的数量超过了一定阈值，那么它们会被更粗粒度的单个锁替换。</p>
+<ol start="2">
+<li><p>锁模式集合。锁可获取的模式集合。  </p>
+<p>通常，仅应用两种模式。独占模式与所有其它模式不兼容，包括它自己。共享模式允许资源同时被多个进程锁定。<br>共享模式可用于读取，而独占模式用于写入。通常来说，也可能有其他模式。模式的名称并不重要，重要的是它们的兼容性矩阵。</p>
+</li>
+</ol>
+<p>更细的粒度和对多个兼容模式的支持为并发执行提供了更多基础。</p>
+<p>所有锁都可以根据其持续时间进行分类。</p>
+<p>长锁可能会获取很长时间 (在大多数情况下，直到事务结束)；它们通常用于保护诸如关系和行之类的资源。这些锁通常由 PostgreSQL 自动管理，但用户仍然可以控制这个过程。</p>
+<p>长锁提供了多种模式，可以对数据进行各种并发操作。它们通常具有广泛的基础设施 (包括等待队列、死锁检测和监测机制等功能)，其维护成本无论如何都远低于对受保护数据的操作。</p>
+<p>短锁的持续时间只有几分之一秒，而且很少会持续超过几个 CPU 指令；它们通常用于保护共享内存中的数据结构。PostgreSQL 以完全自动化的方式管理这些锁。</p>
+<p>短锁通常只提供非常少的模式和基本的基础设施，可能根本没有监测机制。</p>
+<p>PostgreSQL 支持各种类型的锁 1。重锁 (在关系和其他对象上获取) 和行级锁被视为长锁。短锁包括内存结构上的各种锁。此外，还有一组独特的谓词锁，尽管其名字如此，实际上它根本不是锁。</p>
+<h3 id="12-2-Heavyweight-Locks"><a href="#12-2-Heavyweight-Locks" class="headerlink" title="12.2 Heavyweight Locks"></a><a name="Heavyweight-Locks"></a>12.2 Heavyweight Locks</h3><p>重锁是长锁。在对象级别获取，主要用于表，但也可应用于其他类型的对象。重锁通常用于保护对象不受并发更新的影响，或在重组期间禁止使用它们，但重锁也可以解决其他需求。这种模糊的定义是有意为之：这种类型的锁可以用于各种目的。唯一的共同点是它们的内部结构。</p>
+<p>除非另有明确说明，否则术语 lock 通常意味着重锁。</p>
+<p>重锁位于服务器的共享内存中 2，可以在 pg_locks 视图中查看。重锁的总数受到 max_locks_per_transaction 乘以 max_connections 的限制。</p>
+<p>所有事务都使用一个共同的锁池，因此一个事务可以获取超过 max_locks_per_transaction 数量的锁。真正重要的是，系统中锁的总数不能超过所定义的限制。由于在服务器启动时会初始化锁池，因此更改这两个参数中的任何一个都需要重启服务器。</p>
+<p>如果某个资源已经以一个不兼容的模式锁定，那么试图获取另一个锁的进程会加入到队列之中。等待的进程不会浪费 CPU 时间：它们会进入休眠状态，直到锁被释放并且操作系统将它们唤醒。</p>
+<p>如果第一个事务无法继续其操作，直到它获得另一个事务锁定的资源，而后者又需要第一个事务锁定的资源，那么这两个事务可能会陷入死锁。这种情况相对简单；死锁也可能涉及两个以上的事务。由于死锁会导致无限期等待，PostgreSQL 会自动检测它们，并中止其中一个受影响的事务，以确保可以继续正常操作。</p>
+<p>不同类型的重锁有不同的用途，保护不同的资源，并支持不同的模式，因此我们将分别考虑它们。</p>
+<p>以下列表提供了在 pg_locks 视图的 locktype 列中出现的锁类型名称：</p>
+<p>   transactionid 和 virtualxid — 事务 ID 上的锁</p>
+<p>   relation — 关系级锁</p>
+<p>   tuple — 元组上获取的锁</p>
+<p>   object — 非关系对象上的锁</p>
+<p>   extend — 表扩展锁</p>
+<p>   page — 某些索引类型使用的页级锁</p>
+<p>   advisory — 咨询锁</p>
+<p>几乎所有重锁都是根据需要自动获取的，并在相应事务完成时自动释放。但也有一些例外：例如，可以显式设置关系级锁，而咨询锁始终由用户管理。</p>
+<h3 id="12-3-Locks-on-Transaction-IDs"><a href="#12-3-Locks-on-Transaction-IDs" class="headerlink" title="12.3 Locks on Transaction IDs"></a><a name="xid-lock"></a>12.3 Locks on Transaction IDs</h3><p>每个事务总是持有其自身事务 ID 的独占锁 (无论是虚拟的还是实际的，如果有的话)。</p>
+<p>PostgreSQL 为此提供了两种锁定模式，独占模式和共享模式。其兼容矩阵非常简单：共享模式与自身兼容，而独占模式不能与任何模式组合。</p>
+<p><img src="/2025/05/05/DB/PostgreSQL14_Internals/ch12/ch12/img.png" srcset="/img/loading.gif" lazyload alt="img.png"></p>
+<p>为了跟踪特定事务的完成情况，进程可以在任何模式下请求对该事务 ID 的锁。由于事务本身已经持有对其自身 ID 的独占锁，因此无法获取其他的锁。请求该锁的进程会加入队列并进入休眠状态。一旦事务完成，锁就会被释放，排队的进程就会被唤醒。显然，由于相应的资源已经不存在了，它不会设法获取锁，但这个锁本来就不是真正需要的。</p>
+<p>在一个单独的会话中启动一个事务，并获取该后端进程的进程 ID (PID)：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs shell">=&gt; BEGIN;<br>=&gt; SELECT pg_backend_pid();<br>pg_backend_pid<br>−−−−−−−−−−−−−−−−<br>28991<br>(1 row)<br><br></code></pre></td></tr></table></figure>
+
+<p>已启动的事务持有对其自身虚拟 ID 的独占锁：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs shell">=&gt; SELECT locktype, virtualxid, mode, granted<br>FROM pg_locks WHERE pid = 28991;<br>locktype | virtualxid | mode | granted<br>−−−−−−−−−−−−+−−−−−−−−−−−−+−−−−−−−−−−−−−−−+−−−−−−−−−<br>virtualxid | 5/2 | ExclusiveLock | t<br>(1 row)<br><br></code></pre></td></tr></table></figure>
+
+<p>此处的 locktype 是锁的类型，virtualxid 是虚拟事务ID (用于标识锁定的资源)，mode 是锁定模式 (在本例中为独占模式)。granted 标志显示是否已获取到请求的锁。</p>
+<p>一旦事务获取了真实 ID，相应的锁就会被添加到这个列表中：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs shell">=&gt; SELECT pg_current_xact_id();<br>pg_current_xact_id<br>−−−−−−−−−−−−−−−−−−−−<br>134971<br>(1 row)<br></code></pre></td></tr></table></figure>
+
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs shell">=&gt; SELECT locktype, virtualxid, transactionid AS xid, mode, granted<br>FROM pg_locks WHERE pid = 28991;<br>locktype | virtualxid | xid | mode | granted<br>−−−−−−−−−−−−−−−+−−−−−−−−−−−−+−−−−−−−−+−−−−−−−−−−−−−−−+−−−−−−−−−<br>virtualxid | 5/2 | | ExclusiveLock | t<br>transactionid | | 134971 | ExclusiveLock | t<br>(2 rows)<br><br></code></pre></td></tr></table></figure>
+
+<p>现在，这个事务对其两个 ID 均持有独占锁。</p>
+<h3 id="12-4-Relation-Level-Locks"><a href="#12-4-Relation-Level-Locks" class="headerlink" title="12.4 Relation-Level Locks"></a><a name="relation-lock"></a>12.4 Relation-Level Locks</h3><p>PostgreSQL 提供了多达八种模式的锁，用于锁定关系 (表、索引或任何其他对象) 3。这样的多样性可以使一个关系上允许并发运行的命令数量最大化。</p>
+<p>下面显示了兼容性矩阵，并扩展了需要相应锁模式的命令示例。没有必要记住所有这些模式或试图找出它们命名背后的逻辑，但是翻阅这些数据，得出一些一般性的结论，并在需要时参考这个表肯定是有用的。</p>
+<p><img src="/2025/05/05/DB/PostgreSQL14_Internals/ch12/ch12/img_1.png" srcset="/img/loading.gif" lazyload alt="img_1.png"></p>
+<p>Access Share 是最弱的模式；它可以与其他任何模式一起使用，除了 Access Exclusive，后者与所有模式都不兼容。因此，SELECT 命令几乎可以与任何操作并行执行，但不允许删除正在查询的表。</p>
+<p>前四种模式允许并发堆修改，而其他四种模式不允许。例如， CREATE INDEX 命令使用 Share 模式，此模式与自身兼容 (因此你可以在一个表上同时创建多个索引)，并且与只读操作使用的模式相兼容。因此，SELECT 命令可以与索引创建并行运行，而 INSERT，UPDATE 和 DELETE 命令将被阻塞。</p>
+<p>相反，未完成的修改堆数据的事务会阻塞 CREATE INDEX 命令。作为替代，你可以使用 CREATE INEDX CONCURRENTLY，它使用了更弱的 Share Update Exclusive 模式：创建索引需要的时间更长 (此操作甚至可能失败)，但作为回报，它允许并发数据修改。</p>
+<p>ALTER TABLE 命令有多种模式，它们使用不同的锁模式 (Share Update Exclusive、Share Row Exclusive、Access Exclusives)。所有模式都在文档中有所描述 4。</p>
+<p>本书这一部分的例子仍然基于 accounts 表：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs shell">=&gt; TRUNCATE accounts;<br>=&gt; INSERT INTO accounts(id, client, amount)<br>VALUES<br>(1, &#x27;alice&#x27;, 100.00),<br>(2, &#x27;bob&#x27;, 200.00),<br>(3, &#x27;charlie&#x27;, 300.00);<br><br></code></pre></td></tr></table></figure>
+
+<p>我们需要多次访问 pg_locks 表，所以让我们创建一个视图以在单独的列中显示所有 ID，从而使输出更加简洁：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-operator">=</span><span class="hljs-operator">&gt;</span> <span class="hljs-keyword">CREATE</span> <span class="hljs-keyword">VIEW</span> locks <span class="hljs-keyword">AS</span><br><span class="hljs-keyword">SELECT</span> pid,<br>locktype,<br><span class="hljs-keyword">CASE</span> locktype<br><span class="hljs-keyword">WHEN</span> <span class="hljs-string">&#x27;relation&#x27;</span> <span class="hljs-keyword">THEN</span> relation::regclass::text<br><span class="hljs-keyword">WHEN</span> <span class="hljs-string">&#x27;transactionid&#x27;</span> <span class="hljs-keyword">THEN</span> transactionid::text<br><span class="hljs-keyword">WHEN</span> <span class="hljs-string">&#x27;virtualxid&#x27;</span> <span class="hljs-keyword">THEN</span> virtualxid<br><span class="hljs-keyword">END</span> <span class="hljs-keyword">AS</span> lockid,<br>mode,<br>granted<br><span class="hljs-keyword">FROM</span> pg_locks<br><span class="hljs-keyword">ORDER</span> <span class="hljs-keyword">BY</span> <span class="hljs-number">1</span>, <span class="hljs-number">2</span>, <span class="hljs-number">3</span>;<br></code></pre></td></tr></table></figure>
+
+<p>第一个会话中仍在运行的事务将更新一行。这个操作会锁定 accounts 表及其所有索引，从而在 Row Exclusive 模式下获得了两个新的 relation 类型的锁：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-operator">=</span><span class="hljs-operator">&gt;</span> <span class="hljs-keyword">UPDATE</span> accounts <span class="hljs-keyword">SET</span> amount <span class="hljs-operator">=</span> amount <span class="hljs-operator">+</span> <span class="hljs-number">100.00</span> <span class="hljs-keyword">WHERE</span> id <span class="hljs-operator">=</span> <span class="hljs-number">1</span>;<br></code></pre></td></tr></table></figure>
+
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs shell">=&gt; SELECT locktype, lockid, mode, granted<br>FROM locks WHERE pid = 28991;<br>locktype | lockid | mode | granted<br>−−−−−−−−−−−−−−−+−−−−−−−−−−−−−−−+−−−−−−−−−−−−−−−−−−+−−−−−−−−−<br>relation | accounts | RowExclusiveLock | t<br>relation | accounts_pkey | RowExclusiveLock | t<br>transactionid | 134971 | ExclusiveLock | t<br>virtualxid | 5/2 | ExclusiveLock | t<br>(4 rows)<br></code></pre></td></tr></table></figure>
+<h3 id="12-5-Wait-Queue"><a href="#12-5-Wait-Queue" class="headerlink" title="12.5 Wait Queue"></a><a name="wait-queue"></a>12.5 Wait Queue</h3><p>重锁形成了一个公平的等待队列 5。如果进程试图获取与当前锁或与队列中其他进程已请求的锁不兼容的锁，那么这个进程就会加入队列。</p>
+<p>当第一个会话在进行更新时，让我们在另一个会话中尝试在此表上创建索引：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs shell">=&gt; SELECT pg_backend_pid();<br>pg_backend_pid<br>−−−−−−−−−−−−−−−−<br>29470<br>(1 row)<br>=&gt; CREATE INDEX ON accounts(client);<br><br></code></pre></td></tr></table></figure>
+
+<p>命令会夯住，等待资源的释放。事务试图在共享模式下锁定此表，但无法做到：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs shell">=&gt; SELECT locktype, lockid, mode, granted<br>FROM locks WHERE pid = 29470;<br>locktype | lockid | mode | granted<br>−−−−−−−−−−−−+−−−−−−−−−−+−−−−−−−−−−−−−−−+−−−−−−−−−<br>relation | accounts | ShareLock | f<br>virtualxid | 6/3 | ExclusiveLock | t<br>(2 rows)<br><br></code></pre></td></tr></table></figure>
+
+<p>现在于第三个会话中执行 VACUUM FULL 命令。它也会加入队列，因为它需要获取 Access Exclusive 模式的锁，这与其他所有模式冲突：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs shell">=&gt; SELECT pg_backend_pid();<br>pg_backend_pid<br>−−−−−−−−−−−−−−−−<br>29673<br>(1 row)<br>=&gt; VACUUM FULL accounts;<br><br></code></pre></td></tr></table></figure>
+
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs shell">=&gt; SELECT locktype, lockid, mode, granted<br>FROM locks WHERE pid = 29673;<br>locktype | lockid | mode | granted<br>−−−−−−−−−−−−−−−+−−−−−−−−−−+−−−−−−−−−−−−−−−−−−−−−+−−−−−−−−−<br>relation | accounts | AccessExclusiveLock | f<br>transactionid | 134975 | ExclusiveLock | t<br>virtualxid | 7/4 | ExclusiveLock | t<br>(3 rows)<br><br></code></pre></td></tr></table></figure>
+
+<p>所有后续的竞争者现在都必须加入队列，无论其锁定模式如何。即使是简单的 SELECT 查询也会老老实实排在 VACUUM FULL 之后，尽管它与执行更新的第一个会话所持有的 Row Exclusive 兼容。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs shell">=&gt; SELECT pg_backend_pid();<br>pg_backend_pid<br>−−−−−−−−−−−−−−−−<br>29883<br>(1 row)<br>=&gt; SELECT * FROM accounts;<br></code></pre></td></tr></table></figure>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs shell">=&gt; SELECT locktype, lockid, mode, granted<br>FROM locks WHERE pid = 29883;<br>locktype | lockid | mode | granted<br>−−−−−−−−−−−−+−−−−−−−−−−+−−−−−−−−−−−−−−−−−+−−−−−−−−−<br>relation | accounts | AccessShareLock | f<br>virtualxid | 8/3 | ExclusiveLock | t<br>(2 rows)<br><br></code></pre></td></tr></table></figure>
+
+<p><img src="/2025/05/05/DB/PostgreSQL14_Internals/ch12/ch12/img_2.png" srcset="/img/loading.gif" lazyload alt="img_2.png"></p>
+<p>pg_blocking_pids 函数提供了所有等待的高层次概览情况。它显示了排在指定进程前面的所有进程 ID，这些进程已经持有或想要获取一个不兼容的锁：</p>
+<p><img src="/2025/05/05/DB/PostgreSQL14_Internals/ch12/ch12/img_3.png" srcset="/img/loading.gif" lazyload alt="img_3.png"></p>
+<p>要获得更多详细信息，你可以查看 pg_locks 表中提供的信息 6。</p>
+<p>一旦事务完成 (无论提交还是中止)，该事务所有的锁都会被释放 7。队列中第一个进程获得所请求的锁并被唤醒。</p>
+<p>此处，提交第一个会话中的事务会使所有排队的进程顺序执行：</p>
+<p><img src="/2025/05/05/DB/PostgreSQL14_Internals/ch12/ch12/img_4.png" srcset="/img/loading.gif" lazyload alt="img_4.png"></p>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/BOOK/" class="category-chain-item">BOOK</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/BOOK/PostgreSQL14-Internals/" class="category-chain-item">PostgreSQL14_Internals</a>
+  
+  
+
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/book/" class="print-no-link">#book</a>
+      
+        <a href="/tags/database/" class="print-no-link">#database</a>
+      
+        <a href="/tags/transactions/" class="print-no-link">#transactions</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>ch12. Relation-Level Locks</div>
+      <div>http://smilemzy.com/2025/05/05/DB/PostgreSQL14_Internals/ch12/ch12/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Smile</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2025年5月5日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-cc-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2025/05/05/DB/PostgreSQL14_Internals/ch13/ch13/" title="ch13. Row-Level Locks">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">ch13. Row-Level Locks</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2025/05/05/DB/PostgreSQL14_Internals/ch11/ch11/" title="ch11. WAL Modes">
+                        <span class="hidden-mobile">ch11. WAL Modes</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/5.0.0/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

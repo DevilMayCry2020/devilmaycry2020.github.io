@@ -1,0 +1,846 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Smile">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="ch10. Base Backup and Point-In-Time Recovery (PITR)在线数据库备份大致可以分为两类：逻辑备份和物理备份。虽然两者都有优缺点，但逻辑备份的一个缺点是可能非常耗时。特别是，对大型数据库进行备份可能需要很长时间，而从备份数据中恢复数据库所需的时间甚至更长。相比之下，物理备份的创建和恢复速度要快得多，这使得它们在实际系统中成为一个非常重要且有用的特性。 在">
+<meta property="og:type" content="article">
+<meta property="og:title" content="ch10. Base Backup and Point-In-Time Recovery (PITR)">
+<meta property="og:url" content="http://smilemzy.com/2025/05/05/DB/PostgreSQL%E6%8C%87%E5%8D%97/%E5%86%85%E5%B9%95%E6%8E%A2%E7%B4%A2_new_release/ch10/ch10/index.html">
+<meta property="og:site_name" content="Smile">
+<meta property="og:description" content="ch10. Base Backup and Point-In-Time Recovery (PITR)在线数据库备份大致可以分为两类：逻辑备份和物理备份。虽然两者都有优缺点，但逻辑备份的一个缺点是可能非常耗时。特别是，对大型数据库进行备份可能需要很长时间，而从备份数据中恢复数据库所需的时间甚至更长。相比之下，物理备份的创建和恢复速度要快得多，这使得它们在实际系统中成为一个非常重要且有用的特性。 在">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://smilemzy.com/2025/05/05/DB/PostgreSQL%E6%8C%87%E5%8D%97/%E5%86%85%E5%B9%95%E6%8E%A2%E7%B4%A2_new_release/ch10/ch10/img.png">
+<meta property="og:image" content="http://smilemzy.com/2025/05/05/DB/PostgreSQL%E6%8C%87%E5%8D%97/%E5%86%85%E5%B9%95%E6%8E%A2%E7%B4%A2_new_release/ch10/ch10/img_1.png">
+<meta property="og:image" content="http://smilemzy.com/2025/05/05/DB/PostgreSQL%E6%8C%87%E5%8D%97/%E5%86%85%E5%B9%95%E6%8E%A2%E7%B4%A2_new_release/ch10/ch10/img_2.png">
+<meta property="og:image" content="http://smilemzy.com/2025/05/05/DB/PostgreSQL%E6%8C%87%E5%8D%97/%E5%86%85%E5%B9%95%E6%8E%A2%E7%B4%A2_new_release/ch10/ch10/img_3.png">
+<meta property="og:image" content="http://smilemzy.com/2025/05/05/DB/PostgreSQL%E6%8C%87%E5%8D%97/%E5%86%85%E5%B9%95%E6%8E%A2%E7%B4%A2_new_release/ch10/ch10/img_4.png">
+<meta property="article:published_time" content="2025-05-05T12:24:15.062Z">
+<meta property="article:modified_time" content="2025-05-05T12:51:29.937Z">
+<meta property="article:author" content="Smile">
+<meta property="article:tag" content="book">
+<meta property="article:tag" content="database">
+<meta property="article:tag" content="transactions">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="http://smilemzy.com/2025/05/05/DB/PostgreSQL%E6%8C%87%E5%8D%97/%E5%86%85%E5%B9%95%E6%8E%A2%E7%B4%A2_new_release/ch10/ch10/img.png">
+  
+  
+  
+  <title>ch10. Base Backup and Point-In-Time Recovery (PITR) - Smile</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/c/font_1749284_5i9bdhy70f8.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/c/font_1736178_k526ubmyhba.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"smilemzy.com","root":"/","version":"1.9.8","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false},"umami":{"src":null,"website_id":null,"domains":null,"start_time":"2024-01-01T00:00:00.000Z","token":null,"api_server":null}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+
+  
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Smile</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/" target="_self">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/" target="_self">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/" target="_self">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/" target="_self">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/" target="_self">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="ch10. Base Backup and Point-In-Time Recovery (PITR)"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2025-05-05 20:24" pubdate>
+          2025年5月5日 晚上
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          3.9k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          33 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">ch10. Base Backup and Point-In-Time Recovery (PITR)</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <h2 id="ch10-Base-Backup-and-Point-In-Time-Recovery-PITR"><a href="#ch10-Base-Backup-and-Point-In-Time-Recovery-PITR" class="headerlink" title="ch10. Base Backup and Point-In-Time Recovery (PITR)"></a>ch10. Base Backup and Point-In-Time Recovery (PITR)</h2><p>在线数据库备份大致可以分为两类：逻辑备份和物理备份。虽然两者都有优缺点，但逻辑备份的一个缺点是可能非常耗时。<br>特别是，对大型数据库进行备份可能需要很长时间，而从备份数据中恢复数据库所需的时间甚至更长。<br>相比之下，物理备份的创建和恢复速度要快得多，这使得它们在实际系统中成为一个非常重要且有用的特性。</p>
+<p>在PostgreSQL中，从8.0版本开始就支持在线物理全备份。对运行中的整个数据库集群（即物理备份数据）的快照称为<br>基础备份（base backup）。</p>
+<p>时间点恢复（Point-in-Time Recovery，简称PITR）也是从8.0版本开始提供的功能，它<br>利用基础备份和连续归档功能创建的归档日志，可以将数据库集群恢复到任意时间点。<br>例如，如果您犯了一个重大错误（比如截断了所有表），可以使用此功能将数据库恢复到错误发生前的状态。</p>
+<p>本章将涵盖以下主题：</p>
+<p>什么是基础备份？<br>PITR是如何工作的？<br>什么是时间线ID（timelineId）？<br>什么是时间线历史文件（timeline history file）？  </p>
+<table>
+<thead>
+<tr>
+<th>Chapter Contents</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><a href="#10-Overview">10.1. Base Backup</a></td>
+</tr>
+<tr>
+<td><a href="#pitr">10.2. How Point-in-Time Recovery Works</a></td>
+</tr>
+<tr>
+<td><a href="#timeline">10.3. timelineId and Timeline History File</a></td>
+</tr>
+<tr>
+<td><a href="#pitr-timeline">10.4. Point-in-Time Recovery with Timeline History File</a></td>
+</tr>
+</tbody></table>
+<blockquote>
+<p>info</p>
+<p>在7.4或更早的版本中，PostgreSQL仅支持逻辑备份（包括逻辑完全备份、逻辑部分备份以及数据导出）。</p>
+</blockquote>
+<h3 id="10-1-Base-Backup"><a href="#10-1-Base-Backup" class="headerlink" title="10.1. Base Backup"></a><a name="10-Overview"></a>10.1. Base Backup</h3><p>首先，使用低级命令制作基础备份的标准流程如下：</p>
+<ol>
+<li>执行pg_backup_start命令（在14或更早版本中为pg_start_backup）。  </li>
+<li>使用您选择的归档命令对数据库集群进行快照。  </li>
+<li>执行pg_backup_stop命令（在14或更早版本中为pg_stop_backup）。</li>
+</ol>
+<p>这个简单的流程对于数据库管理员来说很容易使用，因为它除了像cp命令或类似归档工具这样的通用工具外，<br>不需要其他特殊工具。此外，此流程不需要表锁，因此所有用户都可以继续发出查询，而不受备份操作的影响。<br>这相比于其他主要的开源关系型数据库管理系统是一个显著的优势。</p>
+<p>制作基础备份的一个更简单的方法是使用pg_basebackup实用程序，它内部会发出上述的低级命令。</p>
+<p><img src="/2025/05/05/DB/PostgreSQL%E6%8C%87%E5%8D%97/%E5%86%85%E5%B9%95%E6%8E%A2%E7%B4%A2_new_release/ch10/ch10/img.png" srcset="/img/loading.gif" lazyload alt="img.png"></p>
+<blockquote>
+<p>info</p>
+<p>The pg_backup_start and pg_backup_stop commands are defined<br>here: src&#x2F;backend&#x2F;access&#x2F;transam&#x2F;xlogfuncs.c.</p>
+</blockquote>
+<p>由于pg_backup_start和pg_backup_stop命令对于理解PITR至关重要，我们将在接下来的小节中更详细地探讨它们。</p>
+<h4 id="10-1-1-pg-backup-start-Ver-14-or-earlier-pg-start-backup"><a href="#10-1-1-pg-backup-start-Ver-14-or-earlier-pg-start-backup" class="headerlink" title="10.1.1. pg_backup_start (Ver.14 or earlier, pg_start_backup)"></a>10.1.1. pg_backup_start (Ver.14 or earlier, pg_start_backup)</h4><p>pg_backup_start命令用于准备制作基础备份。</p>
+<p>如第9.8节所述，恢复过程从一个REDO点开始，因此pg_backup_start命令在开始制作基础备份时必须执行检查点以显式<br>创建一个REDO点。此外，其检查点的位置必须保存在一个不同于pg_control的文件中，因为在备份过程中可能会多次执行<br>常规检查点。因此，pg_backup_start执行以下四个操作：</p>
+<ol>
+<li>强制数据库进入全页写入模式。  </li>
+<li>切换到当前WAL段文件（8.4或更高版本）。  </li>
+<li>执行检查点。  </li>
+<li>创建backup_label文件 – 此文件在基础目录的顶层创建，包含有关基础备份本身的基本信息，如该检查点的检查点位置。</li>
+</ol>
+<p>第三和第四项操作是该命令的核心。第一和第二项操作是为了更可靠地恢复数据库集群而执行的。</p>
+<p>backup_label文件包含以下六项内容（在11或更高版本中为七项）：</p>
+<ol>
+<li>CHECKPOINT LOCATION – 这是记录由该命令创建的检查点的LSN位置。  </li>
+<li>START WAL LOCATION – 这在PITR中不使用，但用于第11章中描述的流复制。<br>之所以命名为‘START WAL LOCATION’，是因为复制模式下的备用服务器仅在初始启动时读取此值一次。  </li>
+<li>BACKUP METHOD – 这是制作此基础备份所使用的方法。  </li>
+<li>BACKUP FROM – 这表明备份是从主服务器还是备用服务器上获取的。  </li>
+<li>START TIME – 这是执行pg_backup_start命令时的时间戳。  </li>
+<li>LABEL – 这是在pg_backup_start命令中指定的标签。  </li>
+<li>START TIMELINE – 这是备份开始时的时间线。这是为了进行健康检查，并在11版本中引入。</li>
+</ol>
+<blockquote>
+<p>backup_label</p>
+<p>下面是使用 pg_basebackup 制作的第 16 版 backup_label 文件的实际示例：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs shell"><span class="hljs-meta prompt_">postgres&gt; </span><span class="language-bash"><span class="hljs-built_in">cat</span> /usr/local/pgsql/data/backup_label</span><br>START WAL LOCATION: 0/1B000028 (file 00000001000000000000001B)<br>CHECKPOINT LOCATION: 0/1B000060<br>BACKUP METHOD: streamed<br>BACKUP FROM: primary<br>START TIME: 2024-1-1 11:45:19 GMT<br>LABEL: pg_basebackup base backup<br>START TIMELINE: 1<br></code></pre></td></tr></table></figure></blockquote>
+<p>正如您可能想象的那样，当您使用此基础备份恢复数据库时，PostgreSQL会从backup_label文件中获取“CHECKPOINT LOCATION”，<br>以便从相应的归档日志中读取检查点记录。然后，它从记录中获取REDO点并开始恢复过程。（具体细节将在下一部分描述。）</p>
+<h4 id="10-1-2-pg-backup-stop-Ver-14-or-earlier-pg-stop-backup"><a href="#10-1-2-pg-backup-stop-Ver-14-or-earlier-pg-stop-backup" class="headerlink" title="10.1.2. pg_backup_stop (Ver.14 or earlier, pg_stop_backup)"></a>10.1.2. pg_backup_stop (Ver.14 or earlier, pg_stop_backup)</h4><p>pg_backup_stop命令执行以下五项操作来完成备份：</p>
+<ol>
+<li>如果pg_backup_start命令已强制更改，则重置为非全页写入模式。  </li>
+<li>写入备份结束的XLOG记录。  </li>
+<li>切换WAL段文件。  </li>
+<li>创建备份历史文件。此文件包含backup_label文件的内容以及执行pg_backup_stop命令的时间戳。  </li>
+<li>删除backup_label文件。从基础备份恢复时需要backup_label文件，但在复制后，原始数据库集群中就不需要了。</li>
+</ol>
+<blockquote>
+<p>info</p>
+<p>备份历史文件的命名方法如下所示：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs shell">&#123;WAL segment&#125;.&#123;offset value at the time the base backup was started&#125;.backup<br></code></pre></td></tr></table></figure></blockquote>
+<h3 id="10-2-How-Point-in-Time-Recovery-Works"><a href="#10-2-How-Point-in-Time-Recovery-Works" class="headerlink" title="10.2. How Point-in-Time Recovery Works"></a><a name="pitr"></a>10.2. How Point-in-Time Recovery Works</h3><p>图10.2展示了PITR（Point-in-Time Recovery）的基本概念。在PITR模式下，PostgreSQL会将归档日志中<br>的WAL（Write-Ahead Log）数据重放到底层备份上，从pg_backup_start创建的REDO点开始，一直重放到您希望恢复的<br>那个时间点。在PostgreSQL中，需要恢复到的时间点被称为恢复目标（recovery target）。</p>
+<p><img src="/2025/05/05/DB/PostgreSQL%E6%8C%87%E5%8D%97/%E5%86%85%E5%B9%95%E6%8E%A2%E7%B4%A2_new_release/ch10/ch10/img_1.png" srcset="/img/loading.gif" lazyload alt="img_1.png"></p>
+<p>以下是PITR工作原理的描述。</p>
+<p>假设你在2024年1月1日格林威治标准时间12:05时犯了一个错误。你需要删除数据库集群，并使用在此之前制作的<br>基础备份来恢复一个新的。</p>
+<p>首先，你需要设置restore_command参数的命令，同时在postgresql.conf文件中<br>（对于版本11或更早的，则是在recovery.conf文件中）设置recovery_target_time参数的时间为<br>你犯错的那个时间点（本例中为12:05 GMT）。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs shell"><span class="hljs-meta prompt_"># </span><span class="language-bash">Place archive logs under /mnt/server/archivedir directory.</span><br>restore_command = &#x27;cp /mnt/server/archivedir/%f %p&#x27;<br>recovery_target_time = &quot;2024-1-1 12:05 GMT&quot;<br></code></pre></td></tr></table></figure>
+
+<p>当PostgreSQL启动时，如果在数据库集群中检测到backup_label文件和recovery.signal文件<br>（对于版本11或更早的，则是检测recovery.conf文件），它就会进入PITR（Point-in-Time Recovery）模式。</p>
+<blockquote>
+<p>recovery.conf &#x2F; recovery.signal</p>
+<p>从版本12开始，recovery.conf文件已被废弃，所有与恢复相关的参数都应该写入postgresql.conf中。<br>详细情况请参阅官方文档。</p>
+<p>在版本12或之后，当您使用basebackup恢复服务器时，需要在数据库集群目录下创建一个空文件<br>名为recovery.signal。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs shell"><span class="hljs-meta prompt_">$ </span><span class="language-bash"><span class="hljs-built_in">touch</span> /usr/local/pgsql/data/recovery.signal</span><br></code></pre></td></tr></table></figure></blockquote>
+<p>PITR（时间点恢复）过程几乎与第9.8节中描述的正常恢复过程相同。唯一不同之处在于：</p>
+<ol>
+<li><p>WAL段&#x2F;归档日志从何处读取？</p>
+<p> 正常恢复模式 - 从基本目录下的pg_wal子目录（在9.6或更早版本中为pg_xlog子目录）读取。<br> PITR模式 - 从’archive_command’参数设置的归档目录中读取。  </p>
+</li>
+<li><p>检查点位置从何处读取？</p>
+<p> 正常恢复模式 - 从pg_control文件中读取。<br> PITR模式 - 从backup_label文件中读取。</p>
+</li>
+</ol>
+<p>PITR过程的大致步骤如下：</p>
+<ol>
+<li>PostgreSQL使用内部函数read_backup_label()<br>从backup_label文件中读取“CHECKPOINT LOCATION”的值，以找到重做点（REDO点）。  </li>
+<li>PostgreSQL从postgresql.conf文件中读取一些参数的值（在11或更早版本中，是从recovery.conf文件），<br>比如’restore_command’和’recovery_target_time’。  </li>
+<li>PostgreSQL开始从REDO点重放WAL数据，这个点可以通过“CHECKPOINT LOCATION”的值轻松获得。<br>WAL数据通过执行’restore_command’参数中所写的命令，从归档区复制到临时区域的日志文件中读取。<br>（临时区域中的复制日志文件在使用后会被删除。）<br>在这个例子中，因为’recovery_target_time’参数被设置为时间戳‘2024-1-1 12:05:00’，<br>所以PostgreSQL会从REDO点开始读取并重放WAL数据，直到该时间戳前的位置。<br>如果没有在postgresql.conf（11或更早版本中为recovery.conf）中设置恢复目标，<br>PostgreSQL将一直重放到归档日志的末尾。</li>
+<li>当恢复过程完成后，在pg_wal子目录下（在9.6或更早版本中为pg_xlog子目录）会创建一个时间线历史文件，<br>如‘00000002.history’。 如果启用了归档日志功能，同名文件也会在归档目录中创建。<br>该文件的内容和作用将在后续部分进行说明。</li>
+</ol>
+<p>提交和中止操作的记录都包含了各自操作完成的<br>时间戳（这两种操作的XLOG数据部分分别在xl_xact_commit和xl_xact_abort中有定义）。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-keyword">typedef</span> <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">xl_xact_commit</span></span><br><span class="hljs-class">&#123;</span><br>        TimestampTz	xact_time;          <span class="hljs-comment">/* time of commit */</span><br>        uint32          xinfo;              <span class="hljs-comment">/* info flags */</span><br>        <span class="hljs-type">int</span>            	nrels;              <span class="hljs-comment">/* number of RelFileNodes */</span><br>        <span class="hljs-type">int</span>            	nsubxacts;          <span class="hljs-comment">/* number of subtransaction XIDs */</span><br>        <span class="hljs-type">int</span>            	nmsgs;              <span class="hljs-comment">/* number of shared inval msgs */</span><br>        Oid            	dbId;               <span class="hljs-comment">/* MyDatabaseId */</span><br>        Oid            	tsId;               <span class="hljs-comment">/* MyDatabaseTableSpace */</span><br>        <span class="hljs-comment">/* Array of RelFileNode(s) to drop at commit */</span><br>        RelFileNode     xnodes[<span class="hljs-number">1</span>];          <span class="hljs-comment">/* VARIABLE LENGTH ARRAY */</span><br>        <span class="hljs-comment">/* ARRAY OF COMMITTED SUBTRANSACTION XIDs FOLLOWS */</span><br>        <span class="hljs-comment">/* ARRAY OF SHARED INVALIDATION MESSAGES FOLLOWS */</span><br>&#125; xl_xact_commit;<br></code></pre></td></tr></table></figure>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-keyword">typedef</span> <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">xl_xact_abort</span></span><br><span class="hljs-class">&#123;</span><br>        TimestampTz     xact_time;          <span class="hljs-comment">/* time of abort */</span><br>        <span class="hljs-type">int</span>            	nrels;              <span class="hljs-comment">/* number of RelFileNodes */</span><br>        <span class="hljs-type">int</span>             nsubxacts;          <span class="hljs-comment">/* number of subtransaction XIDs */</span><br>        <span class="hljs-comment">/* Array of RelFileNode(s) to drop at abort */</span><br>        RelFileNode     xnodes[<span class="hljs-number">1</span>];          <span class="hljs-comment">/* VARIABLE LENGTH ARRAY */</span><br>        <span class="hljs-comment">/* ARRAY OF ABORTED SUBTRANSACTION XIDs FOLLOWS */</span><br>&#125; xl_xact_abort;<br></code></pre></td></tr></table></figure>
+
+<p>因此，如果在’recovery_target_time’参数中设置了目标时间，PostgreSQL每当重放提交或中止操作的XLOG记录时，<br>就可以选择是否继续恢复。当重放每种操作的XLOG记录时，PostgreSQL会比较目标时间和记录中写入的每个时间戳，<br>如果时间戳超过了目标时间，PITR过程就会结束。</p>
+<blockquote>
+<p>info<br>The function read_backup_label() is defined in src&#x2F;backend&#x2F;access&#x2F;transam&#x2F;xlog.c.</p>
+<p>The structure xl_xact_commit and xl_xact_abort are defined in src&#x2F;include&#x2F;access&#x2F;xact.h.</p>
+</blockquote>
+<blockquote>
+<p>为什么我们可以使用普通的归档工具制作基础备份呢？</p>
+<p>恢复过程是一个将数据库集群恢复到一致状态的过程，即使该集群本身不一致。PITR正是基于恢复过程的，<br>因此即便基础备份是一组不一致的文件，它也能够恢复数据库集群。这就是为什么我们能够使用普通的归档工具<br>而无需文件系统快照功能或特殊工具的原因。</p>
+</blockquote>
+<h3 id="10-3-timelineId-and-Timeline-History-File"><a href="#10-3-timelineId-and-Timeline-History-File" class="headerlink" title="10.3. timelineId and Timeline History File"></a><a name="timeline"></a>10.3. timelineId and Timeline History File</h3><p>在PostgreSQL中，时间线（timeline）用于区分原始数据库集群和恢复的集群，是PITR（Point-in-Time Recovery）<br>中的一个核心概念。<br>本节将描述与时间线相关的两个要素：timelineId和时间线历史文件。</p>
+<h4 id="10-3-1-timelineId"><a href="#10-3-1-timelineId" class="headerlink" title="10.3.1. timelineId"></a>10.3.1. timelineId</h4><p>每个时间线都有一个相应的时间线ID（timelineId），这是一个从1开始的4字节无符号整数。</p>
+<p>每个数据库集群都会被分配一个独立的时间线ID。由initdb工具创建的原始数据库集群的时间线ID为1。<br>每当数据库集群进行恢复时，时间线ID就会增加1。例如，在前一节的例子中，从原始集群恢复出的集群的时间线ID就是2。</p>
+<p>图10.3从时间线ID的角度展示了PITR过程。</p>
+<p>首先，我们移除当前的数据库集群，并恢复之前制作的基础备份，以便回到恢复的起始点。这种情况在图中以红色箭头曲线表示。</p>
+<p>接下来，我们启动PostgreSQL服务器，它会重放归档日志中的WAL数据，从pg_backup_start创建的REDO点开始，<br>沿着初始时间线（时间线ID 1）直至恢复目标。这种情况在图中以蓝色箭头直线表示。<br>然后，为恢复后的数据库集群分配一个新的时间线ID 2，PostgreSQL在此新时间线上运行。</p>
+<p><img src="/2025/05/05/DB/PostgreSQL%E6%8C%87%E5%8D%97/%E5%86%85%E5%B9%95%E6%8E%A2%E7%B4%A2_new_release/ch10/ch10/img_2.png" srcset="/img/loading.gif" lazyload alt="img_2.png"></p>
+<p>正如第9章中简要提到的，WAL段文件名的前8位数字等于创建该段的数据库集群的时间线ID。<br>当时间线ID发生变化时，WAL段文件名也会相应改变。</p>
+<p>聚焦于WAL段文件，恢复过程可以这样描述：假设我们使用两个归档日志<br>‘000000010000000000000009’和‘00000001000000000000000A’来恢复数据库集群。<br>新恢复的数据库集群会被分配时间线ID 2，PostgreSQL将从‘00000002000000000000000A’开始创建新的WAL段文件。</p>
+<p>图10.4展示了这种情况。</p>
+<p><img src="/2025/05/05/DB/PostgreSQL%E6%8C%87%E5%8D%97/%E5%86%85%E5%B9%95%E6%8E%A2%E7%B4%A2_new_release/ch10/ch10/img_3.png" srcset="/img/loading.gif" lazyload alt="img_3.png"></p>
+<h4 id="10-3-2-Timeline-History-File"><a href="#10-3-2-Timeline-History-File" class="headerlink" title="10.3.2. Timeline History File"></a>10.3.2. Timeline History File</h4><p>当PITR过程完成后，会在归档目录下以及pg_xlog子目录（在版本10或之后为pg_wal子目录）<br>中创建一个名为类似‘00000002.history’的时间线历史文件。这个文件记录了它从哪个时间线分支出来以及分支发生的时间。</p>
+<p>The naming rule of this file is shown below:</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs shell">&quot;8-digit new timelineId&quot;.history<br></code></pre></td></tr></table></figure>
+
+<p>时间线历史文件至少包含一行，每行由以下三项组成：</p>
+<ol>
+<li>timelineId：用于恢复的归档日志的时间线ID。  </li>
+<li>LSN：WAL段切换发生的LSN（日志序列号）位置。  </li>
+<li>reason：关于为什么时间线发生变更的人可读解释。</li>
+</ol>
+<p>A specific example is shown below:</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs shell"><span class="hljs-meta prompt_">postgres&gt; </span><span class="language-bash"><span class="hljs-built_in">cat</span> /home/postgres/archivelogs/00000002.<span class="hljs-built_in">history</span></span><br>1	  0/A000198	before 2024-1-1 12:05:00.861324+00<br></code></pre></td></tr></table></figure>
+
+<p>Meaning as follows:</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs shell">该数据库集群（时间线ID = 2）是基于时间线ID为1的基础备份构建的，<br>并且通过重放归档日志直到位置‘0/A000198’，恢复到了‘2024-1-1 12:05:00.861324+00’这一时刻之前的状态。<br></code></pre></td></tr></table></figure>
+
+<p>这样一来，每个时间线历史文件都向我们完整叙述了单个恢复数据库集群的历史。此外，它也在PITR过程本身中发挥作用。<br>具体细节将在下一节中解释。</p>
+<blockquote>
+<p>info</p>
+<p>版本9.3对时间线历史文件格式进行了更改。以下是9.3版本或之后以及更早版本的格式示例，但未详细展开。</p>
+<p>Later version 9.3:</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs shell">timelineId	LSN	&quot;reason&quot;<br></code></pre></td></tr></table></figure>
+
+<p>Until version 9.2:</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs shell">timelineId	WAL_segment	&quot;reason&quot;<br></code></pre></td></tr></table></figure></blockquote>
+<h3 id="10-4-Point-in-Time-Recovery-with-Timeline-History-File"><a href="#10-4-Point-in-Time-Recovery-with-Timeline-History-File" class="headerlink" title="10.4. Point-in-Time Recovery with Timeline History File"></a><a name="pitr-timeline"></a>10.4. Point-in-Time Recovery with Timeline History File</h3><p>时间线历史文件在第二次及以后的PITR过程中扮演着重要角色。通过尝试再次恢复，我们将探讨它是如何被使用的。</p>
+<p>再次假设，在时间线ID为2的已恢复数据库集群中，您在‘12:15:00’时犯了一个错误。在这种情况下，为了恢复数据库集群，<br>您应该创建一个如下所示的新recovery.conf文件：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs shell">restore_command = &#x27;cp /mnt/server/archivedir/%f %p&#x27;<br>recovery_target_time = &quot;2024-1-1 12:15:00 GMT&quot;<br>recovery_target_timeline = 2<br></code></pre></td></tr></table></figure>
+
+<p>参数recovery_target_time设置的是您犯新错误的时间点，而参数recovery_target_timeline设置为2，<br>目的是沿着时间线ID 2进行恢复。</p>
+<p>重启PostgreSQL服务器并进入PITR模式，以便沿着时间线ID 2恢复目标时间点的数据库。参见图10.5。</p>
+<p><img src="/2025/05/05/DB/PostgreSQL%E6%8C%87%E5%8D%97/%E5%86%85%E5%B9%95%E6%8E%A2%E7%B4%A2_new_release/ch10/ch10/img_4.png" srcset="/img/loading.gif" lazyload alt="img_4.png"></p>
+<ol>
+<li><p>PostgreSQL 从 backup_label 文件中读取 CHECKPOINT LOCATION 的值。  </p>
+</li>
+<li><p>从 recovery.conf 文件中读取某些参数的值；在这个例子中，<br>包括 restore_command、recovery_target_time 和 recovery_target_timeline。  </p>
+</li>
+<li><p>根据 recovery_target_timeline 参数的值，PostgreSQL 读取对应的时间线历史文件 ‘00000002.history’。  </p>
+</li>
+<li><p>PostgreSQL 按照以下步骤重放WAL数据：</p>
+<p> 从 REDO 点到 0&#x2F;A000198 LSN（该LSN记录在‘00000002.history’文件中），PostgreSQL读取<br>并重放时间线ID为1的适当归档日志中的WAL数据。<br> 从 0&#x2F;A000198 LSN之后到时间戳 2024-1-1 12:15:00 之前，PostgreSQL读取并<br>重放时间线ID为2的适当归档日志中的WAL数据。     </p>
+</li>
+<li><p>当恢复过程完成时，当前的时间线ID将进阶到3，并在 pg_wal 子目录（如果是9.6或更早版本则是 pg_xlog 目录）<br>以及归档目录中创建一个新的命名为 ‘00000003.history’ 的时间线历史文件。</p>
+</li>
+</ol>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs shell"><span class="hljs-meta prompt_">postgres&gt; </span><span class="language-bash"><span class="hljs-built_in">cat</span> /home/postgres/archivelogs/00000003.<span class="hljs-built_in">history</span></span><br>1         0/A000198     before 2024-1-1 12:05:00.861324+00<br><br>2         0/B000078     before 2024-1-1 12:15:00.927133+00<br></code></pre></td></tr></table></figure>
+
+<p>当您进行多次PITR操作时，应该明确设置时间线ID以使用相应的时间线历史文件。</p>
+<p>这样一来，时间线历史文件不仅是数据库集群的历史记录日志，也是PITR过程中恢复指令的重要参考文档。</p>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/BOOK/" class="category-chain-item">BOOK</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/BOOK/PostgreSQL%E6%8C%87%E5%8D%97%EF%BC%9A%E5%86%85%E5%B9%95%E6%8E%A2%E7%B4%A2/" class="category-chain-item">PostgreSQL指南：内幕探索</a>
+  
+  
+
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/book/" class="print-no-link">#book</a>
+      
+        <a href="/tags/database/" class="print-no-link">#database</a>
+      
+        <a href="/tags/transactions/" class="print-no-link">#transactions</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>ch10. Base Backup and Point-In-Time Recovery (PITR)</div>
+      <div>http://smilemzy.com/2025/05/05/DB/PostgreSQL指南/内幕探索_new_release/ch10/ch10/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Smile</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2025年5月5日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-cc-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2025/05/05/DB/PostgreSQL%E6%8C%87%E5%8D%97/%E5%86%85%E5%B9%95%E6%8E%A2%E7%B4%A2_new_release/ch11/ch11/" title="ch11. Streaming Replication">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">ch11. Streaming Replication</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2025/05/05/DB/PostgreSQL%E6%8C%87%E5%8D%97/%E5%86%85%E5%B9%95%E6%8E%A2%E7%B4%A2_new_release/ch1/ch1/" title="ch1. 数据库集簇、数据库和数据表">
+                        <span class="hidden-mobile">ch1. 数据库集簇、数据库和数据表</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/5.0.0/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

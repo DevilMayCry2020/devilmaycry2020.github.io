@@ -1,0 +1,768 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Smile">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="介绍MySQL Locking Functions https:&#x2F;&#x2F;dev.mysql.com&#x2F;doc&#x2F;refman&#x2F;8.0&#x2F;en&#x2F;locking-functions.html 目录内容本章包含以下内容：    Chapter Contents    1. GET_LOCK   2. IS_FREE_LOCK   3. IS_USED_LOCK   4. RELEASE_ALL_LOCKS   5">
+<meta property="og:type" content="article">
+<meta property="og:title" content="MySQL Locking Functions">
+<meta property="og:url" content="http://smilemzy.com/2025/05/05/note/db/mysql/LockFunc/README/index.html">
+<meta property="og:site_name" content="Smile">
+<meta property="og:description" content="介绍MySQL Locking Functions https:&#x2F;&#x2F;dev.mysql.com&#x2F;doc&#x2F;refman&#x2F;8.0&#x2F;en&#x2F;locking-functions.html 目录内容本章包含以下内容：    Chapter Contents    1. GET_LOCK   2. IS_FREE_LOCK   3. IS_USED_LOCK   4. RELEASE_ALL_LOCKS   5">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2025-05-05T12:24:13.799Z">
+<meta property="article:modified_time" content="2025-05-05T12:37:23.410Z">
+<meta property="article:author" content="Smile">
+<meta property="article:tag" content="database">
+<meta property="article:tag" content="MySQL">
+<meta name="twitter:card" content="summary_large_image">
+  
+  
+  
+  <title>MySQL Locking Functions - Smile</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/c/font_1749284_5i9bdhy70f8.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/c/font_1736178_k526ubmyhba.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"smilemzy.com","root":"/","version":"1.9.8","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false},"umami":{"src":null,"website_id":null,"domains":null,"start_time":"2024-01-01T00:00:00.000Z","token":null,"api_server":null}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+
+  
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Smile</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/" target="_self">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/" target="_self">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/" target="_self">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/" target="_self">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/" target="_self">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="MySQL Locking Functions"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2025-05-05 20:24" pubdate>
+          2025年5月5日 晚上
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          2k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          17 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">MySQL Locking Functions</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <h2 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h2><p>MySQL Locking Functions</p>
+<p><a target="_blank" rel="noopener" href="https://dev.mysql.com/doc/refman/8.0/en/locking-functions.html">https://dev.mysql.com/doc/refman/8.0/en/locking-functions.html</a></p>
+<h2 id="目录"><a href="#目录" class="headerlink" title="目录"></a>目录</h2><h2 id="内容"><a href="#内容" class="headerlink" title="内容"></a>内容</h2><p>本章包含以下内容：</p>
+<table>
+<thead>
+<tr>
+<th>Chapter Contents</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><a href="#ch1">1. GET_LOCK</a></td>
+</tr>
+<tr>
+<td><a href="#ch2">2. IS_FREE_LOCK</a></td>
+</tr>
+<tr>
+<td><a href="#ch3">3. IS_USED_LOCK</a></td>
+</tr>
+<tr>
+<td><a href="#ch4">4. RELEASE_ALL_LOCKS</a></td>
+</tr>
+<tr>
+<td><a href="#ch5">5. RELEASE_LOCK</a></td>
+</tr>
+<tr>
+<td><a href="#ch6">6. 总结</a></td>
+</tr>
+</tbody></table>
+<p>以下是内容简介：</p>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>GET_LOCK()</td>
+<td>Get a named lock</td>
+</tr>
+<tr>
+<td>IS_FREE_LOCK()</td>
+<td>Whether the named lock is free</td>
+</tr>
+<tr>
+<td>IS_USED_LOCK()</td>
+<td>Whether the named lock is in use; return connection identifier if true</td>
+</tr>
+<tr>
+<td>RELEASE_ALL_LOCKS()</td>
+<td>Release all current named locks</td>
+</tr>
+<tr>
+<td>RELEASE_LOCK()</td>
+<td>Release the named lock</td>
+</tr>
+</tbody></table>
+<h3 id="1-GET-LOCK-str-timeout"><a href="#1-GET-LOCK-str-timeout" class="headerlink" title="1. GET_LOCK(str,timeout)"></a><a name="ch1"></a>1. GET_LOCK(str,timeout)</h3><p>尝试使用由字符串 str 给定的名称获取一个锁，并使用 timeout 秒作为超时时间。<br>负的超时值表示无限超时。该锁是exclusive模式。当被一个会话持有时，其他会话不能获得相同名称的锁。</p>
+<p>如果成功获得锁，则返回 1；如果尝试超时（例如，因为另一个客户端之前已锁定该名称），则返回 0；<br>如果发生错误（如内存不足或线程被 mysqladmin kill 命令终止），则返回 NULL。</p>
+<p>通过 GET_LOCK() 获得的锁可以通过执行 RELEASE_LOCK() 显式释放，<br>或者在会话结束时（无论是正常还是异常）隐式释放。<strong>通过 GET_LOCK() 获得的锁在事务提交或回滚时不会被释放。</strong></p>
+<p>GET_LOCK() 使用元数据锁定 (MDL) 子系统实现。可以同时获得多个锁，并且 GET_LOCK() 不会释放任何现有的锁。<br>例如，假设你执行以下语句：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-keyword">SELECT</span> GET_LOCK(<span class="hljs-string">&#x27;lock1&#x27;</span>,<span class="hljs-number">10</span>);<br><span class="hljs-keyword">SELECT</span> GET_LOCK(<span class="hljs-string">&#x27;lock2&#x27;</span>,<span class="hljs-number">10</span>);<br><span class="hljs-keyword">SELECT</span> RELEASE_LOCK(<span class="hljs-string">&#x27;lock2&#x27;</span>);<br><span class="hljs-keyword">SELECT</span> RELEASE_LOCK(<span class="hljs-string">&#x27;lock1&#x27;</span>);<br></code></pre></td></tr></table></figure>
+
+<p>第二个 GET_LOCK() 获得第二个锁，并且两个 RELEASE_LOCK() 调用都返回 1（成功）。</p>
+<p>甚至可以在给定会话中对同一名称多次获得锁。直到获取会话释放所有对该名称的锁，其他会话才能获得该名称的锁。</p>
+<p>通过 GET_LOCK() 获得的唯一命名锁会出现在 Performance Schema 的 metadata_locks 表中。<br>OBJECT_TYPE 列显示 USER LEVEL LOCK，OBJECT_NAME 列指示锁的名称。<br>如果有多个锁对同一名称进行获取，只有第一个锁为该名称注册一行到 metadata_locks 表中。<br>后续对该名称的锁会增加锁中的计数器，但不会获取额外的元数据锁。当最后一个锁实例在该名称上释放时，<br>该名称的 metadata_locks 行将被删除。</p>
+<p>能够获取多个锁意味着客户端之间可能存在死锁。当发生这种情况时，<br>服务器会选择一个调用者并以其 ER_USER_LOCK_DEADLOCK 错误终止其锁获取请求。此错误不会导致事务回滚。</p>
+<p>MySQL 对锁名称的最大长度强制限制为 64 个字符。</p>
+<p>GET_LOCK() 可用于实现应用程序锁或模拟记录锁。名称是在服务器范围内锁定的。如果在一个会话中已经锁定了某个名称，<br>GET_LOCK() 将阻止任何其他会话对该名称发出的锁请求。这使得同意某一给定锁名称的客户端可以使用该名称进行协作式<br>的建议锁定。但要注意的是，这也允许不属于合作客户端集的一个客户端无意或故意锁定一个名称，从而阻止任何合作<br>客户端锁定该名称。减少这种情况可能性的一种方法是使用特定于数据库或应用程序的锁名称。例如，使用<br>形式为 db_name.str 或 app_name.str 的锁名称。</p>
+<p>如果有多个客户端正在等待一个锁，他们获取锁的顺序是未定义的。应用程序不应假设客户端按照它们<br>发出锁请求的顺序获取锁。</p>
+<p>GET_LOCK() 在基于语句的复制中是不安全的。如果你在 binlog_format 设置为 STATEMENT 时使用此函数，则会记录一条警告。</p>
+<p>由于 GET_LOCK() 仅在单个 mysqld 上建立锁，因此不适合与 NDB Cluster 一起使用，因为没有方法在多个 MySQL 服务<br>器之间强制执行 SQL 锁。更多信息请参阅第 25.2.7.10 节，“与多个 NDB 集群节点相关的限制”。</p>
+<pre><code class="hljs">**注意**
+
+由于能够获取多个命名锁，单个语句可能会获得大量锁。例如：
+INSERT INTO ... SELECT GET_LOCK(t1.col_name) FROM t1;
+这类语句可能会产生某些不良影响。例如，如果语句在执行过程中部分失败并回滚，
+则到失败点为止已获得的锁仍然存在。如果意图是使插入的行与获得的锁之间存在对应关系，
+则该意图无法实现。此外，如果锁必须按照特定顺序授予，请注意结果集的顺序可能因优化器
+选择的执行计划而异。基于这些原因，最好将应用程序限制为每个语句只调用一次锁获取。
+</code></pre>
+<p>还提供了一个不同的锁定接口，作为插件服务或一组可加载函数。此接口提供了锁命名空间以及独立的读锁和写锁，<br>不同于 GET_LOCK() 及相关函数提供的接口。有关详细信息，请参阅第 7.6.9.1 节，“锁定服务”。<br>(<a target="_blank" rel="noopener" href="https://dev.mysql.com/doc/refman/8.0/en/locking-service.html">https://dev.mysql.com/doc/refman/8.0/en/locking-service.html</a>)</p>
+<h3 id="2-IS-FREE-LOCK-str"><a href="#2-IS-FREE-LOCK-str" class="headerlink" title="2. IS_FREE_LOCK(str)"></a><a name="ch2"></a>2. IS_FREE_LOCK(str)</h3><p>检查名为 str 的锁是否空闲可用（即未被锁定）。如果锁是空闲的（无人使用该锁），则返回 1；<br>如果锁正在使用中，则返回 0；如果发生错误（如参数不正确），则返回 NULL。</p>
+<p>此函数在基于语句的复制中是不安全的。如果你在 binlog_format 设置为 STATEMENT<br>时使用此函数，则会记录一条警告。</p>
+<h3 id="3-IS-USED-LOCK-str"><a href="#3-IS-USED-LOCK-str" class="headerlink" title="3. IS_USED_LOCK(str)"></a><a name="ch3"></a>3. IS_USED_LOCK(str)</h3><p>检查名为 str 的锁是否正在使用中（即已锁定）。如果是，则返回持有该锁的客户端会话的连接标识符。<br>否则，返回 NULL。</p>
+<p>此函数在基于语句的复制中是不安全的。如果你在 binlog_format<br>设置为 STATEMENT 时使用此函数，则会记录一条警告。</p>
+<h3 id="4-RELEASE-ALL-LOCKS"><a href="#4-RELEASE-ALL-LOCKS" class="headerlink" title="4. RELEASE_ALL_LOCKS()"></a><a name="ch4"></a>4. RELEASE_ALL_LOCKS()</h3><p>释放当前会话持有的所有命名锁，并返回释放的锁数量（如果没有锁，则返回 0）。</p>
+<p>此函数在基于语句的复制中是不安全的。如果你在 binlog_format 设置为 STATEMENT 时使用此函数，则会记录一条警告。</p>
+<h3 id="5-RELEASE-ALL-LOCKS"><a href="#5-RELEASE-ALL-LOCKS" class="headerlink" title="5. RELEASE_ALL_LOCKS()"></a><a name="ch5"></a>5. RELEASE_ALL_LOCKS()</h3><p>释放由字符串 str 命名的锁，该锁通过 GET_LOCK() 获得。如果成功释放锁，则返回 1；<br>如果该线程未建立此锁（在此情况下不会释放锁），则返回 0；如果指定名称的锁不存在，<br>则返回 NULL。如果从未通过 GET_LOCK() 获得该锁或之前已经释放，则该锁不存在。</p>
+<p>DO 语句与 RELEASE_LOCK() 结合使用非常方便。详见第 15.2.3 节，“DO 语句”。</p>
+<p>此函数在基于语句的复制中是不安全的。如果你在 binlog_format 设置为 STATEMENT 时使用此函数，则会记录一条警告。</p>
+<h3 id="6-总结"><a href="#6-总结" class="headerlink" title="6. 总结"></a><a name="ch6"></a>6. 总结</h3><pre><code class="hljs">注意事项
+
+锁的范围：GET_LOCK() 获取的锁是MySQL服务级别的，不是数据库或表级别的。这意味着它适用于跨数据库或表的操作保护。
+
+锁的释放：必须显式地使用 RELEASE_LOCK() 释放锁，或者当持有锁的会话结束时锁会被自动释放。其他线程无法释放。
+
+锁的性能：在高并发环境下，频繁地获取和释放锁可能会对性能产生影响。应该谨慎使用，并确保其必要性。
+
+锁的可见性：锁是MySQL服务级别的，不是跨服务器的。如果应用是分布式的，并且需要在不同的 MySQL服务实例间共享锁，那么可能需要实现自己的分布式锁机制。
+
+锁的名称：锁的名称在数据库实例中是唯一的，但是不同的 MySQL 实例之间锁的名称可以相同，它们互不干扰。
+</code></pre>
+<p>函数锁虽然对于流程处理非常严谨，但对MySQL数据库性能来说，非常不友好。这种服务级别锁，因为获取锁之后，<br>就是等待过程，所以消耗CPU资源。大量的函数锁，会占有CPU资源（信号量、自旋锁），<br>导致无法处理其他任务。实际生产中，不建议使用。</p>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/DB/" class="category-chain-item">DB</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/DB/MySQL/" class="category-chain-item">MySQL</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/DB/MySQL/lock/" class="category-chain-item">lock</a>
+  
+  
+
+  
+
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/database/" class="print-no-link">#database</a>
+      
+        <a href="/tags/MySQL/" class="print-no-link">#MySQL</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>MySQL Locking Functions</div>
+      <div>http://smilemzy.com/2025/05/05/note/db/mysql/LockFunc/README/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Smile</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2025年5月5日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-cc-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2025/05/05/note/db/Oracle/PLSQL/DBMS_LOCK/README/" title="oracle DBMS_LOCK">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">oracle DBMS_LOCK</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2025/05/05/%E6%B5%8B%E8%AF%95%E6%96%87%E7%AB%A0/" title="测试文章">
+                        <span class="hidden-mobile">测试文章</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/5.0.0/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

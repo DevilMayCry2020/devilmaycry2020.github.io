@@ -1,0 +1,1241 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Smile">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="介绍oracle DBMS_LOCK 包 目录内容DBMS_LOCK包为Oracle锁定管理服务提供了接口。 您可以请求特定模式的锁，为其分配一个唯一名称，使得该名称在同一实例或其他实例中的另一个进程中可被识别，进而改变锁的模式并释放该锁。 本章包含以下内容：    Chapter Contents    1. 概述   2. 安全模型   3. 常量   4. 规则与限制   5. 操作注意事项">
+<meta property="og:type" content="article">
+<meta property="og:title" content="oracle DBMS_LOCK">
+<meta property="og:url" content="http://smilemzy.com/2025/05/05/note/db/Oracle/PLSQL/DBMS_LOCK/README/index.html">
+<meta property="og:site_name" content="Smile">
+<meta property="og:description" content="介绍oracle DBMS_LOCK 包 目录内容DBMS_LOCK包为Oracle锁定管理服务提供了接口。 您可以请求特定模式的锁，为其分配一个唯一名称，使得该名称在同一实例或其他实例中的另一个进程中可被识别，进而改变锁的模式并释放该锁。 本章包含以下内容：    Chapter Contents    1. 概述   2. 安全模型   3. 常量   4. 规则与限制   5. 操作注意事项">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2025-05-05T12:24:13.807Z">
+<meta property="article:modified_time" content="2025-05-05T12:36:59.419Z">
+<meta property="article:author" content="Smile">
+<meta property="article:tag" content="database">
+<meta property="article:tag" content="oracle">
+<meta name="twitter:card" content="summary_large_image">
+  
+  
+  
+  <title>oracle DBMS_LOCK - Smile</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/c/font_1749284_5i9bdhy70f8.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/c/font_1736178_k526ubmyhba.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"smilemzy.com","root":"/","version":"1.9.8","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false},"umami":{"src":null,"website_id":null,"domains":null,"start_time":"2024-01-01T00:00:00.000Z","token":null,"api_server":null}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+
+  
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Smile</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/" target="_self">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/" target="_self">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/" target="_self">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/" target="_self">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/" target="_self">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="oracle DBMS_LOCK"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2025-05-05 20:24" pubdate>
+          2025年5月5日 晚上
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          3.8k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          32 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">oracle DBMS_LOCK</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <h2 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h2><p>oracle DBMS_LOCK 包</p>
+<h2 id="目录"><a href="#目录" class="headerlink" title="目录"></a>目录</h2><h2 id="内容"><a href="#内容" class="headerlink" title="内容"></a>内容</h2><p>DBMS_LOCK包为Oracle锁定管理服务提供了接口。</p>
+<p>您可以请求特定模式的锁，为其分配一个唯一名称，使得该名称在同一实例或其他实例中的另一个进程中可被识别，<br>进而改变锁的模式并释放该锁。</p>
+<p>本章包含以下内容：</p>
+<table>
+<thead>
+<tr>
+<th>Chapter Contents</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><a href="#Overview">1. 概述</a></td>
+</tr>
+<tr>
+<td><a href="#Security-Model">2. 安全模型</a></td>
+</tr>
+<tr>
+<td><a href="#Constants">3. 常量</a></td>
+</tr>
+<tr>
+<td><a href="#Rules-and-Limits">4. 规则与限制</a></td>
+</tr>
+<tr>
+<td><a href="#Operational-Notes">5. 操作注意事项</a></td>
+</tr>
+<tr>
+<td><a href="#Summary-of-DBMS_LOCK-Subprograms">6. DBMS_LOCK子程序摘要</a></td>
+</tr>
+<tr>
+<td><a href="#USE-of-DBMS_LOCK">7. 使用Oracle锁定管理服务（用户锁）</a></td>
+</tr>
+</tbody></table>
+<p>另请参阅：</p>
+<p>欲了解更多详细信息及如何使用DBMS_LOCK包的示例，请参考《Oracle数据库开发人员指南》。</p>
+<h3 id="1-DBMS-LOCK-概述"><a href="#1-DBMS-LOCK-概述" class="headerlink" title="1. DBMS_LOCK 概述"></a><a name="Overview"></a>1. DBMS_LOCK 概述</h3><p>DBMS_LOCK包有许多有益的用途，包括以下方面：</p>
+<ol>
+<li><p>为设备（如终端）提供独占访问权限。</p>
+</li>
+<li><p>在应用级别实施读取锁的强制执行。</p>
+</li>
+<li><p>检测锁何时释放及在应用程序后进行清理。</p>
+</li>
+<li><p>同步应用程序并强制执行顺序处理。</p>
+</li>
+</ol>
+<h3 id="2-DBMS-LOCK-安全模型"><a href="#2-DBMS-LOCK-安全模型" class="headerlink" title="2. DBMS_LOCK 安全模型"></a><a name="Security-Model"></a>2. DBMS_LOCK 安全模型</h3><p>可能存在操作系统特定的限制，影响可获得的最大锁总数。在使用锁或向其他用户开放此包时，必须考虑这一点。<br>可以考虑仅向特定用户或角色授予执行权限。</p>
+<p>一个更好的替代方案是创建一个封装包，限制所使用的锁的数量，并仅向特定用户授予执行权限。<br>封装包的一个示例在DBMS_LOCK.SQL包规范文件中有记录。这些锁在企业管理器监控中显示的缩写形式也在括号中进行了说明。</p>
+<h3 id="3-DBMS-LOCK-常量"><a href="#3-DBMS-LOCK-常量" class="headerlink" title="3. DBMS_LOCK 常量"></a><a name="Constants"></a>3. DBMS_LOCK 常量</h3><p>DBMS_LOCK包包含了一些常量，用于在指定参数值时使用。这些常量在下表中展示。</p>
+<p>Table 94-1 DBMS_LOCK Constants</p>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Alternate Name(s)</th>
+<th>Type</th>
+<th>Value</th>
+<th>OEM Abbreviation(OEM缩写)</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>NL_MODE</td>
+<td>NuL1</td>
+<td>INTEGER</td>
+<td>1</td>
+<td>-</td>
+<td>-</td>
+</tr>
+<tr>
+<td>SS_MODE</td>
+<td>Sub Shared</td>
+<td>INTEGER</td>
+<td>2</td>
+<td>ULRS</td>
+<td>这可用于聚合对象上，以指示正在对对象的各个子部分获取共享锁。</td>
+</tr>
+<tr>
+<td>SX_MODE</td>
+<td>1.Sub eXclusive  2.Row Exclusive Mode</td>
+<td>INTEGER</td>
+<td>3</td>
+<td>ULRX</td>
+<td>这可用于聚合对象，以表明正在对对象的各子部分获取排他锁。</td>
+</tr>
+<tr>
+<td>S_MODE</td>
+<td>1.Shared  2.Row Exclusive Mode 3. Intended Exclusive</td>
+<td>INTEGER</td>
+<td>4</td>
+<td>ULRSX</td>
+<td>-</td>
+</tr>
+<tr>
+<td>SSX_MODE</td>
+<td>1.Shared Sub eXclusive  2.Share Row Exclusive Mode</td>
+<td>INTEGER</td>
+<td>5</td>
+<td>-</td>
+<td>这表示整个聚合对象已被共享锁锁定，但该对象的部分子集可能还额外持有排他锁。</td>
+</tr>
+<tr>
+<td>X_MODE</td>
+<td>Exclusive</td>
+<td>INTEGER</td>
+<td>6</td>
+<td>ULX</td>
+<td>-</td>
+</tr>
+</tbody></table>
+<p>这些是不同的锁模式：</p>
+<ul>
+<li><strong>nl（NuLl）</strong>：无锁模式，</li>
+<li><strong>ss（Sub Shared）</strong>：子共享锁，</li>
+<li><strong>sx（Sub eXclusive）</strong>：子独占锁，</li>
+<li><strong>s（Shared）</strong>：共享锁，</li>
+<li><strong>ssx（Shared Sub eXclusive）</strong>：共享子独占锁，</li>
+<li><strong>x（eXclusive）</strong>：独占锁。</li>
+</ul>
+<h3 id="4-DBMS-LOCK-规则与限制"><a href="#4-DBMS-LOCK-规则与限制" class="headerlink" title="4. DBMS_LOCK 规则与限制"></a><a name="Rules-and-Limits"></a>4. DBMS_LOCK 规则与限制</h3><p>当另一个进程持有“held”时，尝试获取“get”的操作会成功或失败，这取决于持有的模式和get的类型。</p>
+<p>下表描述了这些结果：</p>
+<table>
+<thead>
+<tr>
+<th>HELD MODE</th>
+<th>GET NL</th>
+<th>GET SS</th>
+<th>GET SX</th>
+<th>GET S</th>
+<th>GET SSX</th>
+<th>GET X</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>NL</td>
+<td>&check;</td>
+<td>&check;</td>
+<td>&check;</td>
+<td>&check;</td>
+<td>&check;</td>
+<td>&check;</td>
+</tr>
+<tr>
+<td>SS</td>
+<td>&check;</td>
+<td>&check;</td>
+<td>&check;</td>
+<td>&check;</td>
+<td>&check;</td>
+<td>&times;</td>
+</tr>
+<tr>
+<td>SX</td>
+<td>&check;</td>
+<td>&check;</td>
+<td>&check;</td>
+<td>&times;</td>
+<td>&times;</td>
+<td>&times;</td>
+</tr>
+<tr>
+<td>S</td>
+<td>&check;</td>
+<td>&check;</td>
+<td>&times;</td>
+<td>&check;</td>
+<td>&times;</td>
+<td>&times;</td>
+</tr>
+<tr>
+<td>SSX</td>
+<td>&check;</td>
+<td>&check;</td>
+<td>&times;</td>
+<td>&times;</td>
+<td>&times;</td>
+<td>&times;</td>
+</tr>
+<tr>
+<td>X</td>
+<td>&check;</td>
+<td>&times;</td>
+<td>&times;</td>
+<td>&times;</td>
+<td>&times;</td>
+<td>&times;</td>
+</tr>
+</tbody></table>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs sql">maxwait  constant <span class="hljs-type">integer</span> :<span class="hljs-operator">=</span> <span class="hljs-number">32767</span>;<br></code></pre></td></tr></table></figure>
+<p>常量maxwait表示永久等待。</p>
+<h3 id="5-DBMS-LOCK-操纵注意事项"><a href="#5-DBMS-LOCK-操纵注意事项" class="headerlink" title="5. DBMS_LOCK 操纵注意事项"></a><a name="Operational-Notes"></a>5. DBMS_LOCK 操纵注意事项</h3><p>用户锁与Oracle锁永远不会发生冲突，因为它们以”UL”前缀标识。您可以使用企业管理器的锁监视屏幕或相应的固定视图来查看这些锁。</p>
+<p>用户锁会在会话终止时自动释放。锁标识符是一个介于0到1073741823之间的数字。</p>
+<p>由于预留的用户锁与Oracle锁相同，它具有Oracle锁的所有功能，例如死锁检测。<br>请确保在分布式事务中使用的任何用户锁在COMMIT时被释放，否则可能会发生未检测到的死锁。</p>
+<p>DBMS_LOCK在每个会话限制为几百个锁时效率最高。Oracle强烈建议您制定使用这些锁的标准约定，<br>以避免尝试使用相同锁的程序之间发生冲突。例如，可以将公司名称作为锁名的一部分包含在内。</p>
+<h3 id="6-DBMS-LOCK-子程序摘要"><a href="#6-DBMS-LOCK-子程序摘要" class="headerlink" title="6. DBMS_LOCK 子程序摘要"></a><a name="Summary-of-DBMS_LOCK-Subprograms"></a>6. DBMS_LOCK 子程序摘要</h3><p>此表列出了DBMS_LOCK子程序并简要描述了它们。</p>
+<table>
+<thead>
+<tr>
+<th>Subprogram</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><a href="#ALLOCATE_UNIQUE">6.1 ALLOCATE_UNIQUE 过程</a></td>
+<td>分配给命名锁的一个唯一锁ID</td>
+</tr>
+<tr>
+<td><a href="#ALLOCATE_UNIQUE_AUTONOMOUS">6.2 ALLOCATE_UNIQUE_AUTONOMOUS 过程</a></td>
+<td>分配给命名锁的一个唯一锁ID</td>
+</tr>
+<tr>
+<td><a href="#CONVERT">6.3 CONVERT 函数</a></td>
+<td>将锁从一种模式转换为另一种模式</td>
+</tr>
+<tr>
+<td><a href="#RELEASE">6.4 RELEASE 函数</a></td>
+<td>释放一个锁</td>
+</tr>
+<tr>
+<td><a href="#REQUEST">6.5 REQUEST 函数</a></td>
+<td>请求特定模式的锁</td>
+</tr>
+<tr>
+<td><a href="#SLEEP">6.6 SLEEP 过程</a></td>
+<td>让会话睡眠指定的时间</td>
+</tr>
+</tbody></table>
+<h4 id="6-1-ALLOCATE-UNIQUE-过程"><a href="#6-1-ALLOCATE-UNIQUE-过程" class="headerlink" title="6.1 ALLOCATE_UNIQUE 过程"></a><a name="ALLOCATE_UNIQUE"></a>6.1 ALLOCATE_UNIQUE 过程</h4><p>此过程为指定的锁名分配一个唯一的锁标识符（范围在1073741824到1999999999之间）。<br>锁标识符用于使应用程序能够协调它们对锁的使用。这是因为它可能使得应用程序基于锁名称而非锁编号来协调它们的锁使用更为简便。</p>
+<p>句法：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs sql">DBMS_LOCK.ALLOCATE_UNIQUE (<br>   lockname         <span class="hljs-keyword">IN</span>  VARCHAR2,<br>   lockhandle       <span class="hljs-keyword">OUT</span> VARCHAR2,<br>   expiration_secs  <span class="hljs-keyword">IN</span>  <span class="hljs-type">INTEGER</span>   <span class="hljs-keyword">DEFAULT</span> <span class="hljs-number">864000</span>);<br></code></pre></td></tr></table></figure>
+
+<p>参数：</p>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>lockname</td>
+<td>您想为其生成唯一ID的锁的名称。<br> 不要使用以ORA$开头的锁名称；这些名称保留给Oracle提供的产品使用。</td>
+</tr>
+<tr>
+<td>lockhandle</td>
+<td>返回由ALLOCATE_UNIQUE生成的锁ID的句柄。<br> 您可以在后续的REQUEST、CONVERT和RELEASE调用中使用这个句柄。 <br> 返回句柄而不是实际的锁ID是为了减少因编程错误意外创建了不正确但有效的锁ID的可能性。这为使用此包的不同应用程序之间提供了更好的隔离。<br> LOCKHANDLE可以是长度最多为VARCHAR2(128)的字符串。<br>所有使用ALLOCATE_UNIQUE相同锁名返回的锁句柄的会话都指的是同一个锁。因此，请不要在不同会话之间传递锁句柄。</td>
+</tr>
+<tr>
+<td>expiration_specs</td>
+<td>在允许从DBMS_LOCK_ALLOCATED表中删除指定锁之前，自上次对该锁执行ALLOCATE_UNIQUE后需要等待的秒数。 <br> 默认的等待期限是10天。你不应该从这个表中手动删除锁。后续对ALLOCATE_UNIQUE的调用可能会删除过期的锁以回收空间。</td>
+</tr>
+</tbody></table>
+<p>使用说明</p>
+<p>如果您选择通过名称来识别锁，可以使用ALLOCATE_UNIQUE为这些命名锁生成一个唯一的锁标识号。</p>
+<p>首个使用新锁名调用ALLOCATE_UNIQUE的会话将导致生成一个唯一的锁ID，并将其存储在dbms_lock_allocated表中。<br>随后的调用（通常由其他会话发起）将返回之前生成的锁ID。</p>
+<p>至少在最后一次针对指定锁名调用ALLOCATE_UNIQUE之后的expiration_secs（默认为10天）期间，锁名会与返回的锁ID关联。<br>在此时间之后，为了回收空间，该锁名在dbms_lock_allocated表中的行可能会被删除。ALLOCATE_UNIQUE执行一次提交操作。</p>
+<p><strong>警告：命名用户锁可能效率较低，因为Oracle需使用SQL来确定与指定名称相关的锁。</strong></p>
+<p>异常：</p>
+<p>ORA-20000, ORU-10003: 无法在dbms_lock_allocated目录中查找或插入锁<lockname>。</lockname></p>
+<h4 id="6-2-ALLOCATE-UNIQUE-AUTONOMOUS-过程"><a href="#6-2-ALLOCATE-UNIQUE-AUTONOMOUS-过程" class="headerlink" title="6.2 ALLOCATE_UNIQUE_AUTONOMOUS 过程"></a><a name="ALLOCATE_UNIQUE_AUTONOMOUS"></a>6.2 ALLOCATE_UNIQUE_AUTONOMOUS 过程</h4><p>此过程为指定的锁名分配一个唯一的锁标识符（范围在1073741824到1999999999之间）。<br>锁标识符用于使应用程序能够协调它们对锁的使用。这是因为它可能使得应用程序基于锁名称而非锁编号来协调它们的锁使用更为简便。</p>
+<p>句法：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs sql">DBMS_LOCK.ALLOCATE_UNIQUE_AUTONOMOUS (<br>   lockname         <span class="hljs-keyword">IN</span>  VARCHAR2,<br>   lockhandle       <span class="hljs-keyword">OUT</span> VARCHAR2,<br>   expiration_secs  <span class="hljs-keyword">IN</span>  <span class="hljs-type">INTEGER</span>   <span class="hljs-keyword">DEFAULT</span> <span class="hljs-number">864000</span>);<br></code></pre></td></tr></table></figure>
+
+<p>参数：</p>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>lockname</td>
+<td>您想为其生成唯一ID的锁的名称。<br> 不要使用以ORA$开头的锁名称；这些名称保留给Oracle提供的产品使用。</td>
+</tr>
+<tr>
+<td>lockhandle</td>
+<td>返回由ALLOCATE_UNIQUE_AUTONOMOUS生成的锁ID的句柄。<br> 您可以在后续的REQUEST、CONVERT和RELEASE调用中使用这个句柄。 <br> 返回句柄而不是实际的锁ID是为了减少因编程错误意外创建了不正确但有效的锁ID的可能性。这为使用此包的不同应用程序之间提供了更好的隔离。<br> LOCKHANDLE可以是长度最多为VARCHAR2(128)的字符串。<br>所有使用ALLOCATE_UNIQUE_AUTONOMOUS相同锁名返回的锁句柄的会话都指的是同一个锁。因此，请不要在不同会话之间传递锁句柄。</td>
+</tr>
+<tr>
+<td>expiration_specs</td>
+<td>在允许从DBMS_LOCK_ALLOCATED表中删除指定锁之前，自上次对该锁执行ALLOCATE_UNIQUE_AUTONOMOUS后需要等待的秒数。 <br> 默认的等待期限是10天。你不应该从这个表中手动删除锁。后续对ALLOCATE_UNIQUE_AUTONOMOUS的调用可能会删除过期的锁以回收空间。</td>
+</tr>
+</tbody></table>
+<p>使用说明</p>
+<p>如果您选择通过名称来识别锁，可以使用ALLOCATE_UNIQUE_AUTONOMOUS为这些命名锁生成一个唯一的锁标识号。</p>
+<p>首个使用新锁名调用ALLOCATE_UNIQUE_AUTONOMOUS的会话将导致生成一个唯一的锁ID，并将其存储在dbms_lock_allocated表中。<br>随后的调用（通常由其他会话发起）将返回之前生成的锁ID。</p>
+<p>至少在最后一次针对指定锁名调用ALLOCATE_UNIQUE_AUTONOMOUS之后的expiration_secs（默认为10天）期间，锁名会与返回的锁ID关联。<br>在此时间之后，为了回收空间，该锁名在dbms_lock_allocated表中的行可能会被删除。ALLOCATE_UNIQUE_AUTONOMOUS执行一次提交操作。</p>
+<p><strong>警告：命名用户锁可能效率较低，因为Oracle需使用SQL来确定与指定名称相关的锁。</strong></p>
+<p>异常：</p>
+<p>ORA-20000, ORU-10003: 无法在dbms_lock_allocated目录中查找或插入锁<lockname>。</lockname></p>
+<h4 id="6-3-CONVERT-函数"><a href="#6-3-CONVERT-函数" class="headerlink" title="6.3 CONVERT 函数"></a><a name="CONVERT"></a>6.3 CONVERT 函数</h4><p>此函数将锁从一种模式转换为另一种模式。CONVERT 是一个重载函数，它可以接受用户定义的<br>锁标识符，或是由 ALLOCATE_UNIQUE 过程返回的锁句柄。</p>
+<p>语法：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs sql">DBMS_LOCK.CONVERT(<br>   id         <span class="hljs-keyword">IN</span> <span class="hljs-type">INTEGER</span> <span class="hljs-operator">||</span> <br>   lockhandle <span class="hljs-keyword">IN</span> VARCHAR2,<br>   lockmode   <span class="hljs-keyword">IN</span> <span class="hljs-type">INTEGER</span>,<br>   timeout    <span class="hljs-keyword">IN</span> NUMBER <span class="hljs-keyword">DEFAULT</span> MAXWAIT)<br>  <span class="hljs-keyword">RETURN</span> <span class="hljs-type">INTEGER</span>;<br></code></pre></td></tr></table></figure>
+<p>参数：</p>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>id or lockhandle</td>
+<td>用户分配的锁标识符，取值范围从0到1073741823，或你想要更改其模式的锁的锁句柄，该锁句柄由ALLOCATE_UNIQUE过程返回。</td>
+</tr>
+<tr>
+<td>lockmode</td>
+<td>你想要分配给指定锁的新模式。<br> 可用模式及其关联的整数标识符，请参见常量。</td>
+</tr>
+<tr>
+<td>timeout</td>
+<td>继续尝试改变锁模式的秒数。<br>如果在这个时间段内无法转换锁模式，则调用将返回1（表示超时）。</td>
+</tr>
+</tbody></table>
+<p>返回值：</p>
+<table>
+<thead>
+<tr>
+<th>返回值</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>0</td>
+<td>成功</td>
+</tr>
+<tr>
+<td>1</td>
+<td>超时</td>
+</tr>
+<tr>
+<td>2</td>
+<td>死锁</td>
+</tr>
+<tr>
+<td>3</td>
+<td>参数错误</td>
+</tr>
+<tr>
+<td>4</td>
+<td>未拥有由id或lockhandle指定的锁</td>
+</tr>
+<tr>
+<td>5</td>
+<td>非法的锁句柄</td>
+</tr>
+</tbody></table>
+<h4 id="6-4-RELEASE-函数"><a href="#6-4-RELEASE-函数" class="headerlink" title="6.4 RELEASE 函数"></a><a name="RELEASE"></a>6.4 RELEASE 函数</h4><p>此函数显式释放先前使用REQUEST函数获取的锁。</p>
+<p>锁会在会话结束时自动释放。RELEASE是一个重载函数，它可以接受用户定义的锁标识符，或者是ALLOCATE_UNIQUE过程返回的锁句柄。</p>
+<p>语法：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs sql">DBMS_LOCK.RELEASE (<br>   id         <span class="hljs-keyword">IN</span> <span class="hljs-type">INTEGER</span>)<br>  <span class="hljs-keyword">RETURN</span> <span class="hljs-type">INTEGER</span>;<br><br>DBMS_LOCK.RELEASE (<br>   lockhandle <span class="hljs-keyword">IN</span> VARCHAR2)<br>  <span class="hljs-keyword">RETURN</span> <span class="hljs-type">INTEGER</span>;<br></code></pre></td></tr></table></figure>
+
+<p>参数：</p>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>id or lockhandle</td>
+<td>用户分配的锁标识符，取值范围从0到1073741823，或你想更改其模式的锁的锁句柄，该锁句柄由ALLOCATE_UNIQUE过程返回。</td>
+</tr>
+</tbody></table>
+<p>返回值：</p>
+<table>
+<thead>
+<tr>
+<th>返回值</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>0</td>
+<td>成功</td>
+</tr>
+<tr>
+<td>3</td>
+<td>参数错误</td>
+</tr>
+<tr>
+<td>4</td>
+<td>未拥有由id或lockhandle指定的锁</td>
+</tr>
+<tr>
+<td>5</td>
+<td>非法的锁句柄</td>
+</tr>
+</tbody></table>
+<h4 id="6-5-REQUEST-函数"><a href="#6-5-REQUEST-函数" class="headerlink" title="6.5 REQUEST 函数"></a><a name="REQUEST"></a>6.5 REQUEST 函数</h4><p>此函数请求具有指定模式的锁。</p>
+<p>REQUEST是一个重载函数，它可以接受用户定义的锁标识符，或者是ALLOCATE_UNIQUE过程返回的锁句柄。</p>
+<p>语法：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs sql">DBMS_LOCK.REQUEST(<br>   id                 <span class="hljs-keyword">IN</span>  <span class="hljs-type">INTEGER</span> <span class="hljs-operator">||</span><br>   lockhandle         <span class="hljs-keyword">IN</span>  VARCHAR2,<br>   lockmode           <span class="hljs-keyword">IN</span>  <span class="hljs-type">INTEGER</span> <span class="hljs-keyword">DEFAULT</span> X_MODE,<br>   timeout            <span class="hljs-keyword">IN</span>  <span class="hljs-type">INTEGER</span> <span class="hljs-keyword">DEFAULT</span> MAXWAIT,<br>   release_on_commit  <span class="hljs-keyword">IN</span>  <span class="hljs-type">BOOLEAN</span> <span class="hljs-keyword">DEFAULT</span> <span class="hljs-literal">FALSE</span>)<br>  <span class="hljs-keyword">RETURN</span> <span class="hljs-type">INTEGER</span>;<br></code></pre></td></tr></table></figure>
+<p>当前的默认值，如X_MODE和MAXWAIT，是在DBMS_LOCK包规范中定义的。</p>
+<p>参数：</p>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>id or lockhandle</td>
+<td>用户分配的锁标识符，取值范围从0到1073741823，或你想要更改其模式的锁的锁句柄，该锁句柄由ALLOCATE_UNIQUE过程返回。</td>
+</tr>
+<tr>
+<td>lockmode</td>
+<td>你想要分配给指定锁的新模式。<br> 可用模式及其关联的整数标识符，请参见常量。</td>
+</tr>
+<tr>
+<td>timeout</td>
+<td>继续尝试授予锁的秒数。如果在这段时间内无法授予锁，则调用将返回值1（超时）。</td>
+</tr>
+<tr>
+<td>release_on_commit</td>
+<td>将此参数设置为TRUE可在提交或回滚时释放锁。<br> 否则，锁将一直保持直到被显式释放或会话结束。</td>
+</tr>
+</tbody></table>
+<p>返回值：</p>
+<table>
+<thead>
+<tr>
+<th>返回值</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>0</td>
+<td>成功</td>
+</tr>
+<tr>
+<td>1</td>
+<td>超时</td>
+</tr>
+<tr>
+<td>2</td>
+<td>死锁</td>
+</tr>
+<tr>
+<td>3</td>
+<td>参数错误</td>
+</tr>
+<tr>
+<td>4</td>
+<td>未拥有由id或lockhandle指定的锁</td>
+</tr>
+<tr>
+<td>5</td>
+<td>非法的锁句柄</td>
+</tr>
+</tbody></table>
+<h4 id="6-6-SLEEP-过程"><a href="#6-6-SLEEP-过程" class="headerlink" title="6.6 SLEEP 过程"></a><a name="SLEEP"></a>6.6 SLEEP 过程</h4><p>此过程使会话暂停指定的一段时间。</p>
+<p>语法：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs sql">DBMS_LOCK.SLEEP (<br>   seconds  <span class="hljs-keyword">IN</span> NUMBER);<br></code></pre></td></tr></table></figure>
+
+<p>参数：</p>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>seconds</td>
+<td>暂停会话的时间长度，以秒为单位。<br> 最小的时间增量可以输入到百分之一秒；例如，1.95 是一个合法的时间值。</td>
+</tr>
+</tbody></table>
+<h3 id="7-使用Oracle锁定管理服务（用户锁）"><a href="#7-使用Oracle锁定管理服务（用户锁）" class="headerlink" title="7. 使用Oracle锁定管理服务（用户锁）"></a><a name="USE-of-DBMS_LOCK"></a>7. 使用Oracle锁定管理服务（用户锁）</h3><p>您的应用程序可以通过调用DBMS_LOCK包中的子程序来使用Oracle锁定管理服务（用户锁）。</p>
+<p>一个应用程序可以请求特定模式的锁，给予它一个唯一名称（在同一个或另一个实例中的另一个子程序中可识别），改变锁的模式，并释放它。<br>因为保留的用户锁是Oracle数据库锁，所以它具有数据库锁的所有特性，比如死锁检测。</p>
+<p>确保在分布式事务中使用的任何用户锁在COMMIT时都会被释放，否则可能会发生未被检测到的死锁。</p>
+<table>
+<thead>
+<tr>
+<th>Topic</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><a href="#WHEN_TO_USE">7.1 何时使用用户锁</a></td>
+</tr>
+<tr>
+<td><a href="#HOW_TO_LOOK">7.2 查看与监控锁</a></td>
+</tr>
+</tbody></table>
+<h4 id="7-1-何时使用用户锁"><a href="#7-1-何时使用用户锁" class="headerlink" title="7.1 何时使用用户锁"></a><a name="WHEN_TO_USE"></a>7.1 何时使用用户锁</h4><p>用户锁可以协助实现以下功能：</p>
+<ol>
+<li><p>为设备提供独占访问：如终端的独占使用。</p>
+</li>
+<li><p>在应用层实施读取锁控制。</p>
+</li>
+<li><p>检测锁释放并进行应用后的清理。</p>
+</li>
+<li><p>同步应用程序并强制顺序处理。</p>
+</li>
+</ol>
+<p>示例8-2演示了Pro*COBOL预编译器如何使用锁来确保当多人必须访问同一设备时，不会发生冲突。</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-operator">*</span><span class="hljs-operator">*</span><span class="hljs-operator">*</span><span class="hljs-operator">*</span><span class="hljs-operator">*</span><span class="hljs-operator">*</span><span class="hljs-operator">*</span><span class="hljs-operator">*</span><span class="hljs-operator">*</span><span class="hljs-operator">*</span><span class="hljs-operator">*</span><span class="hljs-operator">*</span><span class="hljs-operator">*</span><span class="hljs-operator">*</span><span class="hljs-operator">*</span><span class="hljs-operator">*</span><span class="hljs-operator">*</span><span class="hljs-operator">*</span><span class="hljs-operator">*</span><span class="hljs-operator">*</span><span class="hljs-operator">*</span><span class="hljs-operator">*</span><span class="hljs-operator">*</span><span class="hljs-operator">*</span><span class="hljs-operator">*</span><span class="hljs-operator">*</span><span class="hljs-operator">*</span><span class="hljs-operator">*</span><span class="hljs-operator">*</span><span class="hljs-operator">*</span><span class="hljs-operator">*</span><span class="hljs-operator">*</span><span class="hljs-operator">*</span><span class="hljs-operator">*</span><span class="hljs-operator">*</span><span class="hljs-operator">*</span><span class="hljs-operator">*</span><span class="hljs-operator">*</span><span class="hljs-operator">*</span><span class="hljs-operator">*</span><span class="hljs-operator">*</span><span class="hljs-operator">*</span><span class="hljs-operator">*</span><span class="hljs-operator">*</span><span class="hljs-operator">*</span><span class="hljs-operator">*</span><span class="hljs-operator">*</span><span class="hljs-operator">*</span><span class="hljs-operator">*</span><span class="hljs-operator">*</span><span class="hljs-operator">*</span><span class="hljs-operator">*</span><span class="hljs-operator">*</span><span class="hljs-operator">*</span><span class="hljs-operator">*</span><span class="hljs-operator">*</span><span class="hljs-operator">*</span><span class="hljs-operator">*</span><span class="hljs-operator">*</span><span class="hljs-operator">*</span><span class="hljs-operator">*</span><span class="hljs-operator">*</span><span class="hljs-operator">*</span><span class="hljs-operator">*</span><span class="hljs-operator">*</span><span class="hljs-operator">*</span> <br><span class="hljs-operator">*</span> Print <span class="hljs-keyword">Check</span>                                                    <span class="hljs-operator">*</span> <br><span class="hljs-operator">*</span> <span class="hljs-keyword">Any</span> cashier may issue a refund <span class="hljs-keyword">to</span> a customer returning goods.  <span class="hljs-operator">*</span> <br><span class="hljs-operator">*</span> Refunds under $<span class="hljs-number">50</span> <span class="hljs-keyword">are</span> given <span class="hljs-keyword">in</span> cash, more than $<span class="hljs-number">50</span> <span class="hljs-keyword">by</span> check.   <span class="hljs-operator">*</span> <br><span class="hljs-operator">*</span> This code prints the check. <span class="hljs-keyword">One</span> printer <span class="hljs-keyword">is</span> opened <span class="hljs-keyword">by</span> <span class="hljs-keyword">all</span>       <span class="hljs-operator">*</span> <br><span class="hljs-operator">*</span> the cashiers <span class="hljs-keyword">to</span> avoid the overhead <span class="hljs-keyword">of</span> opening <span class="hljs-keyword">and</span> closing it   <span class="hljs-operator">*</span> <br><span class="hljs-operator">*</span> <span class="hljs-keyword">for</span> <span class="hljs-keyword">every</span> <span class="hljs-keyword">check</span>, meaning that lines <span class="hljs-keyword">of</span> output <span class="hljs-keyword">from</span> multiple    <span class="hljs-operator">*</span> <br><span class="hljs-operator">*</span> cashiers can become interleaved if you do <span class="hljs-keyword">not</span> ensure exclusive <span class="hljs-operator">*</span> <br><span class="hljs-operator">*</span> access <span class="hljs-keyword">to</span> the printer. The DBMS_LOCK package <span class="hljs-keyword">is</span> used <span class="hljs-keyword">to</span>        <span class="hljs-operator">*</span> <br><span class="hljs-operator">*</span> ensure exclusive access.                                       <span class="hljs-operator">*</span> <br><span class="hljs-operator">*</span><span class="hljs-operator">*</span><span class="hljs-operator">*</span><span class="hljs-operator">*</span><span class="hljs-operator">*</span><span class="hljs-operator">*</span><span class="hljs-operator">*</span><span class="hljs-operator">*</span><span class="hljs-operator">*</span><span class="hljs-operator">*</span><span class="hljs-operator">*</span><span class="hljs-operator">*</span><span class="hljs-operator">*</span><span class="hljs-operator">*</span><span class="hljs-operator">*</span><span class="hljs-operator">*</span><span class="hljs-operator">*</span><span class="hljs-operator">*</span><span class="hljs-operator">*</span><span class="hljs-operator">*</span><span class="hljs-operator">*</span><span class="hljs-operator">*</span><span class="hljs-operator">*</span><span class="hljs-operator">*</span><span class="hljs-operator">*</span><span class="hljs-operator">*</span><span class="hljs-operator">*</span><span class="hljs-operator">*</span><span class="hljs-operator">*</span><span class="hljs-operator">*</span><span class="hljs-operator">*</span><span class="hljs-operator">*</span><span class="hljs-operator">*</span><span class="hljs-operator">*</span><span class="hljs-operator">*</span><span class="hljs-operator">*</span><span class="hljs-operator">*</span><span class="hljs-operator">*</span><span class="hljs-operator">*</span><span class="hljs-operator">*</span><span class="hljs-operator">*</span><span class="hljs-operator">*</span><span class="hljs-operator">*</span><span class="hljs-operator">*</span><span class="hljs-operator">*</span><span class="hljs-operator">*</span><span class="hljs-operator">*</span><span class="hljs-operator">*</span><span class="hljs-operator">*</span><span class="hljs-operator">*</span><span class="hljs-operator">*</span><span class="hljs-operator">*</span><span class="hljs-operator">*</span><span class="hljs-operator">*</span><span class="hljs-operator">*</span><span class="hljs-operator">*</span><span class="hljs-operator">*</span><span class="hljs-operator">*</span><span class="hljs-operator">*</span><span class="hljs-operator">*</span><span class="hljs-operator">*</span><span class="hljs-operator">*</span><span class="hljs-operator">*</span><span class="hljs-operator">*</span><span class="hljs-operator">*</span><span class="hljs-operator">*</span> <br>打印支票<br>任何收银员均可向退货的顾客发放退款。 <br>退款金额低于<span class="hljs-number">50</span>美元的以现金形式给予，超过<span class="hljs-number">50</span>美元则开具支票。 <br>本代码用于打印支票。所有收银员共用一台打印机以避免为每张支票打开和关闭所带来的开销，<br>这意味着如果不对打印机进行独占访问控制，来自多个收银员的输出行可能会相互交织。 <br>使用DBMS_LOCK包来确保对打印机的独占访问。<br><br><span class="hljs-keyword">CHECK</span><span class="hljs-operator">-</span>PRINT <br><span class="hljs-operator">*</span>    <span class="hljs-keyword">Get</span> the lock &quot;handle&quot; <span class="hljs-keyword">for</span> the printer lock. <br>   MOVE &quot;CHECKPRINT&quot; <span class="hljs-keyword">TO</span> LOCKNAME<span class="hljs-operator">-</span>ARR. <br>   MOVE <span class="hljs-number">10</span> <span class="hljs-keyword">TO</span> LOCKNAME<span class="hljs-operator">-</span>LEN. <br>   <span class="hljs-keyword">EXEC</span> <span class="hljs-keyword">SQL</span> <span class="hljs-keyword">EXECUTE</span> <br>      <span class="hljs-keyword">BEGIN</span> DBMS_LOCK.ALLOCATE_UNIQUE ( :LOCKNAME, :LOCKHANDLE ); <br>      <span class="hljs-keyword">END</span>; <span class="hljs-keyword">END</span><span class="hljs-operator">-</span>EXEC. <br><span class="hljs-operator">*</span>   Lock the printer <span class="hljs-keyword">in</span> exclusive mode (<span class="hljs-keyword">default</span> mode).<br>   <span class="hljs-keyword">EXEC</span> <span class="hljs-keyword">SQL</span> <span class="hljs-keyword">EXECUTE</span> <br>      <span class="hljs-keyword">BEGIN</span> DBMS_LOCK.REQUEST ( :LOCKHANDLE ); <br>      <span class="hljs-keyword">END</span>; <span class="hljs-keyword">END</span><span class="hljs-operator">-</span>EXEC. <br><span class="hljs-operator">*</span>   You now have exclusive use <span class="hljs-keyword">of</span> the printer, print the check. <br>  ... <br><span class="hljs-operator">*</span>   Unlock the printer so other people can use it <br><span class="hljs-keyword">EXEC</span> <span class="hljs-keyword">SQL</span> <span class="hljs-keyword">EXECUTE</span> <br>      <span class="hljs-keyword">BEGIN</span> DBMS_LOCK.RELEASE ( :LOCKHANDLE ); <br>      <span class="hljs-keyword">END</span>; <span class="hljs-keyword">END</span><span class="hljs-operator">-</span>EXEC.<br></code></pre></td></tr></table></figure>
+
+
+<h4 id="7-2-查看与监控锁"><a href="#7-2-查看与监控锁" class="headerlink" title="7.2 查看与监控锁"></a><a name="HOW_TO_LOOK"></a>7.2 查看与监控锁</h4><p>表8-3描述了Oracle数据库中用于显示实例内正在进行的事务锁定信息的设施。</p>
+<table>
+<thead>
+<tr>
+<th>Tool</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>性能监控数据字典视图</td>
+<td><a target="_blank" rel="noopener" href="https://docs.oracle.com/en/database/oracle/oracle-database/12.2/admin/monitoring-the-database.html#GUID-93C0C7B2-33E1-4733-909F-1CDCAC636791">https://docs.oracle.com/en/database/oracle/oracle-database/12.2/admin/monitoring-the-database.html#GUID-93C0C7B2-33E1-4733-909F-1CDCAC636791</a></td>
+</tr>
+<tr>
+<td>UTLLOCKT.SQL</td>
+<td>UTLLOCKT.SQL 脚本用于以树状结构的方式展示一个简单的字符锁等待图。通过任何SQL工具（如SQL*Plus）运行此脚本，它会打印系统中正在等待锁的会话以及相应的阻塞锁。该脚本文件的位置取决于操作系统。（在使用UTLLOCKT.SQL之前，必须先运行CATBLOCK.SQL脚本。）</td>
+</tr>
+</tbody></table>
+<p>你可以查询一组数据字典视图来监控Oracle数据库实例。</p>
+<p>这些视图的范围较为广泛。针对特定进程的其他视图，则会在本书描述该进程的部分进行讨论。</p>
+<table>
+<thead>
+<tr>
+<th>视图</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>V$LOCK</td>
+<td>列出Oracle数据库当前持有的锁及待处理的锁或 latch 请求</td>
+</tr>
+<tr>
+<td>DBA_BLOCKERS</td>
+<td>显示持有对象锁导致其他会话等待的会话</td>
+</tr>
+<tr>
+<td>DBA_WAITERS</td>
+<td>显示等待对象锁的会话</td>
+</tr>
+<tr>
+<td>DBA_DDL_LOCKS</td>
+<td>列出DDL锁及待处理的DDL锁请求</td>
+</tr>
+<tr>
+<td>DBA_DML_LOCKS</td>
+<td>列出DML锁及待处理的DML锁请求</td>
+</tr>
+<tr>
+<td>DBA_LOCK</td>
+<td>列出所有锁及待处理的锁或 latch 请求</td>
+</tr>
+<tr>
+<td>DBA_LOCK_INTERNAL</td>
+<td>显示每条事务的锁详情及待处理的锁请求</td>
+</tr>
+<tr>
+<td>V$SESSION_WAIT</td>
+<td>列出活跃会话正在等待的资源或事件</td>
+</tr>
+<tr>
+<td>V$SYSSTAT</td>
+<td>包含会话统计信息</td>
+</tr>
+<tr>
+<td>V$RESOURCE_LIMIT</td>
+<td>提供系统资源当前使用与最大限制信息</td>
+</tr>
+<tr>
+<td>V$SQLAREA</td>
+<td>包含共享SQL区域统计信息，每个SQL字符串一行，及已解析和执行的SQL统计信息</td>
+</tr>
+<tr>
+<td>V$LATCH</td>
+<td>包含非顶层 latch 统计数据及顶层 latch 的汇总统计</td>
+</tr>
+</tbody></table>
+<p>|</p>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/DB/" class="category-chain-item">DB</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/DB/Oracle/" class="category-chain-item">Oracle</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/DB/Oracle/package/" class="category-chain-item">package</a>
+  
+  
+
+  
+
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/database/" class="print-no-link">#database</a>
+      
+        <a href="/tags/oracle/" class="print-no-link">#oracle</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>oracle DBMS_LOCK</div>
+      <div>http://smilemzy.com/2025/05/05/note/db/Oracle/PLSQL/DBMS_LOCK/README/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Smile</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2025年5月5日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-cc-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2025/05/05/note/db/Oracle/RAC/GRD/README/" title="Global Resource Drectory (GRD)">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">Global Resource Drectory (GRD)</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2025/05/05/note/db/mysql/LockFunc/README/" title="MySQL Locking Functions">
+                        <span class="hidden-mobile">MySQL Locking Functions</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/5.0.0/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

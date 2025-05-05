@@ -1,0 +1,804 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Smile">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="xxTCP keepalive for a better PostgreSQL experience TCP keepalive 以获得更好的 PostgreSQL 体验 本文主要内容如下：    Chapter Contents sub Chapter    1 Reasons for broken connections 1.1 Database server crashes    1.2 C">
+<meta property="og:type" content="article">
+<meta property="og:title" content="PostgreSQL中的keepalive">
+<meta property="og:url" content="http://smilemzy.com/2025/05/05/note/db/postgresql/conf/keepalive/index.html">
+<meta property="og:site_name" content="Smile">
+<meta property="og:description" content="xxTCP keepalive for a better PostgreSQL experience TCP keepalive 以获得更好的 PostgreSQL 体验 本文主要内容如下：    Chapter Contents sub Chapter    1 Reasons for broken connections 1.1 Database server crashes    1.2 C">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://smilemzy.com/2025/05/05/note/db/postgresql/conf/keepalive/img.png">
+<meta property="og:image" content="http://smilemzy.com/2025/05/05/note/db/postgresql/conf/keepalive/img_1.png">
+<meta property="og:image" content="http://smilemzy.com/2025/05/05/note/db/postgresql/conf/keepalive/img_2.png">
+<meta property="article:published_time" content="2025-05-05T12:24:13.840Z">
+<meta property="article:modified_time" content="2025-05-05T12:35:54.027Z">
+<meta property="article:author" content="Smile">
+<meta property="article:tag" content="database">
+<meta property="article:tag" content="PostgreSQL">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="http://smilemzy.com/2025/05/05/note/db/postgresql/conf/keepalive/img.png">
+  
+  
+  
+  <title>PostgreSQL中的keepalive - Smile</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/c/font_1749284_5i9bdhy70f8.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/c/font_1736178_k526ubmyhba.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"smilemzy.com","root":"/","version":"1.9.8","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false},"umami":{"src":null,"website_id":null,"domains":null,"start_time":"2024-01-01T00:00:00.000Z","token":null,"api_server":null}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+
+  
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Smile</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/" target="_self">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/" target="_self">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/" target="_self">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/" target="_self">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/" target="_self">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="PostgreSQL中的keepalive"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2025-05-05 20:24" pubdate>
+          2025年5月5日 晚上
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          2.5k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          21 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">PostgreSQL中的keepalive</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <h2 id="xx"><a href="#xx" class="headerlink" title="xx"></a>xx</h2><p>TCP keepalive for a better PostgreSQL experience</p>
+<p>TCP keepalive 以获得更好的 PostgreSQL 体验</p>
+<p>本文主要内容如下：</p>
+<table>
+<thead>
+<tr>
+<th>Chapter Contents</th>
+<th>sub Chapter</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><a href="#cp1">1 Reasons for broken connections</a></td>
+<td><a href="#cp1.1">1.1 Database server crashes</a></td>
+</tr>
+<tr>
+<td></td>
+<td><a href="#cp1.2">1.2 Connections abandoned by the client</a></td>
+</tr>
+<tr>
+<td></td>
+<td><a href="#cp1.3">1.3 Connections closed by a network component</a></td>
+</tr>
+<tr>
+<td><a href="#cp2">2 What is TCP keepalive?</a></td>
+<td></td>
+</tr>
+<tr>
+<td><a href="#cp3">3 TCP keepalive default settings</a></td>
+<td></td>
+</tr>
+<tr>
+<td><a href="#cp4">4 Using TCP keepalive to keep an idle database session alive</a></td>
+<td></td>
+</tr>
+<tr>
+<td><a href="#cp5">5 Using TCP keepalive to detect dead connections</a></td>
+<td></td>
+</tr>
+<tr>
+<td><a href="#cp6">6 Setting TCP keepalive parameters on the PostgreSQL server</a></td>
+<td></td>
+</tr>
+<tr>
+<td><a href="#cp7">7 Setting TCP keepalive parameters on the PostgreSQL client</a></td>
+<td></td>
+</tr>
+<tr>
+<td><a href="#cp8">8 Setting TCP keepalive parameters on the operating system</a></td>
+<td></td>
+</tr>
+<tr>
+<td><a href="#cp9">9 Conclusion</a></td>
+<td></td>
+</tr>
+<tr>
+<td><a href="#cp10">10 Other problems</a></td>
+<td></td>
+</tr>
+</tbody></table>
+<p>如果您听说过TCP keepalive但不确定那是什么，请继续阅读。如果您曾对如下错误消息感到惊讶：</p>
+<pre><code class="hljs">(1) 服务器意外关闭了连接
+(2) SSL SYSCALL 错误：检测到EOF
+(3) 客户端连接意外结束
+(4) 无法从客户端接收数据：连接被对方重置
+</code></pre>
+<p><img src="/2025/05/05/note/db/postgresql/conf/keepalive/img.png" srcset="/img/loading.gif" lazyload alt="img.png"><br>那么，这篇文章就是为您准备的。</p>
+<h3 id="1-Reasons-for-broken-connections"><a href="#1-Reasons-for-broken-connections" class="headerlink" title="1 Reasons for broken connections"></a><a name="cp1"></a>1 Reasons for broken connections</h3><p>断开的连接可能有几种原因：</p>
+<h4 id="1-1-Database-server-crashes"><a href="#1-1-Database-server-crashes" class="headerlink" title="1.1 Database server crashes"></a><a name="cp1.1"></a>1.1 Database server crashes</h4><p>上述列表中的前两个消息可能是 PostgreSQL 服务器问题的结果。<br>如果服务器由于某种原因崩溃，您会看到类似的消息。<br>要调查是否存在服务器问题，您应该首先查看 PostgreSQL 日志，看看是否能找到匹配的崩溃报告。</p>
+<p>我们不会在下文中处理这种情况，因为它不是网络问题。</p>
+<h4 id="1-2-Connections-abandoned-by-the-client"><a href="#1-2-Connections-abandoned-by-the-client" class="headerlink" title="1.2 Connections abandoned by the client"></a><a name="cp1.2"></a>1.2 Connections abandoned by the client</h4><p>客户端放弃的连接</p>
+<p>如果客户端退出时未正确关闭数据库连接，则服务器在网络套接字通信时将收到文件结束符或错误。<br>自 v14 版本引入的新会话统计信息中，您可以跟踪此类“被放弃”的数据库连接数量，<br>在 pg_stat_database.sessions_abandoned 中。</p>
+<p>(<a target="_blank" rel="noopener" href="https://www.cybertec-postgresql.com/en/estimating-connection-pool-size-with-postgresql-database-statistics/">https://www.cybertec-postgresql.com/en/estimating-connection-pool-size-with-postgresql-database-statistics/</a>).</p>
+<p>例如，如果应用程序服务器出现故障并重新启动，通常它不会关闭与数据库服务器的连接。<br>这并不令人惊慌，当服务器尝试向客户端发送数据时，数据库服务器会迅速检测到。但如果数据库会话处于空闲状态，<br>服务器进程则等待客户端发送下一个语句（您可以在 pg_stat_activity 中看到 wait_event “ClientRead”）。<br>然后服务器不会立即注意到客户端已不存在！这种滞留的后端进程占用了一个进程槽，<br>并可能导致您超出 max_connections。</p>
+<p>PostgreSQL v14 引入了一个新参数 idle_session_timeout，该参数会在一段时间后关闭空闲连接。<br>但这也会终止“健康”的空闲连接，因此这不是一个很好的解决方案。TCP keepalive 为此问题提供了一个更好的解决方案。</p>
+<h4 id="1-3-Connections-closed-by-a-network-component"><a href="#1-3-Connections-closed-by-a-network-component" class="headerlink" title="1.3 Connections closed by a network component"></a><a name="cp1.3"></a>1.3 Connections closed by a network component</h4><p>由网络组件关闭的连接</p>
+<p>有时数据库连接的两端都会遇到相同的问题：每一端都发现另一端“挂断了”。在这种情况下，<br>问题是位于数据库客户端和服务器之间的某个地方。</p>
+<p>如果有实际的连接问题，网络连接可能会断开。在软件级别上您无法对此进行更改。但通常情况下，<br>断开连接是由防火墙或路由器的配置方式引起的。网络组件可能必须“记住”每个开放连接的状态，<br>而用于此的资源是有限的。因此，放弃并丢弃长时间空闲的连接似乎是一种权宜之计。</p>
+<p>由于当今大部分的 TCP 流量是通过 HTTP 进行的，而 HTTP 是无状态的，这通常不是问题。<br>如果您的 HTTP 连接中断，只需为下一个请求建立一个新的连接即可，这并不会非常耗资源。但是数据库则不同：</p>
+<pre><code class="hljs">(1) 建立数据库连接的成本很高
+(2) 数据库连接不是无状态的；例如，连接关闭时，打开的事务、临时表和预准备语句都会丢失
+(3) 对于数据库会话来说，长时间处于空闲状态是正常的，例如如果您正在使用连接池，
+或者当客户端正在等待长时间运行的分析查询的结果时
+</code></pre>
+<p>这时 TCP keepalive 就派上用场了，它可以保持空闲连接的开放。</p>
+<h3 id="2-What-is-TCP-keepalive"><a href="#2-What-is-TCP-keepalive" class="headerlink" title="2 What is TCP keepalive?"></a><a name="cp2"></a>2 What is TCP keepalive?</h3><p>Keepalive 是 TCP 协议的一项功能。当您在 TCP 网络套接字上设置 SO_KEEPALIVE 选项时，<br>一旦套接字进入空闲状态，计时器将开始运行。当 keepalive 空闲时间到期且套接字上没有进一步活动时，<br>内核将向通信伙伴发送一个“keepalive 数据包”。如果伙伴回应，连接被视为良好，计时器将重新开始运行。</p>
+<p>如果没有收到回应，内核会在发送另一个 keepalive 数据包之前等待 keepalive 间隔时间。<br>此过程会重复进行，直到发送的 keepalive packets数量达到 keepalive count。之后，连接被视为已断开，<br>尝试使用网络套接字将会导致错误。</p>
+<p>请注意，是操作系统内核而不是应用程序（数据库服务器或客户端）发送 keepalive 消息。<br>应用程序并不知晓这一过程。</p>
+<p>TCP keepalive 有两个目的：</p>
+<p>(1) 防止网络连接长时间处于空闲状态；<br>(2) 检测另一端通信方是否在未关闭网络连接的情况下离开。<br>（名称“keepalive”并不能很好地描述这一点——“detectdead”会更准确一些）。</p>
+<h3 id="3-TCP-keepalive-default-settings"><a href="#3-TCP-keepalive-default-settings" class="headerlink" title="3 TCP keepalive default settings"></a><a name="cp3"></a>3 TCP keepalive default settings</h3><p>TCP keepalive 默认设置<br>keepalive 参数的默认值因操作系统而异。在 Linux 和 Windows 上，默认值为：</p>
+<p>keepalive 空闲时间：Linux、MacOS 和 Windows 上为 2 小时<br>keepalive 间隔：Linux 和 MacOS 上为 75 秒，Windows 上为 1 秒<br>keepalive 计数：MacOS 上为 8，Linux 上为 9，Windows 上为 10（此值在 Windows 上无法更改）</p>
+<h3 id="4-Using-TCP-keepalive-to-keep-an-idle-database-session-alive"><a href="#4-Using-TCP-keepalive-to-keep-an-idle-database-session-alive" class="headerlink" title="4 Using TCP keepalive to keep an idle database session alive"></a><a name="cp4"></a>4 Using TCP keepalive to keep an idle database session alive</h3><p>使用 TCP keepalive 维持空闲数据库会话</p>
+<p>为了防止防火墙和路由器关闭空闲连接，我们需要将 keepalive 空闲时间设置得更低。<br>这样，在连接被关闭之前就会发送 keepalive 数据包。这会欺骗有问题的网络组件，使其认为连接并未空闲，<br>即使数据库客户端和服务器都没有发送任何数据。</p>
+<h3 id="5-Using-TCP-keepalive-to-detect-dead-connections"><a href="#5-Using-TCP-keepalive-to-detect-dead-connections" class="headerlink" title="5 Using TCP keepalive to detect dead connections"></a><a name="cp5"></a>5 Using TCP keepalive to detect dead connections</h3><p>使用 TCP keepalive 检测死连接</p>
+<p>对于这种用例，减少 keepalive 空闲时间通常是不够的。如果服务器发送了九个间隔时间为 75 秒的 keepalive 数据包，<br>则需要超过 10 分钟才能检测到死连接。因此，我们也会减少 keepalive 计数，或 keepalive 间隔，或同时减少两者。</p>
+<p>这里还有一个缺失的部分：即使操作系统检测到网络连接已断开，除非数据库服务器尝试使用网络套接字，<br>否则它不会注意到这一点。如果它正在等待来自客户端的请求，这将立即发生。但如果服务器忙于执行<br>长时间运行的 SQL 语句，它将不会注意到死连接，直到查询完成并尝试将结果返回给客户端！<br>为了避免这种情况的发生，PostgreSQL v14 引入了一个新参数 client_connection_check_interval，<br>目前仅在 Linux 上支持。设置此参数会导致服务器定期“轮询”套接字，即使它还没有任何要发送的数据。<br>这样，它可以检测到已关闭的连接并中断 SQL 语句的执行。</p>
+<h3 id="6-Setting-TCP-keepalive-parameters-on-the-PostgreSQL-server"><a href="#6-Setting-TCP-keepalive-parameters-on-the-PostgreSQL-server" class="headerlink" title="6 Setting TCP keepalive parameters on the PostgreSQL server"></a><a name="cp6"></a>6 Setting TCP keepalive parameters on the PostgreSQL server</h3><p>在 PostgreSQL 服务器上设置 TCP keepalive 参数</p>
+<p>PostgreSQL 服务器总是在 TCP 套接字上设置 SO_KEEPALIVE 以检测断开的连接，但默认的两小时空闲超时时间非常长。</p>
+<p>您可以设置配置参数 tcp_keepalives_idle、tcp_keepalives_interval 和 tcp_keepalives_count<br>（最后一个在 Windows 上不支持）来更改所有服务器套接字的设置。</p>
+<p>这是为所有数据库连接配置 TCP keepalive 的最便捷方式，无论使用何种客户端。</p>
+<h3 id="7-Setting-TCP-keepalive-parameters-on-the-PostgreSQL-client"><a href="#7-Setting-TCP-keepalive-parameters-on-the-PostgreSQL-client" class="headerlink" title="7 Setting TCP keepalive parameters on the PostgreSQL client"></a><a name="cp7"></a>7 Setting TCP keepalive parameters on the PostgreSQL client</h3><p>在 PostgreSQL 客户端上设置 TCP keepalive 参数</p>
+<p>PostgreSQL 客户端共享库 libpq 具有连接参数 keepalives_idle、keepalives_interval<br>和 keepalives_count（同样，后者在 Windows 上不支持），以便在客户端配置 keepalive。</p>
+<p>这些参数可以与所有链接到 libpq 的客户端接口一起在 PostgreSQL 连接字符串中使用，例如 Psycopg 或 PHP。</p>
+<p>不使用 libpq 的 PostgreSQL JDBC 驱动程序仅有一个连接参数 tcpKeepAlive 来<br>启用 TCP keepalive（默认情况下禁用），但没有参数来配置 keepalive 空闲时间和其它 keepalive 设置。</p>
+<h3 id="8-Setting-TCP-keepalive-parameters-on-the-operating-system"><a href="#8-Setting-TCP-keepalive-parameters-on-the-operating-system" class="headerlink" title="8 Setting TCP keepalive parameters on the operating system"></a><a name="cp8"></a>8 Setting TCP keepalive parameters on the operating system</h3><p>而不是专门为 PostgreSQL 连接配置 keepalive 设置，您可以更改操作系统中所有 TCP 连接的<br>默认值——这在您使用的 PostgreSQL 客户端应用程序不允许设置 keepalive 连接参数时非常有用。</p>
+<p><img src="/2025/05/05/note/db/postgresql/conf/keepalive/img_1.png" srcset="/img/loading.gif" lazyload alt="img_1.png"></p>
+<p><img src="/2025/05/05/note/db/postgresql/conf/keepalive/img_2.png" srcset="/img/loading.gif" lazyload alt="img_2.png"></p>
+<p>如上所述，没有设置 keepalive 探针的数量，该数量被硬编码为 10。注册表项必须是 DWORD 类型，且值以毫秒为单位而非秒。</p>
+<p>更改这些键后，重新启动 Windows 以激活它们。</p>
+<h3 id="9-Conclusion"><a href="#9-Conclusion" class="headerlink" title="9 Conclusion"></a><a name="cp9"></a>9 Conclusion</h3><p>配置 TCP keepalive 可以通过保持空闲数据库连接的开放或通过及时检测断开的连接来<br>提升您的 PostgreSQL 体验。您可以在 PostgreSQL 客户端、服务器或操作系统上配置 keepalive。</p>
+<p>除了配置 keepalive 之外，还应设置新参数 client_connection_check_interval，以便在客户端放弃<br>会话时取消长时间运行的查询。</p>
+<h3 id="10-Other-problems"><a href="#10-Other-problems" class="headerlink" title="10 Other problems"></a><a name="cp10"></a>10 Other problems</h3><p>(1) 一些防火墙默认策略是阻止 keepalive 数据包。注意在 postgres 服务器和客户端之间没有任何此类防火墙。如果有，请允许 postgres 端口的 keepalive 数据包。</p>
+<p>(2) 我想知道下面两个错误有什么区别？</p>
+<p>“could not receive data from client: Connection reset by peer”</p>
+<p>“could not receive data from client: Connection timed out”。</p>
+<p>这两个都是由于 keepalive 相关的问题吗？</p>
+<p>答：不，只有第一个错误与 keepalive 相关：对等端（TCP 连接的另一端）终止了连接。<br>第二个错误意味着在一定时间内没有人响应 TCP 连接请求。<br>这种情况通常发生在您尝试连接到已关闭、不存在或被防火墙阻止的机器时。</p>
+<p>(3) 发散文章：<br><a target="_blank" rel="noopener" href="https://blog.csdn.net/liuzhenghua66/article/details/145260469">https://blog.csdn.net/liuzhenghua66/article/details/145260469</a> (连接池偶现15分钟超时问题)</p>
+<p><a target="_blank" rel="noopener" href="https://www.cnblogs.com/trust-freedom/p/6992952.html">https://www.cnblogs.com/trust-freedom/p/6992952.html</a></p>
+<p><a target="_blank" rel="noopener" href="https://www.laoxiong.net/firewall-dcd-and-tcp-keep-alive.html">https://www.laoxiong.net/firewall-dcd-and-tcp-keep-alive.html</a></p>
+<p><a target="_blank" rel="noopener" href="https://www.cnblogs.com/trust-freedom/p/6992952.html">https://www.cnblogs.com/trust-freedom/p/6992952.html</a></p>
+<p><a target="_blank" rel="noopener" href="https://blog.csdn.net/zhang_road/article/details/104473143">https://blog.csdn.net/zhang_road/article/details/104473143</a></p>
+<h4 id="参与贡献"><a href="#参与贡献" class="headerlink" title="参与贡献"></a>参与贡献</h4><ol>
+<li>Fork 本仓库</li>
+<li>新建 Feat_xxx 分支</li>
+<li>提交代码</li>
+<li>新建 Pull Request</li>
+</ol>
+<h4 id="特技"><a href="#特技" class="headerlink" title="特技"></a>特技</h4><ol>
+<li>使用 Readme_XXX.md 来支持不同的语言，例如 Readme_en.md, Readme_zh.md</li>
+<li>Gitee 官方博客 <a target="_blank" rel="noopener" href="https://blog.gitee.com/">blog.gitee.com</a></li>
+<li>你可以 <a target="_blank" rel="noopener" href="https://gitee.com/explore">https://gitee.com/explore</a> 这个地址来了解 Gitee 上的优秀开源项目</li>
+<li><a target="_blank" rel="noopener" href="https://gitee.com/gvp">GVP</a> 全称是 Gitee 最有价值开源项目，是综合评定出的优秀开源项目</li>
+<li>Gitee 官方提供的使用手册 <a target="_blank" rel="noopener" href="https://gitee.com/help">https://gitee.com/help</a></li>
+<li>Gitee 封面人物是一档用来展示 Gitee 会员风采的栏目 <a target="_blank" rel="noopener" href="https://gitee.com/gitee-stars/">https://gitee.com/gitee-stars/</a></li>
+</ol>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/DB/" class="category-chain-item">DB</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/DB/PostgreSQL/" class="category-chain-item">PostgreSQL</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/DB/PostgreSQL/conf/" class="category-chain-item">conf</a>
+  
+  
+
+  
+
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/database/" class="print-no-link">#database</a>
+      
+        <a href="/tags/PostgreSQL/" class="print-no-link">#PostgreSQL</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>PostgreSQL中的keepalive</div>
+      <div>http://smilemzy.com/2025/05/05/note/db/postgresql/conf/keepalive/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Smile</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2025年5月5日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-cc-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2025/05/05/note/db/postgresql/extension/PgExtension/pageinspect/PageInspect/" title="PostgreSQL pg_pageinspect 拓展插件">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">PostgreSQL pg_pageinspect 拓展插件</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2025/05/05/note/db/postgresql/checkpoint/gdb/README/" title="PostgreSQL 调试 checkpointer 进程">
+                        <span class="hidden-mobile">PostgreSQL 调试 checkpointer 进程</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/5.0.0/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

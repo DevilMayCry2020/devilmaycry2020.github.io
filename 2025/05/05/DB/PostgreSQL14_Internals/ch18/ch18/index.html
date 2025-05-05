@@ -1,0 +1,889 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Smile">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="ch18. Table Access Methods本章主要内容如下：    Chapter Contents    18.1 Pluggable Storage Engines   18.2 Sequential Scans   18.3 Parallel Plans   18.4 Parallel Sequential Scans   18.5 Parallel Execution Limit">
+<meta property="og:type" content="article">
+<meta property="og:title" content="ch18. Table Access Methods">
+<meta property="og:url" content="http://smilemzy.com/2025/05/05/DB/PostgreSQL14_Internals/ch18/ch18/index.html">
+<meta property="og:site_name" content="Smile">
+<meta property="og:description" content="ch18. Table Access Methods本章主要内容如下：    Chapter Contents    18.1 Pluggable Storage Engines   18.2 Sequential Scans   18.3 Parallel Plans   18.4 Parallel Sequential Scans   18.5 Parallel Execution Limit">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://smilemzy.com/2025/05/05/DB/PostgreSQL14_Internals/ch18/ch18/img.png">
+<meta property="og:image" content="http://smilemzy.com/2025/05/05/DB/PostgreSQL14_Internals/ch18/ch18/img_1.png">
+<meta property="og:image" content="http://smilemzy.com/2025/05/05/DB/PostgreSQL14_Internals/ch18/ch18/img_2.png">
+<meta property="og:image" content="http://smilemzy.com/2025/05/05/DB/PostgreSQL14_Internals/ch18/ch18/img_3.png">
+<meta property="og:image" content="http://smilemzy.com/2025/05/05/DB/PostgreSQL14_Internals/ch18/ch18/img_4.png">
+<meta property="og:image" content="http://smilemzy.com/2025/05/05/DB/PostgreSQL14_Internals/ch18/ch18/img_5.png">
+<meta property="og:image" content="http://smilemzy.com/2025/05/05/DB/PostgreSQL14_Internals/ch18/ch18/img_6.png">
+<meta property="og:image" content="http://smilemzy.com/2025/05/05/DB/PostgreSQL14_Internals/ch18/ch18/img_7.png">
+<meta property="og:image" content="http://smilemzy.com/2025/05/05/DB/PostgreSQL14_Internals/ch18/ch18/img_8.png">
+<meta property="article:published_time" content="2025-05-05T12:24:14.580Z">
+<meta property="article:modified_time" content="2025-05-05T12:56:33.574Z">
+<meta property="article:author" content="Smile">
+<meta property="article:tag" content="book">
+<meta property="article:tag" content="database">
+<meta property="article:tag" content="transactions">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="http://smilemzy.com/2025/05/05/DB/PostgreSQL14_Internals/ch18/ch18/img.png">
+  
+  
+  
+  <title>ch18. Table Access Methods - Smile</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/c/font_1749284_5i9bdhy70f8.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/c/font_1736178_k526ubmyhba.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"smilemzy.com","root":"/","version":"1.9.8","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false},"umami":{"src":null,"website_id":null,"domains":null,"start_time":"2024-01-01T00:00:00.000Z","token":null,"api_server":null}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+
+  
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Smile</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/" target="_self">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/" target="_self">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/" target="_self">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/" target="_self">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/" target="_self">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="ch18. Table Access Methods"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2025-05-05 20:24" pubdate>
+          2025年5月5日 晚上
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          5.5k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          46 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">ch18. Table Access Methods</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <h2 id="ch18-Table-Access-Methods"><a href="#ch18-Table-Access-Methods" class="headerlink" title="ch18. Table Access Methods"></a>ch18. Table Access Methods</h2><p>本章主要内容如下：</p>
+<table>
+<thead>
+<tr>
+<th>Chapter Contents</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><a href="#cp1">18.1 Pluggable Storage Engines</a></td>
+</tr>
+<tr>
+<td><a href="#cp2">18.2 Sequential Scans</a></td>
+</tr>
+<tr>
+<td><a href="#cp3">18.3 Parallel Plans</a></td>
+</tr>
+<tr>
+<td><a href="#cp4">18.4 Parallel Sequential Scans</a></td>
+</tr>
+<tr>
+<td><a href="#cp5">18.5 Parallel Execution Limitations</a></td>
+</tr>
+</tbody></table>
+<h3 id="18-1-Pluggable-Storage-Engines"><a href="#18-1-Pluggable-Storage-Engines" class="headerlink" title="18.1 Pluggable Storage Engines"></a><a name="cp1"></a>18.1 Pluggable Storage Engines</h3><p>PostgreSQL 使用的数据布局既不是唯一可能的，也不是所有负载类型的最佳选择。遵循可扩展性的理念，PostgreSQL 允许创建和新增表访问方法 (可插拔存储引擎)，但目前仅有一种开箱即用的引擎：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-operator">=</span><span class="hljs-operator">&gt;</span> <span class="hljs-keyword">SELECT</span> amname, amhandler <span class="hljs-keyword">FROM</span> pg_am <span class="hljs-keyword">WHERE</span> amtype <span class="hljs-operator">=</span> <span class="hljs-string">&#x27;t&#x27;</span>;<br> amname <span class="hljs-operator">|</span> 		 amhandler<br>−−−−−−−−<span class="hljs-operator">+</span>−−−−−−−−−−−−−−−−−−−−−−<br> heap 	<span class="hljs-operator">|</span> heap_tableam_handler<br>(<span class="hljs-number">1</span> <span class="hljs-type">row</span>)<br></code></pre></td></tr></table></figure>
+<p>在建表时，你可以指定要使用的引擎 (CREATE TABLE … USING)；否则，将使用 default_table_access_method 参数中列出的默认引擎。</p>
+<p>为了让 PostgreSQL 内核部分以相同的方式与不同的引擎协作，表访问方法必须实现一个特殊的接口。1 在 amhandler 列中指定的函数，其返回的接口结构 2 包含内核所需的所有信息。</p>
+<p>以下核心组件可被所有表访问方法使用：</p>
+<pre><code class="hljs">事务管理器，包括 ACID 和快照隔离支持
+缓冲区管理
+I/O 子系统
+TOAST
+优化器和执行器
+索引支持
+</code></pre>
+<p>即使存储引擎并不使用这些组件中的所有部分，这些组件也始终可供引擎使用。</p>
+<p>而引擎定义了：</p>
+<pre><code class="hljs">元组格式和数据结构
+表扫描的实现和成本预估
+插入、删除、更新和锁操作的实现
+可见性规则
+清理和分析过程
+</code></pre>
+<p>从历史上看，PostgreSQL 使用了一个单一的内置数据存储，而没有任何适当的编程接口，因此现在很难提出一个好的设计，既能考虑到标准引擎的所有特点，又不干扰其他方法。</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs text">比如，目前仍不清楚如何处理 WAL。新的访问方法可能需要记录自己的操作，而内核并不知道这些操作。现有的通用 WAL 机制 3 通常是一个糟糕的选择，因为它会产生过多的开销。你可以添加另一个接口来处理新类型的 WAL 条目，但是这样一来，崩溃恢复将依赖于外部代码，这是非常不可取的。到目前为止，唯一看似可行的解决方案是为每个特定引擎修补内核。<br></code></pre></td></tr></table></figure>
+
+<p>因此，我没有严格区分表访问方法和内核。本书前面部分描述的许多功能从形式上讲属于堆访问方法，而不属于内核本身。这种方法很可能始终是 PostgreSQL 的最终标准引擎，而其他方法将填补各自的空白，以应对特定负载类型的挑战。</p>
+<p>在目前正在开发的所有新引擎中，我想提及以下几种：</p>
+<p>Zheap 旨在处理表膨胀 4。它实现了原地更新，并将与 MVCC 相关的历史数据移动到一个单独的回滚段中。这种引擎对于涉及频繁数据更新的负载将非常有用。</p>
+<p>Zheap 的架构对于 Oracle 用户来说会感到很熟悉，尽管它确实有一些细微差别 (例如，索引访问方法的接口不允许使用其自己的版本创建索引)。</p>
+<p>Zedstore 实现了列式存储 5，这种存储方式可能对 OLAP 查询最为高效。</p>
+<p>存储的数据其结构是一棵元组 ID 的 B 树；每一列都存储在与主树相关的自己的 B 树中。未来，可能会在一个 B 树中存储多个列，从而获得混合存储。</p>
+<h3 id="18-2-Sequential-Scans"><a href="#18-2-Sequential-Scans" class="headerlink" title="18.2 Sequential Scans"></a><a name="cp2"></a>18.2 Sequential Scans</h3><p>存储引擎定义了表数据的物理布局，并提供访问方法。唯一支持的方法是顺序扫描，它完整地读取表主分支的文件 (或多个文件)。每次页面读取，都会检查每条元组的可见性；那些不满足查询的元组会被过滤掉。</p>
+<p><img src="/2025/05/05/DB/PostgreSQL14_Internals/ch18/ch18/img.png" srcset="/img/loading.gif" lazyload alt="img.png"></p>
+<p>扫描进程会遍历缓冲区缓存；为了确保大表不会淘汰有用的数据，PostgreSQL 使用了一个小型的环形缓冲区。扫描同一张表的其他进程会加入到这个环形缓冲区，从而避免额外的磁盘读取；这种扫描被称为同步扫描。这样一来，扫描就不必总是从文件开头开始。</p>
+<p>顺序扫描是读取整个表或其中大部分数据的最有效的方式。换句话说，当选择率较低时，顺序扫描带来的价值最大。(如果选择率高，意味着查询只需要选择几行，那么最好使用索引)。</p>
+<h4 id="18-2-1-成本估算"><a href="#18-2-1-成本估算" class="headerlink" title="18.2.1 成本估算"></a>18.2.1 成本估算</h4><p>在查询的执行计划中，Seq Scan 节点表示顺序扫描：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-operator">=</span><span class="hljs-operator">&gt;</span> EXPLAIN <span class="hljs-keyword">SELECT</span> <span class="hljs-operator">*</span><br><span class="hljs-keyword">FROM</span> flights;<br>                         QUERY PLAN<br>−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−<br> Seq Scan <span class="hljs-keyword">on</span> flights (cost<span class="hljs-operator">=</span><span class="hljs-number">0.00</span>.<span class="hljs-number">.4772</span><span class="hljs-number">.67</span> <span class="hljs-keyword">rows</span><span class="hljs-operator">=</span><span class="hljs-number">214867</span> width<span class="hljs-operator">=</span><span class="hljs-number">63</span>)<br>(<span class="hljs-number">1</span> <span class="hljs-type">row</span>)<br></code></pre></td></tr></table></figure>
+
+<p>预估的行数是作为基本统计信息的一部分提供的：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-operator">=</span><span class="hljs-operator">&gt;</span> <span class="hljs-keyword">SELECT</span> reltuples <span class="hljs-keyword">FROM</span> pg_class <span class="hljs-keyword">WHERE</span> relname <span class="hljs-operator">=</span> <span class="hljs-string">&#x27;flights&#x27;</span>;<br> reltuples<br>−−−−−−−−−−−<br>    <span class="hljs-number">214867</span><br>(<span class="hljs-number">1</span> <span class="hljs-type">row</span>)<br></code></pre></td></tr></table></figure>
+
+
+<p>在估算成本时，优化器会考虑以下两个组成部分：磁盘 IO 和 CPU 资源。6</p>
+<p><strong>I&#x2F;O 成本</strong> 的计算方法是将表中的页面数量乘以读取单个页面的成本 (假设页面是按顺序读取的)。当缓冲区管理器请求一个页面时，操作系统实际上从磁盘读取了更多的数据，所以后续的几个页面很可能在操作系统缓存中找到。因此，使用顺序扫描读取单个页面的成本 (规划器按 seq_page_cost 预估) 低于随机访问的成本 (由 random_page_cost 值定义)。</p>
+<p>默认设置适用于 HDD；如果你使用的是 SSD，那么显著降低 random_page_cost 值是有意义的 (seq_page_cost 参数通常保持原样，作为参考值)。由于这些参数之间的最佳比例取决于硬件，因此通常在表空间级别设置 (ALTER TABLESPACE …SET)。</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-operator">=</span><span class="hljs-operator">&gt;</span> <span class="hljs-keyword">SELECT</span> relpages,<br>  current_setting(<span class="hljs-string">&#x27;seq_page_cost&#x27;</span>) <span class="hljs-keyword">AS</span> seq_page_cost,<br>  relpages <span class="hljs-operator">*</span> current_setting(<span class="hljs-string">&#x27;seq_page_cost&#x27;</span>)::<span class="hljs-type">real</span> <span class="hljs-keyword">AS</span> total<br><span class="hljs-keyword">FROM</span> pg_class <span class="hljs-keyword">WHERE</span> relname <span class="hljs-operator">=</span> <span class="hljs-string">&#x27;flights&#x27;</span>;<br> relpages <span class="hljs-operator">|</span> seq_page_cost <span class="hljs-operator">|</span> total<br>−−−−−−−−−−<span class="hljs-operator">+</span>−−−−−−−−−−−−−−−<span class="hljs-operator">+</span>−−−−−−−<br>     <span class="hljs-number">2624</span> <span class="hljs-operator">|</span> <span class="hljs-number">1</span>             <span class="hljs-operator">|</span>  <span class="hljs-number">2624</span><br>(<span class="hljs-number">1</span> <span class="hljs-type">row</span>)<br></code></pre></td></tr></table></figure>
+
+<p>这些计算清楚地显示了不及时清理所导致的表膨胀的后果：表的主分支越大，需要扫描的页面就越多，无论包含多少活跃元组。</p>
+<p><strong>CPU 资源预估</strong> 包括处理每个元组的成本 (规划器按 cpu_tuple_cost 预估)：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-operator">=</span><span class="hljs-operator">&gt;</span> <span class="hljs-keyword">SELECT</span> reltuples,<br>  current_setting(<span class="hljs-string">&#x27;cpu_tuple_cost&#x27;</span>) <span class="hljs-keyword">AS</span> cpu_tuple_cost,<br>  reltuples <span class="hljs-operator">*</span> current_setting(<span class="hljs-string">&#x27;cpu_tuple_cost&#x27;</span>)::<span class="hljs-type">real</span> <span class="hljs-keyword">AS</span> total<br><span class="hljs-keyword">FROM</span> pg_class <span class="hljs-keyword">WHERE</span> relname <span class="hljs-operator">=</span> <span class="hljs-string">&#x27;flights&#x27;</span>;<br> reltuples <span class="hljs-operator">|</span> cpu_tuple_cost <span class="hljs-operator">|</span>  total<br>−−−−−−−−−−−<span class="hljs-operator">+</span>−−−−−−−−−−−−−−−−<span class="hljs-operator">+</span>−−−−−−−−−<br>    <span class="hljs-number">214867</span> <span class="hljs-operator">|</span> <span class="hljs-number">0.01</span>           <span class="hljs-operator">|</span> <span class="hljs-number">2148.67</span><br>(<span class="hljs-number">1</span> <span class="hljs-type">row</span>)<br></code></pre></td></tr></table></figure>
+
+<p>这两个预估值的总和表示计划的总成本。启动成本为零，因为顺序扫描没有前置条件。</p>
+<p>如果需要过滤扫描的表，应用的过滤条件会出现在 Seq Scan 节点的 Filter 部分。预估的行数取决于这些条件的选择率，而成本预估包括了相关的计算开销。</p>
+<p>EXPLAIN ANALYZE 命令显示了实际返回的行数以及被过滤掉的行数：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-operator">=</span><span class="hljs-operator">&gt;</span> EXPLAIN (analyze, timing off, summary off)<br><span class="hljs-keyword">SELECT</span> <span class="hljs-operator">*</span> <span class="hljs-keyword">FROM</span> flights<br><span class="hljs-keyword">WHERE</span> status <span class="hljs-operator">=</span> <span class="hljs-string">&#x27;Scheduled&#x27;</span>;<br>                   QUERY PLAN<br>−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−<br> Seq Scan <span class="hljs-keyword">on</span> flights<br>   (cost<span class="hljs-operator">=</span><span class="hljs-number">0.00</span>.<span class="hljs-number">.5309</span><span class="hljs-number">.84</span> <span class="hljs-keyword">rows</span><span class="hljs-operator">=</span><span class="hljs-number">15383</span> width<span class="hljs-operator">=</span><span class="hljs-number">63</span>)<br>   (actual <span class="hljs-keyword">rows</span><span class="hljs-operator">=</span><span class="hljs-number">15383</span> loops<span class="hljs-operator">=</span><span class="hljs-number">1</span>)<br>   <span class="hljs-keyword">Filter</span>: ((status)::text <span class="hljs-operator">=</span> <span class="hljs-string">&#x27;Scheduled&#x27;</span>::text)<br>   <span class="hljs-keyword">Rows</span> Removed <span class="hljs-keyword">by</span> <span class="hljs-keyword">Filter</span>: <span class="hljs-number">199484</span><br>(<span class="hljs-number">5</span> <span class="hljs-keyword">rows</span>)<br></code></pre></td></tr></table></figure>
+
+<p>让我们看一个更加复杂的执行计划，使用到了聚合：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-operator">=</span><span class="hljs-operator">&gt;</span> EXPLAIN <span class="hljs-keyword">SELECT</span> <span class="hljs-built_in">count</span>(<span class="hljs-operator">*</span>) <span class="hljs-keyword">FROM</span> seats;<br>                          QUERY PLAN<br>−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−<br> Aggregate (cost<span class="hljs-operator">=</span><span class="hljs-number">24.74</span>.<span class="hljs-number">.24</span><span class="hljs-number">.75</span> <span class="hljs-keyword">rows</span><span class="hljs-operator">=</span><span class="hljs-number">1</span> width<span class="hljs-operator">=</span><span class="hljs-number">8</span>)<br>   −<span class="hljs-operator">&gt;</span> Seq Scan <span class="hljs-keyword">on</span> seats (cost<span class="hljs-operator">=</span><span class="hljs-number">0.00</span>.<span class="hljs-number">.21</span><span class="hljs-number">.39</span> <span class="hljs-keyword">rows</span><span class="hljs-operator">=</span><span class="hljs-number">1339</span> width<span class="hljs-operator">=</span><span class="hljs-number">0</span>)<br>(<span class="hljs-number">2</span> <span class="hljs-keyword">rows</span>)<br></code></pre></td></tr></table></figure>
+<p>该计划由两个节点组成：上层节点 (Aggregate) 用于计算函数 count，从下层节点 (Seq Scan) 拉取数据，后者负责扫描表。</p>
+<p>Aggregate 节点的启动成本包括聚合本身：在从下层节点获取所有行之前，不可能返回第一行 (在这个例子中只有一行)。聚合成本是根据每个输入行的条件操作的执行成本 (按 cpu_operator_cost 估算) 来估算的：7</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-operator">=</span><span class="hljs-operator">&gt;</span> <span class="hljs-keyword">SELECT</span> reltuples,<br>  current_setting(<span class="hljs-string">&#x27;cpu_operator_cost&#x27;</span>) <span class="hljs-keyword">AS</span> cpu_operator_cost,<br>  round((<br>    reltuples <span class="hljs-operator">*</span> current_setting(<span class="hljs-string">&#x27;cpu_operator_cost&#x27;</span>)::<span class="hljs-type">real</span><br>  )::<span class="hljs-type">numeric</span>, <span class="hljs-number">2</span>) <span class="hljs-keyword">AS</span> cpu_cost<br><span class="hljs-keyword">FROM</span> pg_class <span class="hljs-keyword">WHERE</span> relname <span class="hljs-operator">=</span> <span class="hljs-string">&#x27;seats&#x27;</span>;<br> reltuples <span class="hljs-operator">|</span> cpu_operator_cost <span class="hljs-operator">|</span> cpu_cost<br>−−−−−−−−−−−<span class="hljs-operator">+</span>−−−−−−−−−−−−−−−−−−−<span class="hljs-operator">+</span>−−−−−−−−−−<br>      <span class="hljs-number">1339</span> <span class="hljs-operator">|</span> <span class="hljs-number">0.0025</span>            <span class="hljs-operator">|</span>     <span class="hljs-number">3.35</span><br>(<span class="hljs-number">1</span> <span class="hljs-type">row</span>)<br></code></pre></td></tr></table></figure>
+
+<p>计算出的估算值被添加到 Seq Scan 节点的总成本中。</p>
+<p>Aggregate 节点的总成本还包括处理待返回行的成本，按 cpu_tuple_cost 估算：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-operator">=</span><span class="hljs-operator">&gt;</span> <span class="hljs-keyword">WITH</span> t(cpu_cost) <span class="hljs-keyword">AS</span> (<br>  <span class="hljs-keyword">SELECT</span> round((<br>    reltuples <span class="hljs-operator">*</span> current_setting(<span class="hljs-string">&#x27;cpu_operator_cost&#x27;</span>)::<span class="hljs-type">real</span><br>  )::<span class="hljs-type">numeric</span>, <span class="hljs-number">2</span>)<br>  <span class="hljs-keyword">FROM</span> pg_class <span class="hljs-keyword">WHERE</span> relname <span class="hljs-operator">=</span> <span class="hljs-string">&#x27;seats&#x27;</span><br>)<br><span class="hljs-keyword">SELECT</span> <span class="hljs-number">21.39</span> <span class="hljs-operator">+</span> t.cpu_cost <span class="hljs-keyword">AS</span> startup_cost,<br>  round((<br>    <span class="hljs-number">21.39</span> <span class="hljs-operator">+</span> t.cpu_cost <span class="hljs-operator">+</span><br>    <span class="hljs-number">1</span> <span class="hljs-operator">*</span> current_setting(<span class="hljs-string">&#x27;cpu_tuple_cost&#x27;</span>)::<span class="hljs-type">real</span><br>  )::<span class="hljs-type">numeric</span>, <span class="hljs-number">2</span>) <span class="hljs-keyword">AS</span> total_cost<br><span class="hljs-keyword">FROM</span> t;<br> startup_cost <span class="hljs-operator">|</span> total_cost<br>−−−−−−−−−−−−−−<span class="hljs-operator">+</span>−−−−−−−−−−−−<br>        <span class="hljs-number">24.74</span> <span class="hljs-operator">|</span>      <span class="hljs-number">24.75</span><br>(<span class="hljs-number">1</span> <span class="hljs-type">row</span>)<br></code></pre></td></tr></table></figure>
+<p>因此，成本估算的依赖关系如下图所示：<br><img src="/2025/05/05/DB/PostgreSQL14_Internals/ch18/ch18/img_1.png" srcset="/img/loading.gif" lazyload alt="img_1.png"></p>
+<h3 id="18-3-Parallel-Plans"><a href="#18-3-Parallel-Plans" class="headerlink" title="18.3 Parallel Plans"></a><a name="cp3"></a>18.3 Parallel Plans</h3><p>PostgreSQL 支持并行查询。8 执行查询的领导者进程生成 (通过 postmaster) 多个工作进程，这些进程同时执行计划中相同的并行部分。结果会传递给领导者进程，领导者进程将它们汇总在 Gather 9 节点中。当不接收数据时，领导者进程也可以参与执行计划的并行部分。</p>
+<p>如果需要，你可以通过关闭 parallel_leader_participation 参数来禁止领导者进程参与并行计划的执行。</p>
+<p><img src="/2025/05/05/DB/PostgreSQL14_Internals/ch18/ch18/img_2.png" srcset="/img/loading.gif" lazyload alt="img_2.png"></p>
+<p>当然，启动这些进程并在它们之间传递数据并不是没有成本的，因此到目前为止并不是所有的查询都应该并行化。</p>
+<p>此外，即使允许并行执行，也并非计划的所有部分都可以同时处理。一些操作由领导者进程单独以顺序模式执行。</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs text">PostgreSQL 不支持另一种并行计划执行方式，即由多个工作进程执行数据处理，这些工作进程实际上形成了一条流水线 (粗略地说，每个计划节点都由一个单独的进程执行) ; PostgreSQL 开发人员认为这种机制效率低下。<br></code></pre></td></tr></table></figure>
+
+<h3 id="18-4-Parallel-Sequential-Scans"><a href="#18-4-Parallel-Sequential-Scans" class="headerlink" title="18.4 Parallel Sequential Scans"></a><a name="cp4"></a>18.4 Parallel Sequential Scans</h3><p>为并行处理设计的节点之一是 Parallel Seq Scan 节点，负责执行并行顺序扫描。</p>
+<p>这个名字听起来有点矛盾 (扫描究竟是顺序的还是并行的？)，但无论如何，它反映了操作的本质。如果我们观察文件访问，会发现表页面是顺序读取的，遵循它们在简单顺序扫描中读取的顺序。然而，这个操作是由多个并发进程执行的。为了避免重复扫描同一个页面，执行器通过共享内存来同步这些进程。</p>
+<p>此处有一个微妙的问题，操作系统无法获得典型的顺序扫描的全貌；相反，它看到的是多个执行随机读取的进程。因此，通常用于加速顺序扫描的数据预取几乎变得毫无用处。为了尽量减少这种不愉快的影响 ，PostgreSQL 为每个进程分配的不是一个页面，而是多个连续的页面进行读取。10</p>
+<p>因此，并行扫描看起来并没有多大意义，因为通常的读取成本因进程间的数据传输开销而增加。然而，如果工作进程对获取的行进行了后续处理 (如聚合)，那么总执行时间可能会大大缩短。</p>
+<h4 id="18-4-1-成本估算"><a href="#18-4-1-成本估算" class="headerlink" title="18.4.1 成本估算"></a>18.4.1 成本估算</h4><p>让我们看一个对大表执行聚合的查询。执行计划使用了并行：</p>
+<p><img src="/2025/05/05/DB/PostgreSQL14_Internals/ch18/ch18/img_3.png" srcset="/img/loading.gif" lazyload alt="img_3.png"></p>
+<p>所有位于 Gather 节点下方的节点都属于计划的并行部分。这些节点由各个工作进程执行 (这里规划了两个工作进程) ，可能也由领导者进程执行 (除非通过 parallel_leader_participation 参数将此功能关闭)。Gather 节点自身以及所有它上方的节点构成了计划的顺序部分，并仅由领导者进程执行。</p>
+<p>Parallel Seq Scan 节点表示并行堆扫描。rows 字段显示了单个进程要处理的预估平均行数。总而言之，执行必须由三个进程 (一个领导者进程和两个工作进程) 来完成，但是领导者进程将处理较少的行：随着工作进程数量的增加，其工作比重会变小。11 在这个特定的例子中，因子是 2.4。</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-operator">=</span><span class="hljs-operator">&gt;</span> <span class="hljs-keyword">SELECT</span> reltuples::<span class="hljs-type">numeric</span>, round(reltuples <span class="hljs-operator">/</span> <span class="hljs-number">2.4</span>) <span class="hljs-keyword">AS</span> per_process<br><span class="hljs-keyword">FROM</span> pg_class <span class="hljs-keyword">WHERE</span> relname <span class="hljs-operator">=</span> <span class="hljs-string">&#x27;bookings&#x27;</span>;<br> reltuples <span class="hljs-operator">|</span> per_process<br>−−−−−−−−−−−<span class="hljs-operator">+</span>−−−−−−−−−−−−−<br>   <span class="hljs-number">2111110</span> <span class="hljs-operator">|</span>      <span class="hljs-number">879629</span><br>(<span class="hljs-number">1</span> <span class="hljs-type">row</span>)<br></code></pre></td></tr></table></figure>
+
+<p>Parallel Seq Scan 的成本计算方式类似于顺序扫描。计算出的值较小，因为每个进程处理的行数较少；I&#x2F;O 部分是完整包含的，因为仍然需要逐页读取整个表。</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-operator">=</span><span class="hljs-operator">&gt;</span> <span class="hljs-keyword">SELECT</span> round((<br>  relpages <span class="hljs-operator">*</span> current_setting(<span class="hljs-string">&#x27;seq_page_cost&#x27;</span>)::<span class="hljs-type">real</span> <span class="hljs-operator">+</span><br>  reltuples <span class="hljs-operator">/</span> <span class="hljs-number">2.4</span> <span class="hljs-operator">*</span> current_setting(<span class="hljs-string">&#x27;cpu_tuple_cost&#x27;</span>)::<span class="hljs-type">real</span><br>)::<span class="hljs-type">numeric</span>, <span class="hljs-number">2</span>)<br><span class="hljs-keyword">FROM</span> pg_class <span class="hljs-keyword">WHERE</span> relname <span class="hljs-operator">=</span> <span class="hljs-string">&#x27;bookings&#x27;</span>;<br>  round<br>−−−−−−−−−−<br> <span class="hljs-number">22243.29</span><br>(<span class="hljs-number">1</span> <span class="hljs-type">row</span>)<br></code></pre></td></tr></table></figure>
+
+<p>接下来 Partial Aggregate 节点对获取到的数据进行聚合；在此例中，它用于计算行数。</p>
+<p>聚合成本按往常方式进行估算，并添加到表扫描的成本中：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-operator">=</span><span class="hljs-operator">&gt;</span> <span class="hljs-keyword">WITH</span> t(startup_cost)<br><span class="hljs-keyword">AS</span> (<br>  <span class="hljs-keyword">SELECT</span> <span class="hljs-number">22243.29</span> <span class="hljs-operator">+</span> round((<br>    reltuples <span class="hljs-operator">/</span> <span class="hljs-number">2.4</span> <span class="hljs-operator">*</span> current_setting(<span class="hljs-string">&#x27;cpu_operator_cost&#x27;</span>)::<span class="hljs-type">real</span><br>  )::<span class="hljs-type">numeric</span>, <span class="hljs-number">2</span>)<br>  <span class="hljs-keyword">FROM</span> pg_class<br>  <span class="hljs-keyword">WHERE</span> relname <span class="hljs-operator">=</span> <span class="hljs-string">&#x27;bookings&#x27;</span><br>)<br><span class="hljs-keyword">SELECT</span> startup_cost,<br>  startup_cost <span class="hljs-operator">+</span> round((<br>    <span class="hljs-number">1</span> <span class="hljs-operator">*</span> current_setting(<span class="hljs-string">&#x27;cpu_tuple_cost&#x27;</span>)::<span class="hljs-type">real</span><br>  )::<span class="hljs-type">numeric</span>, <span class="hljs-number">2</span>) <span class="hljs-keyword">AS</span> total_cost<br><span class="hljs-keyword">FROM</span> t;<br> startup_cost <span class="hljs-operator">|</span> total_cost<br>−−−−−−−−−−−−−−<span class="hljs-operator">+</span>−−−−−−−−−−−−<br>     <span class="hljs-number">24442.36</span> <span class="hljs-operator">|</span>   <span class="hljs-number">24442.37</span><br>(<span class="hljs-number">1</span> <span class="hljs-type">row</span>)<br></code></pre></td></tr></table></figure>
+<p>下一个节点 (Gather) 由领导者进程执行。该节点负责启动工作进程并收集他们返回的数据。</p>
+<p>在规划过程中，启动进程 (无论数量如何) 的成本估算由 parallel_setup_cost 参数定义，而进程之间每行数据传输的成本按 parallel_tuple_cost 进行估算。</p>
+<p>在这个例子中，启动成本 (用于启动进程) 占大头；这个值被添加到 Partial Aggregate 节点的启动成本中。总成本还包括传输两行的成本；这个值被添加到 Partial Aggregate 节点 12 的总成本中：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-operator">=</span><span class="hljs-operator">&gt;</span> <span class="hljs-keyword">SELECT</span><br>  <span class="hljs-number">24442.36</span> <span class="hljs-operator">+</span> round(<br>    current_setting(<span class="hljs-string">&#x27;parallel_setup_cost&#x27;</span>)::<span class="hljs-type">numeric</span>,<br>  <span class="hljs-number">2</span>) <span class="hljs-keyword">AS</span> setup_cost,<br>  <span class="hljs-number">24442.37</span> <span class="hljs-operator">+</span> round(<br>    current_setting(<span class="hljs-string">&#x27;parallel_setup_cost&#x27;</span>)::<span class="hljs-type">numeric</span> <span class="hljs-operator">+</span><br>    <span class="hljs-number">2</span> <span class="hljs-operator">*</span> current_setting(<span class="hljs-string">&#x27;parallel_tuple_cost&#x27;</span>)::<span class="hljs-type">numeric</span>,<br>    <span class="hljs-number">2</span>) <span class="hljs-keyword">AS</span> total_cost;<br> setup_cost <span class="hljs-operator">|</span> total_cost<br>−−−−−−−−−−−−<span class="hljs-operator">+</span>−−−−−−−−−−−−<br>   <span class="hljs-number">25442.36</span> <span class="hljs-operator">|</span>   <span class="hljs-number">25442.57</span><br>(<span class="hljs-number">1</span> <span class="hljs-type">row</span>)<br></code></pre></td></tr></table></figure>
+
+<p>最后要说的是，Finalize Aggregate 节点负责聚合 Gather 节点从并行进程接收到的所有部分结果。</p>
+<p>最后的聚合估算与其他任何聚合一样。启动成本基于聚合三行数据的成本；这个值被添加到 Gather 的总成本中 (因为需要所有行来计算结果)。Finalize Aggregate 的总成本还包括返回一行的成本。</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-operator">=</span><span class="hljs-operator">&gt;</span> <span class="hljs-keyword">WITH</span> t(startup_cost) <span class="hljs-keyword">AS</span> (<br>  <span class="hljs-keyword">SELECT</span> <span class="hljs-number">25442.57</span> <span class="hljs-operator">+</span> round((<br>    <span class="hljs-number">3</span> <span class="hljs-operator">*</span> current_setting(<span class="hljs-string">&#x27;cpu_operator_cost&#x27;</span>)::<span class="hljs-type">real</span><br>  )::<span class="hljs-type">numeric</span>, <span class="hljs-number">2</span>)<br>  <span class="hljs-keyword">FROM</span> pg_class <span class="hljs-keyword">WHERE</span> relname <span class="hljs-operator">=</span> <span class="hljs-string">&#x27;bookings&#x27;</span><br>)<br><span class="hljs-keyword">SELECT</span> startup_cost,<br>  startup_cost <span class="hljs-operator">+</span> round((<br>    <span class="hljs-number">1</span> <span class="hljs-operator">*</span> current_setting(<span class="hljs-string">&#x27;cpu_tuple_cost&#x27;</span>)::<span class="hljs-type">real</span><br>  )::<span class="hljs-type">numeric</span>, <span class="hljs-number">2</span>) <span class="hljs-keyword">AS</span> total_cost<br><span class="hljs-keyword">FROM</span> t;<br> startup_cost <span class="hljs-operator">|</span> total_cost<br>−−−−−−−−−−−−−−<span class="hljs-operator">+</span>−−−−−−−−−−−−<br>     <span class="hljs-number">25442.58</span> <span class="hljs-operator">|</span>   <span class="hljs-number">25442.59</span><br>(<span class="hljs-number">1</span> <span class="hljs-type">row</span>)<br></code></pre></td></tr></table></figure>
+
+<p>成本估算之间的依赖关系取决于节点是否需要在将结果传递给其父节点之前积累数据。聚合操作在获取所有输入行之前无法返回结果，因此其启动成本基于下层节点的总成本。相反，Gather 节点一旦获取到行就开始向上层节点发送，因此，该操作的启动成本取决于下层节点的启动成本，而它的总成本则基于下层节点的总成本。</p>
+<p>以下是依赖关系图：</p>
+<p><img src="/2025/05/05/DB/PostgreSQL14_Internals/ch18/ch18/img_4.png" srcset="/img/loading.gif" lazyload alt="img_4.png"></p>
+<h3 id="18-5-Parallel-Execution-Limitations"><a href="#18-5-Parallel-Execution-Limitations" class="headerlink" title="18.5 Parallel Execution Limitations"></a><a name="cp5"></a>18.5 Parallel Execution Limitations</h3><h4 id="18-5-1-后台工作进程数量"><a href="#18-5-1-后台工作进程数量" class="headerlink" title="18.5.1 后台工作进程数量"></a>18.5.1 后台工作进程数量</h4><p>进程数量由三个参数层级控制。同时运行的后台工作进程的最大数量由 max_worker_processes 定义。</p>
+<p>然而，并行查询执行并不是唯一需要后台工作进程的操作。例如，后台工作进程也参与逻辑复制以及被扩展使用。专门为并行计划执行所分配的进程数量受到 max_parallel_workers 的限制。</p>
+<p>在此数字中，最多 max_parallel_workers_per_gather 个进程可以服务于一个领导者进程。</p>
+<p>这些参数的选择取决于以下因素：</p>
+<pre><code class="hljs">硬件能力：系统中必须有专门用于并行执行的空闲核心。
+表的大小：数据库必须含有大表。
+典型负载：必须有可能从并行执行中受益的查询。
+</code></pre>
+<p>这些标准通常适用于 OLAP 系统，而不是 OLTP 系统。</p>
+<p>如果预估要读取的堆数据大小不超过 min_parallel_table_scan_size 值，那么规划器将根本不会考虑并行执行。</p>
+<p>除非特定表在 parallel_workers 存储参数中明确指定了进程数量，否则将按照以下公式计算：</p>
+<p><img src="/2025/05/05/DB/PostgreSQL14_Internals/ch18/ch18/img_5.png" srcset="/img/loading.gif" lazyload alt="img_5.png"></p>
+<p>这意味着每当一个表增大三倍时，PostgreSQL 就会为它的处理分配一个额外的并行工作进程。默认设置可以得出以下数据：</p>
+<p><img src="/2025/05/05/DB/PostgreSQL14_Internals/ch18/ch18/img_6.png" srcset="/img/loading.gif" lazyload alt="img_6.png"></p>
+<p>无论如何，并行工作进程的数量都不能超过 max_parallel_workers_per_gather 参数定义的限制。</p>
+<p>如果我们查询一个 19MB 的小表 ，那么只会计划并启动一个工作进程：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-operator">=</span><span class="hljs-operator">&gt;</span> EXPLAIN (analyze, costs off, timing off, summary off)<br><span class="hljs-keyword">SELECT</span> <span class="hljs-built_in">count</span>(<span class="hljs-operator">*</span>) <span class="hljs-keyword">FROM</span> flights;<br>                             QUERY PLAN<br>−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−<br> Finalize Aggregate (actual <span class="hljs-keyword">rows</span><span class="hljs-operator">=</span><span class="hljs-number">1</span> loops<span class="hljs-operator">=</span><span class="hljs-number">1</span>)<br>   −<span class="hljs-operator">&gt;</span> Gather (actual <span class="hljs-keyword">rows</span><span class="hljs-operator">=</span><span class="hljs-number">2</span> loops<span class="hljs-operator">=</span><span class="hljs-number">1</span>)<br>      Workers Planned: <span class="hljs-number">1</span><br>      Workers Launched: <span class="hljs-number">1</span><br>      −<span class="hljs-operator">&gt;</span> Partial Aggregate (actual <span class="hljs-keyword">rows</span><span class="hljs-operator">=</span><span class="hljs-number">1</span> loops<span class="hljs-operator">=</span><span class="hljs-number">2</span>)<br>          −<span class="hljs-operator">&gt;</span> Parallel Seq Scan <span class="hljs-keyword">on</span> flights (actual <span class="hljs-keyword">rows</span><span class="hljs-operator">=</span><span class="hljs-number">107434</span> lo...<br>(<span class="hljs-number">6</span> <span class="hljs-keyword">rows</span>)			<br></code></pre></td></tr></table></figure>
+
+<p>对 105 MB 大小的表进行查询，只会获得两个工作进程，因为达到了 max_parallel_workers_per_gather 工作进程数量的限制：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-operator">=</span><span class="hljs-operator">&gt;</span> EXPLAIN (analyze, costs off, timing off, summary off)<br><span class="hljs-keyword">SELECT</span> <span class="hljs-built_in">count</span>(<span class="hljs-operator">*</span>) <span class="hljs-keyword">FROM</span> bookings;<br>                             QUERY PLAN<br>−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−<br> Finalize Aggregate (actual <span class="hljs-keyword">rows</span><span class="hljs-operator">=</span><span class="hljs-number">1</span> loops<span class="hljs-operator">=</span><span class="hljs-number">1</span>)<br>   −<span class="hljs-operator">&gt;</span> Gather (actual <span class="hljs-keyword">rows</span><span class="hljs-operator">=</span><span class="hljs-number">3</span> loops<span class="hljs-operator">=</span><span class="hljs-number">1</span>)<br>      Workers Planned: <span class="hljs-number">2</span><br>      Workers Launched: <span class="hljs-number">2</span><br>      −<span class="hljs-operator">&gt;</span> Partial Aggregate (actual <span class="hljs-keyword">rows</span><span class="hljs-operator">=</span><span class="hljs-number">1</span> loops<span class="hljs-operator">=</span><span class="hljs-number">3</span>)<br>          −<span class="hljs-operator">&gt;</span> Parallel Seq Scan <span class="hljs-keyword">on</span> bookings (actual <span class="hljs-keyword">rows</span><span class="hljs-operator">=</span><span class="hljs-number">703703</span> l...<br>(<span class="hljs-number">6</span> <span class="hljs-keyword">rows</span>)<br></code></pre></td></tr></table></figure>
+
+<p>如果我们移除这个限制，那么我们将预估得到三个工作进程：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-operator">=</span><span class="hljs-operator">&gt;</span> <span class="hljs-keyword">ALTER</span> <span class="hljs-keyword">SYSTEM</span> <span class="hljs-keyword">SET</span> max_parallel_workers_per_gather <span class="hljs-operator">=</span> <span class="hljs-number">4</span>;<br><span class="hljs-operator">=</span><span class="hljs-operator">&gt;</span> <span class="hljs-keyword">SELECT</span> pg_reload_conf();<br><span class="hljs-operator">=</span><span class="hljs-operator">&gt;</span> EXPLAIN (analyze, costs off, timing off, summary off)<br><span class="hljs-keyword">SELECT</span> <span class="hljs-built_in">count</span>(<span class="hljs-operator">*</span>) <span class="hljs-keyword">FROM</span> bookings;<br>                             QUERY PLAN<br>−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−<br> Finalize Aggregate (actual <span class="hljs-keyword">rows</span><span class="hljs-operator">=</span><span class="hljs-number">1</span> loops<span class="hljs-operator">=</span><span class="hljs-number">1</span>)<br>   −<span class="hljs-operator">&gt;</span> Gather (actual <span class="hljs-keyword">rows</span><span class="hljs-operator">=</span><span class="hljs-number">4</span> loops<span class="hljs-operator">=</span><span class="hljs-number">1</span>)<br>      Workers Planned: <span class="hljs-number">3</span><br>      Workers Launched: <span class="hljs-number">3</span><br>      −<span class="hljs-operator">&gt;</span> Partial Aggregate (actual <span class="hljs-keyword">rows</span><span class="hljs-operator">=</span><span class="hljs-number">1</span> loops<span class="hljs-operator">=</span><span class="hljs-number">4</span>)<br>          −<span class="hljs-operator">&gt;</span> Parallel Seq Scan <span class="hljs-keyword">on</span> bookings (actual <span class="hljs-keyword">rows</span><span class="hljs-operator">=</span><span class="hljs-number">527778</span> l...<br>(<span class="hljs-number">6</span> <span class="hljs-keyword">rows</span>)<br></code></pre></td></tr></table></figure>
+
+<p>如果在查询执行期间可用的槽数量小于规划的值，那么只会启动可用数量的工作进程。</p>
+<p>让我们将并行进程的总数限制为五个，并同时运行两个查询：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-operator">=</span><span class="hljs-operator">&gt;</span> <span class="hljs-keyword">ALTER</span> <span class="hljs-keyword">SYSTEM</span> <span class="hljs-keyword">SET</span> max_parallel_workers <span class="hljs-operator">=</span> <span class="hljs-number">5</span>;<br><span class="hljs-operator">=</span><span class="hljs-operator">&gt;</span> <span class="hljs-keyword">SELECT</span> pg_reload_conf();<br><span class="hljs-operator">=</span><span class="hljs-operator">&gt;</span> EXPLAIN (analyze, costs off, timing off, summary off)<br><span class="hljs-keyword">SELECT</span> <span class="hljs-built_in">count</span>(<span class="hljs-operator">*</span>) <span class="hljs-keyword">FROM</span> bookings;<br></code></pre></td></tr></table></figure>
+
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs sql">                             QUERY PLAN<br>−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−<br> Finalize Aggregate (actual <span class="hljs-keyword">rows</span><span class="hljs-operator">=</span><span class="hljs-number">1</span> loops<span class="hljs-operator">=</span><span class="hljs-number">1</span>)<br>   −<span class="hljs-operator">&gt;</span> Gather (actual <span class="hljs-keyword">rows</span><span class="hljs-operator">=</span><span class="hljs-number">4</span> loops<span class="hljs-operator">=</span><span class="hljs-number">1</span>)<br>       Workers Planned: <span class="hljs-number">3</span><br>       Workers Launched: <span class="hljs-number">3</span><br>       −<span class="hljs-operator">&gt;</span> Partial Aggregate (actual <span class="hljs-keyword">rows</span><span class="hljs-operator">=</span><span class="hljs-number">1</span> loops<span class="hljs-operator">=</span><span class="hljs-number">4</span>)<br>       −<span class="hljs-operator">&gt;</span> Parallel Seq Scan <span class="hljs-keyword">on</span> bookings (actual <span class="hljs-keyword">rows</span><span class="hljs-operator">=</span><span class="hljs-number">527778</span> l...<br>(<span class="hljs-number">6</span> <span class="hljs-keyword">rows</span>)<br></code></pre></td></tr></table></figure>
+<p>尽管在这两种情况下都期望获得三个进程，但其中一个查询只获得了两个。</p>
+<p>让我们恢复默认设置：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-operator">=</span><span class="hljs-operator">&gt;</span> <span class="hljs-keyword">ALTER</span> <span class="hljs-keyword">SYSTEM</span> RESET <span class="hljs-keyword">ALL</span>;<br><span class="hljs-operator">=</span><span class="hljs-operator">&gt;</span> <span class="hljs-keyword">SELECT</span> pg_reload_conf();<br></code></pre></td></tr></table></figure>
+
+<h4 id="18-5-2-无法并行化的查询"><a href="#18-5-2-无法并行化的查询" class="headerlink" title="18.5.2 无法并行化的查询"></a>18.5.2 无法并行化的查询</h4><p>并非所有查询都可以并行化。13 特别地，以下类型的查询无法使用并行计划：</p>
+<pre><code class="hljs">1. 修改或锁定数据的查询 (UPDATE、DELETE、SELECT FOR UPDATE 等)。
+
+此限制不适用于以下命令中的子查询：
+
+— CREATE TABLE AS，SELECT INTO，CREATE MATERIALIZED VIEW
+
+— REFRESH MATERIALIZED VIEW
+
+但是，在所有这些情况下，行插入仍然是顺序执行的。
+
+2. 可以暂停的查询。这适用于游标内运行的查询，包括 PL/pgSQL 中的 FOR 循环。
+
+3. 调用 PARALLEL UNSAFE 函数的查询。默认情况下，这些都是用户定义的函数和一些标准函数。你可以通过查询系统表来获取完整 unsafe 函数的列表：SELECT * FROM pg_proc WHERE proparallel = ‘u’;
+
+4. 函数内的查询，如果这些函数是从一个并行查询中调用的 (为了避免工作进程数量的递归增长)。
+</code></pre>
+<p>在 PostgreSQL 的未来版本中可能会移除其中一些限制。例如，已经存在在可串行化隔离级别下并行化查询的能力。</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs text">使用诸如 INSERT 和 COPY 等命令并行插入行的方式目前正在开发中。14<br></code></pre></td></tr></table></figure>
+<p>出于以下几个原因，查询可能仍然无法并行化：</p>
+<pre><code class="hljs">此类型的查询根本不支持并行。
+服务器配置禁止使用并行计划 (例如，由于施加的表大小限制)。
+并行计划比顺序计划的成本更高。
+</code></pre>
+<p>要检查查询是否可以并行化，你可以暂时打开 force_parallel_mode 参数。然后规划器将尽可能创建并行计划：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-operator">=</span><span class="hljs-operator">&gt;</span> EXPLAIN <span class="hljs-keyword">SELECT</span> <span class="hljs-operator">*</span> <span class="hljs-keyword">FROM</span> flights;<br>                           QUERY PLAN<br>−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−<br> Seq Scan <span class="hljs-keyword">on</span> flights (cost<span class="hljs-operator">=</span><span class="hljs-number">0.00</span>.<span class="hljs-number">.4772</span><span class="hljs-number">.67</span> <span class="hljs-keyword">rows</span><span class="hljs-operator">=</span><span class="hljs-number">214867</span> width<span class="hljs-operator">=</span><span class="hljs-number">63</span>)<br>(<span class="hljs-number">1</span> <span class="hljs-type">row</span>)<br><br><span class="hljs-operator">=</span><span class="hljs-operator">&gt;</span> <span class="hljs-keyword">SET</span> force_parallel_mode <span class="hljs-operator">=</span> <span class="hljs-keyword">on</span>;<br><span class="hljs-operator">=</span><span class="hljs-operator">&gt;</span> EXPLAIN <span class="hljs-keyword">SELECT</span> <span class="hljs-operator">*</span> <span class="hljs-keyword">FROM</span> flights;<br>                             QUERY PLAN<br>−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−<br> Gather (cost<span class="hljs-operator">=</span><span class="hljs-number">1000.00</span>.<span class="hljs-number">.27259</span><span class="hljs-number">.37</span> <span class="hljs-keyword">rows</span><span class="hljs-operator">=</span><span class="hljs-number">214867</span> width<span class="hljs-operator">=</span><span class="hljs-number">63</span>)<br>	 Workers Planned: <span class="hljs-number">1</span><br>	 Single <span class="hljs-keyword">Copy</span>: <span class="hljs-literal">true</span><br>	 −<span class="hljs-operator">&gt;</span> Seq Scan <span class="hljs-keyword">on</span> flights (cost<span class="hljs-operator">=</span><span class="hljs-number">0.00</span>.<span class="hljs-number">.4772</span><span class="hljs-number">.67</span> <span class="hljs-keyword">rows</span><span class="hljs-operator">=</span><span class="hljs-number">214867</span> width<span class="hljs-operator">=</span><span class="hljs-number">63</span>)<br>(<span class="hljs-number">4</span> <span class="hljs-keyword">rows</span>)<br></code></pre></td></tr></table></figure>
+
+<h4 id="18-5-3-并行限制的查询"><a href="#18-5-3-并行限制的查询" class="headerlink" title="18.5.3 并行限制的查询"></a>18.5.3 并行限制的查询</h4><p>计划中的并行部分越大，潜在的性能提升就越多。然而，某些操作仅由领导者进程严格顺序执行 15，即使它们本身并不干扰并行化。换句话说，这些操作不能出现在 Gather 节点下方的计划树中。</p>
+<p><strong>不可扩展的子查询。</strong> 不可扩展子查询的一个最明显例子 16 是扫描一个 CTE 结果 (在计划中由 CTE Scan 节点表示)：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-operator">=</span><span class="hljs-operator">&gt;</span> EXPLAIN (costs off)<br><span class="hljs-keyword">WITH</span> t <span class="hljs-keyword">AS</span> MATERIALIZED (<br>  <span class="hljs-keyword">SELECT</span> <span class="hljs-operator">*</span> <span class="hljs-keyword">FROM</span> flights<br>)<br><span class="hljs-keyword">SELECT</span> <span class="hljs-built_in">count</span>(<span class="hljs-operator">*</span>) <span class="hljs-keyword">FROM</span> t;<br>         QUERY PLAN<br>−−−−−−−−−−−−−−−−−−−−−−−−−−−−<br> Aggregate<br>   CTE t<br>     −<span class="hljs-operator">&gt;</span> Seq Scan <span class="hljs-keyword">on</span> flights<br>   −<span class="hljs-operator">&gt;</span> CTE Scan <span class="hljs-keyword">on</span> t<br>(<span class="hljs-number">4</span> <span class="hljs-keyword">rows</span>)<br></code></pre></td></tr></table></figure>
+
+<p>如果 CTE 没有被物化，那么计划中就不会包含 CTE Scan 节点，因此这个限制就不适用。</p>
+<p>但是请注意，如果以并行模式计算 CTE 的成本更低，CTE 本身可以在并行模式下进行计算。</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-operator">=</span><span class="hljs-operator">&gt;</span> EXPLAIN (costs off)<br><span class="hljs-keyword">WITH</span> t <span class="hljs-keyword">AS</span> MATERIALIZED (<br>  <span class="hljs-keyword">SELECT</span> <span class="hljs-built_in">count</span>(<span class="hljs-operator">*</span>) <span class="hljs-keyword">FROM</span> flights<br>)<br><span class="hljs-keyword">SELECT</span> <span class="hljs-operator">*</span> <span class="hljs-keyword">FROM</span> t;<br>                   QUERY PLAN<br>−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−<br> CTE Scan <span class="hljs-keyword">on</span> t<br>   CTE t<br>     −<span class="hljs-operator">&gt;</span> Finalize Aggregate<br>         −<span class="hljs-operator">&gt;</span> Gather<br>             Workers Planned: <span class="hljs-number">1</span><br>             −<span class="hljs-operator">&gt;</span> Partial Aggregate<br>                 −<span class="hljs-operator">&gt;</span> Parallel Seq Scan <span class="hljs-keyword">on</span> flights<br>(<span class="hljs-number">7</span> <span class="hljs-keyword">rows</span>)<br></code></pre></td></tr></table></figure>
+
+<p>另一个不可扩展子查询的示例如下图中的 SubPlan 节点所示：</p>
+<p><img src="/2025/05/05/DB/PostgreSQL14_Internals/ch18/ch18/img_7.png" srcset="/img/loading.gif" lazyload alt="img_7.png"></p>
+<p>前两行表示主查询的计划：顺序扫描 flights 表，并根据提供的过滤条件检查每一行。过滤条件包含一个子查询；这个子查询的计划从第三行开始。因此，SubPlan 节点在这种情况下会被多次执行，每次顺序扫描获取一行数据时执行一次。</p>
+<p>此计划上层的 Seq Scan 节点不能参与并行执行，因为它依赖于 SubPlan 节点返回的数据。</p>
+<p>最后要提及的是，这里还有一个由 InitPlan 节点表示的不可扩展子查询：</p>
+<p><img src="/2025/05/05/DB/PostgreSQL14_Internals/ch18/ch18/img_8.png" srcset="/img/loading.gif" lazyload alt="img_8.png"></p>
+<p>不同于 SubPlan 节点，InitPlan 仅评估一次 (在此例中，每次执行 SubPlan 2 节点时评估一次)。</p>
+<p>InitPlan 的父节点不能参与并行执行 (但是那些接收 InitPlan 评估结果的节点可以，就像在这个例子中一样)。</p>
+<p><strong>临时表。</strong> 临时表不支持并行扫描，因为临时表只能由创建它们的进程独占式访问。临时表的页面在本地缓冲区缓存中处理。要使本地缓存能够被多个进程访问，将需要像在共享缓存中那样的锁定机制，这会使它的其他好处变得不那么明显。</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-operator">=</span><span class="hljs-operator">&gt;</span> <span class="hljs-keyword">CREATE</span> TEMPORARY <span class="hljs-keyword">TABLE</span> flights_tmp <span class="hljs-keyword">AS</span> <span class="hljs-keyword">SELECT</span> <span class="hljs-operator">*</span> <span class="hljs-keyword">FROM</span> flights;<br><span class="hljs-operator">=</span><span class="hljs-operator">&gt;</span> EXPLAIN (costs off)<br><span class="hljs-keyword">SELECT</span> <span class="hljs-built_in">count</span>(<span class="hljs-operator">*</span>) <span class="hljs-keyword">FROM</span> flights_tmp;<br>          QUERY PLAN<br>−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−<br> Aggregate<br>   −<span class="hljs-operator">&gt;</span> Seq Scan <span class="hljs-keyword">on</span> flights_tmp<br>(<span class="hljs-number">2</span> <span class="hljs-keyword">rows</span>)<br></code></pre></td></tr></table></figure>
+
+<p><strong>并行限制函数。</strong> 定义为 PARALLEL RESTRICTED 的函数仅允许出现在计划的顺序部分中。你可以通过运行以下查询从系统表中获取此类函数的列表：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-keyword">SELECT</span> <span class="hljs-operator">*</span> <span class="hljs-keyword">FROM</span> pg_proc <span class="hljs-keyword">WHERE</span> proparallel <span class="hljs-operator">=</span> <span class="hljs-string">&#x27;r&#x27;</span>;<br></code></pre></td></tr></table></figure>
+
+<p>只有在完全了解所有相关影响，并已经仔细研究了所有施加的限制后，才能将函数标记为 PARALLEL RESTRICTED (更不用说 PARALLEL SAFE)。17</p>
+<h4 id="参与贡献"><a href="#参与贡献" class="headerlink" title="参与贡献"></a>参与贡献</h4><ol>
+<li>Fork 本仓库</li>
+<li>新建 Feat_xxx 分支</li>
+<li>提交代码</li>
+<li>新建 Pull Request</li>
+</ol>
+<h4 id="特技"><a href="#特技" class="headerlink" title="特技"></a>特技</h4><ol>
+<li>使用 Readme_XXX.md 来支持不同的语言，例如 Readme_en.md, Readme_zh.md</li>
+<li>Gitee 官方博客 <a target="_blank" rel="noopener" href="https://blog.gitee.com/">blog.gitee.com</a></li>
+<li>你可以 <a target="_blank" rel="noopener" href="https://gitee.com/explore">https://gitee.com/explore</a> 这个地址来了解 Gitee 上的优秀开源项目</li>
+<li><a target="_blank" rel="noopener" href="https://gitee.com/gvp">GVP</a> 全称是 Gitee 最有价值开源项目，是综合评定出的优秀开源项目</li>
+<li>Gitee 官方提供的使用手册 <a target="_blank" rel="noopener" href="https://gitee.com/help">https://gitee.com/help</a></li>
+<li>Gitee 封面人物是一档用来展示 Gitee 会员风采的栏目 <a target="_blank" rel="noopener" href="https://gitee.com/gitee-stars/">https://gitee.com/gitee-stars/</a></li>
+</ol>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/BOOK/" class="category-chain-item">BOOK</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/BOOK/PostgreSQL14-Internals/" class="category-chain-item">PostgreSQL14_Internals</a>
+  
+  
+
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/book/" class="print-no-link">#book</a>
+      
+        <a href="/tags/database/" class="print-no-link">#database</a>
+      
+        <a href="/tags/transactions/" class="print-no-link">#transactions</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>ch18. Table Access Methods</div>
+      <div>http://smilemzy.com/2025/05/05/DB/PostgreSQL14_Internals/ch18/ch18/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Smile</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2025年5月5日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-cc-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2025/05/05/DB/PostgreSQL14_Internals/ch19/ch19/" title="ch19. Index Access Methods">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">ch19. Index Access Methods</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2025/05/05/DB/PostgreSQL14_Internals/ch17/ch17/" title="ch17. Statistics">
+                        <span class="hidden-mobile">ch17. Statistics</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/5.0.0/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

@@ -1,0 +1,863 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Smile">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="ch6. VACUUM ProcessingVACUUM处理是一个维护进程,可以确保PostgreSQL持续稳定运行。它主要有两个任务:删除死元组和冻结事务ID,这两点在第5.10节中简要提到过。 为了删除死元组,VACUUM处理提供了两种模式:并发VACUUM和完全VACUUM。并发VACUUM(通常直接称为VACUUM)会逐页删除表文件中的死元组,其他事务在此过程中仍然可以读取该表。而完全VA">
+<meta property="og:type" content="article">
+<meta property="og:title" content="ch6. VACUUM Processing">
+<meta property="og:url" content="http://smilemzy.com/2025/05/05/DB/PostgreSQL%E6%8C%87%E5%8D%97/%E5%86%85%E5%B9%95%E6%8E%A2%E7%B4%A2_new_release/ch6/ch6/index.html">
+<meta property="og:site_name" content="Smile">
+<meta property="og:description" content="ch6. VACUUM ProcessingVACUUM处理是一个维护进程,可以确保PostgreSQL持续稳定运行。它主要有两个任务:删除死元组和冻结事务ID,这两点在第5.10节中简要提到过。 为了删除死元组,VACUUM处理提供了两种模式:并发VACUUM和完全VACUUM。并发VACUUM(通常直接称为VACUUM)会逐页删除表文件中的死元组,其他事务在此过程中仍然可以读取该表。而完全VA">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://smilemzy.com/2025/05/05/DB/PostgreSQL%E6%8C%87%E5%8D%97/%E5%86%85%E5%B9%95%E6%8E%A2%E7%B4%A2_new_release/ch6/ch6/img.png">
+<meta property="og:image" content="http://smilemzy.com/2025/05/05/DB/PostgreSQL%E6%8C%87%E5%8D%97/%E5%86%85%E5%B9%95%E6%8E%A2%E7%B4%A2_new_release/ch6/ch6/img_1.png">
+<meta property="og:image" content="http://smilemzy.com/2025/05/05/DB/PostgreSQL%E6%8C%87%E5%8D%97/%E5%86%85%E5%B9%95%E6%8E%A2%E7%B4%A2_new_release/ch6/ch6/img_2.png">
+<meta property="og:image" content="http://smilemzy.com/2025/05/05/DB/PostgreSQL%E6%8C%87%E5%8D%97/%E5%86%85%E5%B9%95%E6%8E%A2%E7%B4%A2_new_release/ch6/ch6/img_3.png">
+<meta property="og:image" content="http://smilemzy.com/2025/05/05/DB/PostgreSQL%E6%8C%87%E5%8D%97/%E5%86%85%E5%B9%95%E6%8E%A2%E7%B4%A2_new_release/ch6/ch6/img_4.png">
+<meta property="og:image" content="http://smilemzy.com/2025/05/05/DB/PostgreSQL%E6%8C%87%E5%8D%97/%E5%86%85%E5%B9%95%E6%8E%A2%E7%B4%A2_new_release/ch6/ch6/img_5.png">
+<meta property="og:image" content="http://smilemzy.com/2025/05/05/DB/PostgreSQL%E6%8C%87%E5%8D%97/%E5%86%85%E5%B9%95%E6%8E%A2%E7%B4%A2_new_release/ch6/ch6/img_6.png">
+<meta property="og:image" content="http://smilemzy.com/2025/05/05/DB/PostgreSQL%E6%8C%87%E5%8D%97/%E5%86%85%E5%B9%95%E6%8E%A2%E7%B4%A2_new_release/ch6/ch6/img_7.png">
+<meta property="og:image" content="http://smilemzy.com/2025/05/05/DB/PostgreSQL%E6%8C%87%E5%8D%97/%E5%86%85%E5%B9%95%E6%8E%A2%E7%B4%A2_new_release/ch6/ch6/img_8.png">
+<meta property="og:image" content="http://smilemzy.com/2025/05/05/DB/PostgreSQL%E6%8C%87%E5%8D%97/%E5%86%85%E5%B9%95%E6%8E%A2%E7%B4%A2_new_release/ch6/ch6/img_9.png">
+<meta property="og:image" content="http://smilemzy.com/2025/05/05/DB/PostgreSQL%E6%8C%87%E5%8D%97/%E5%86%85%E5%B9%95%E6%8E%A2%E7%B4%A2_new_release/ch6/ch6/img_10.png">
+<meta property="article:published_time" content="2025-05-05T12:24:15.147Z">
+<meta property="article:modified_time" content="2025-05-05T12:52:02.938Z">
+<meta property="article:author" content="Smile">
+<meta property="article:tag" content="book">
+<meta property="article:tag" content="database">
+<meta property="article:tag" content="transactions">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="http://smilemzy.com/2025/05/05/DB/PostgreSQL%E6%8C%87%E5%8D%97/%E5%86%85%E5%B9%95%E6%8E%A2%E7%B4%A2_new_release/ch6/ch6/img.png">
+  
+  
+  
+  <title>ch6. VACUUM Processing - Smile</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/c/font_1749284_5i9bdhy70f8.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/c/font_1736178_k526ubmyhba.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"smilemzy.com","root":"/","version":"1.9.8","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false},"umami":{"src":null,"website_id":null,"domains":null,"start_time":"2024-01-01T00:00:00.000Z","token":null,"api_server":null}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+
+  
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Smile</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/" target="_self">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/" target="_self">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/" target="_self">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/" target="_self">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/" target="_self">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="ch6. VACUUM Processing"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2025-05-05 20:24" pubdate>
+          2025年5月5日 晚上
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          5.2k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          44 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">ch6. VACUUM Processing</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <h2 id="ch6-VACUUM-Processing"><a href="#ch6-VACUUM-Processing" class="headerlink" title="ch6. VACUUM Processing"></a>ch6. VACUUM Processing</h2><p>VACUUM处理是一个维护进程,可以确保PostgreSQL持续稳定运行。它主要有两个任务:<br>删除死元组和冻结事务ID,这两点在第5.10节中简要提到过。</p>
+<p>为了删除死元组,VACUUM处理提供了两种模式:并发VACUUM和完全VACUUM。<br>并发VACUUM(通常直接称为VACUUM)会逐页删除表文件中的死元组,其他事务在此过程中仍然可以读取该表。<br>而完全VACUUM则会删除整个文件中的死元组并对活元组进行碎片整理,在此过程中其他事务无法访问该表。</p>
+<p>尽管VACUUM处理对PostgreSQL至关重要,但相比其他功能其改进进度一直较慢。<br>例如在8.0版本之前,这一进程必须手动执行(使用psql工具或cron守护进程)。直到2005年才实现了自动化,<br>引入了autovacuum守护进程。</p>
+<p>由于VACUUM处理需要扫描整个表,因此是一个耗费资源的过程。<br>在8.4版本(2009年)中引入了可见性映射(Visibility Map,VM)来提高删除死元组的效率。<br>在9.6版本(2016年)中,冻结进程通过增强VM得到了进一步改进。</p>
+<table>
+<thead>
+<tr>
+<th>Chapter Contents</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><a href="#outline-vacuum">6.1 Outline of Concurrent VACUUM</a></td>
+</tr>
+<tr>
+<td><a href="#vmap">6.2 Visibility Map</a></td>
+</tr>
+<tr>
+<td><a href="#freeze-process">6.3 Freeze Processing</a></td>
+</tr>
+<tr>
+<td><a href="#remove-clog">6.4 Removing unnecessary clog files</a></td>
+</tr>
+<tr>
+<td><a href="#autovacuum">6.5 Autovacuum Daemon</a></td>
+</tr>
+<tr>
+<td><a href="#full-vacuum">6.6 Full VACUUM</a></td>
+</tr>
+</tbody></table>
+<h3 id="6-1-Outline-of-Concurrent-VACUUM"><a href="#6-1-Outline-of-Concurrent-VACUUM" class="headerlink" title="6.1 Outline of Concurrent VACUUM"></a><a name="outline-vacuum"></a>6.1 Outline of Concurrent VACUUM</h3><p>VACUUM处理会对指定的表或整个数据库中的所有表执行以下任务:</p>
+<p>1、删除死元组<br>删除每个页面中的死元组并对活元组进行碎片整理。<br>删除指向死元组的索引元组。<br>冻结旧的事务ID</p>
+<p>2、必要时冻结元组的旧事务ID。<br>更新与冻结事务ID相关的系统目录(pg_database和pg_class)。<br>如果可能,删除日志文件(clog)的不必要部分。<br>其他</p>
+<p>3、更新已处理表的空间管理(FSM)和可见性映射(VM)。<br>更新若干统计信息(pg_stat_all_tables等)。<br>假定读者熟悉以下术语:死元组、冻结事务ID、FSM和日志文件(clog);如果不熟悉,请参考第5章。<br>VM在第6.2节中介绍。</p>
+<p>以下是VACUUM处理的伪代码:  </p>
+<blockquote>
+<p> Code Pseudocode: Concurrent VACUUM</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><code class="hljs sql">(<span class="hljs-number">1</span>)    <span class="hljs-keyword">FOR</span> <span class="hljs-keyword">each</span> <span class="hljs-keyword">table</span><br>(<span class="hljs-number">2</span>)      Acquire a ShareUpdateExclusiveLock lock <span class="hljs-keyword">for</span> the target <span class="hljs-keyword">table</span><br><br>         <span class="hljs-comment">/* The first block */</span><br>(<span class="hljs-number">3</span>)      Scan <span class="hljs-keyword">all</span> pages <span class="hljs-keyword">to</span> <span class="hljs-keyword">get</span> <span class="hljs-keyword">all</span> dead tuples, <span class="hljs-keyword">and</span> freeze <span class="hljs-keyword">old</span> tuples if necessary<br>(<span class="hljs-number">4</span>)      Remove the index tuples that point <span class="hljs-keyword">to</span> the respective dead tuples if <span class="hljs-keyword">exists</span><br><br>         <span class="hljs-comment">/* The second block */</span><br>(<span class="hljs-number">5</span>)      <span class="hljs-keyword">FOR</span> <span class="hljs-keyword">each</span> page <span class="hljs-keyword">of</span> the <span class="hljs-keyword">table</span><br>(<span class="hljs-number">6</span>)         Remove the dead tuples, <span class="hljs-keyword">and</span> Reallocate the live tuples <span class="hljs-keyword">in</span> the page<br>(<span class="hljs-number">7</span>)         <span class="hljs-keyword">Update</span> FSM <span class="hljs-keyword">and</span> VM<br><span class="hljs-keyword">END</span> <span class="hljs-keyword">FOR</span><br><br>         <span class="hljs-comment">/* The third block */</span><br>(<span class="hljs-number">8</span>)      Clean up indexes<br>(<span class="hljs-number">9</span>)      <span class="hljs-keyword">Truncate</span> the <span class="hljs-keyword">last</span> page if possible<br>(<span class="hljs-number">10</span>)     <span class="hljs-keyword">Update</span> <span class="hljs-keyword">both</span> the statistics <span class="hljs-keyword">and</span> <span class="hljs-keyword">system</span> catalogs <span class="hljs-keyword">of</span> the target <span class="hljs-keyword">table</span><br><span class="hljs-keyword">Release</span> the ShareUpdateExclusiveLock lock<br><span class="hljs-keyword">END</span> <span class="hljs-keyword">FOR</span><br><br>      <span class="hljs-comment">/* Post-processing */</span><br>(<span class="hljs-number">11</span>)  <span class="hljs-keyword">Update</span> statistics <span class="hljs-keyword">and</span> <span class="hljs-keyword">system</span> catalogs<br>(<span class="hljs-number">12</span>)  Remove <span class="hljs-keyword">both</span> unnecessary files <span class="hljs-keyword">and</span> pages <span class="hljs-keyword">of</span> the clog if possible<br></code></pre></td></tr></table></figure>
+
+<p>(1) 从指定的表中获取每个表。<br>(2) 为目标表获取一个ShareUpdateExclusiveLock锁。这个锁允许其他事务进行读取操作。<br>(3) 扫描所有页面以获取所有死元组,并在必要时冻结旧的事务 ID。<br>(4) 删除指向相应死元组的索引元组(如果存在)。<br>(5) 对表的每个页面执行以下任务,第(6)和(7)步。<br>(6) 删除死元组,并重新分配页面中的活元组。<br>(7) 更新目标表的相应 FSM 和 VM。<br>(8) 通过 index_vacuum_cleanup()@indexam.c 函数清理索引。<br>(9) 如果最后一个页面没有任何元组,则截断该页面。<br>(10) 更新与目标表的vacuum处理相关的统计信息和系统目录。<br>(11) 更新与vacuum处理相关的统计信息和系统目录。<br>(12) 如果可能,删除日志文件(clog)中不必要的文件和页面。  </p>
+</blockquote>
+<p>这个伪代码有两个部分：一个是针对每个表的循环,另一个是后处理。内部循环可以分为三个块。<br>每个块都有各自的任务。</p>
+<p>这三个块和后处理过程概括如下:</p>
+<blockquote>
+<p>PARALLEL option</p>
+<p>自 PostgreSQL 13 版本开始,VACUUM 命令支持 PARALLEL 选项。如果设置了此选项,<br>并且创建了多个索引,则 vacuuming 索引和清理索引的阶段会并行处理。</p>
+<p>需要注意的是,这个功能只适用于 VACUUM 命令,autovacuum 不支持此功能。</p>
+</blockquote>
+<h4 id="6-1-1-First-Block"><a href="#6-1-1-First-Block" class="headerlink" title="6.1.1. First Block"></a>6.1.1. First Block</h4><p>这个块执行冻结处理,并删除指向死元组的索引元组。</p>
+<p>首先,PostgreSQL 扫描目标表以构建死元组的列表,并尽可能冻结老元组。<br>该列表存储在名为 maintenance_work_mem 的本地内存中。冻结处理在第 6.3 节中有描述。</p>
+<p>扫描完成后,PostgreSQL 通过参考死元组列表来删除索引元组。这个过程在内部称为”清理阶段”。<br>这是一个代价高昂的过程,所以 PostgreSQL 在 11 版本中进行了改进。</p>
+<p>在 10 版本或更早的版本中,清理阶段总是执行。在 11 版本或更新的版本中,如果目标索引是 B 树,<br>是否执行清理阶段由配置参数 vacuum_cleanup_index_scale_factor 决定。</p>
+<p>请参阅该参数的详细描述。</p>
+<p>如果 maintenance_work_mem 已满且扫描未完成,PostgreSQL 将进入下一个任务,<br>即步骤(4)到(7)。然后,它会回到步骤(3),继续剩余的扫描。</p>
+<h4 id="6-1-2-Second-Block"><a href="#6-1-2-Second-Block" class="headerlink" title="6.1.2. Second Block"></a>6.1.2. Second Block</h4><p>这个块按逐页的方式删除死元组,并更新 FSM 和 VM。图 6.1 展示了一个示例:</p>
+<p><img src="/2025/05/05/DB/PostgreSQL%E6%8C%87%E5%8D%97/%E5%86%85%E5%B9%95%E6%8E%A2%E7%B4%A2_new_release/ch6/ch6/img.png" srcset="/img/loading.gif" lazyload alt="img.png"></p>
+<p>假设这个表包含三个页面。我们关注第 0 页(即第一页)。这个页面有三个元组。<br>Tuple_2 是一个死元组(图 6.1(1))。在这种情况下,PostgreSQL<br>删除 Tuple 2 并重新排序剩余的元组以修复碎片。然后,它更新这个页面的 FSM 和 VM(图 6.1(2))。<br>PostgreSQL 继续这个过程,直到最后一页。</p>
+<p>请注意,不必要的行指针不会被删除。它们将在将来被重复使用。这是因为,如果删除了行指针,<br>所有相关索引的索引元组都必须更新。</p>
+<h4 id="6-1-3-Third-Block"><a href="#6-1-3-Third-Block" class="headerlink" title="6.1.3. Third Block"></a>6.1.3. Third Block</h4><p>第三个块执行索引删除后的清理操作,并更新与 vacuum 处理相关的统计信息和系统目录,针对每个目标表。</p>
+<p>此外,如果最后一页没有元组,它将从表文件中截断。</p>
+<h4 id="6-1-4-Post-processing"><a href="#6-1-4-Post-processing" class="headerlink" title="6.1.4. Post-processing"></a>6.1.4. Post-processing</h4><p>当 vacuum 处理完成后,PostgreSQL 会更新所有与 vacuum 处理相关的统计信息和系统目录。<br>如果可能的话,它还会删除 clog 中不必要的部分(第 6.4 节)。</p>
+<blockquote>
+<p>Ring Buffer</p>
+<p>Vacuum 处理使用了一个环形缓冲区,这在第 8.5 节有描述。<br>因此,已经处理的页面不会被缓存在共享缓冲区中。</p>
+</blockquote>
+<h3 id="6-2-Visibility-Map"><a href="#6-2-Visibility-Map" class="headerlink" title="6.2 Visibility Map"></a><a name="vmap"></a>6.2 Visibility Map</h3><p>Vacuum 处理是一个代价高昂的操作。因此,在 8.4 版本中引入了 VM(可见性映射)来降低这种成本。</p>
+<p>VM 的基本概念很简单。每个表都有一个独立的可见性映射,用于保存表文件中每个页面的可见性状态。<br>页面的可见性决定了该页面是否包含死元组。Vacuum 处理可以通过使用相应的可见性映射(VM)<br>跳过没有死元组的页面。</p>
+<p>图 6.2 展示了 VM 的使用方式。</p>
+<p><img src="/2025/05/05/DB/PostgreSQL%E6%8C%87%E5%8D%97/%E5%86%85%E5%B9%95%E6%8E%A2%E7%B4%A2_new_release/ch6/ch6/img_1.png" srcset="/img/loading.gif" lazyload alt="img_1.png"></p>
+<p>假设这个表由三个页面组成,其中第 0 页和第 2 页包含死元组,而第 1 页不包含。这个表<br>的 VM 保存了哪些页面包含死元组的信息。在这种情况下, Vacuum 处理可以通过查看 VM 的信息,<br>跳过第 1 页。</p>
+<p>每个 VM 由一个或多个 8 KB 的页面组成,并以 ‘vm’ 后缀存储在文件系统中。<br>例如,一个 relfilenode 为 18751 的表文件,其对应的 FSM (18751_fsm) 和 VM (18751_vm) 文件<br>如下所示。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs shell"><span class="hljs-meta prompt_">$ </span><span class="language-bash"><span class="hljs-built_in">cd</span> <span class="hljs-variable">$PGDATA</span></span><br><span class="hljs-meta prompt_">$ </span><span class="language-bash"><span class="hljs-built_in">ls</span> -la base/16384/18751*</span><br>-rw------- 1 postgres postgres  8192 Apr 21 10:21 base/16384/18751<br>-rw------- 1 postgres postgres 24576 Apr 21 10:18 base/16384/18751_fsm<br>-rw------- 1 postgres postgres  8192 Apr 21 10:18 base/16384/18751_vm<br></code></pre></td></tr></table></figure>
+
+<h4 id="6-2-1-Enhancement-of-VM"><a href="#6-2-1-Enhancement-of-VM" class="headerlink" title="6.2.1. Enhancement of VM"></a>6.2.1. Enhancement of VM</h4><p>在 9.6 版本中,VM 进行了增强,以提高冻结处理的效率。<br>新的 VM 不仅显示页面的可见性,还包含每个页面中元组是否冻结的信息(第 6.3.3 节)。</p>
+<h3 id="6-3-Freeze-Processing"><a href="#6-3-Freeze-Processing" class="headerlink" title="6.3 Freeze Processing"></a><a name="freeze-process"></a>6.3 Freeze Processing</h3><p>冻结处理有两种模式。为了方便区分,它们被称为lazy mode和eager mode。<br>根据特定条件，它可以以任一模式执行。</p>
+<blockquote>
+<p>Note</p>
+<p>并发 VACUUM 在内部通常被称为”懒惰 vacuum”。<br>但是,本文中定义的懒惰模式是冻结处理的一种模式。</p>
+</blockquote>
+<p>冻结处理通常以惰性模式运行，但当满足特定条件时就会运行急切模式。</p>
+<p>在懒惰模式下,冻结处理只扫描包含死元组的页面,使用目标表的相应 VM。</p>
+<p>相反,在积极模式下,它会扫描所有页面,而不管每个页面是否包含死元组。<br>它还会更新与冻结处理相关的系统目录,并在可能的情况下删除 clog 中不必要的部分。</p>
+<p>第 6.3.1 节和第 6.3.2 节分别描述了这两种模式。<br>第 6.3.3 节描述了如何在积极模式下改进冻结过程。</p>
+<h4 id="6-3-1-Lazy-Mode"><a href="#6-3-1-Lazy-Mode" class="headerlink" title="6.3.1. Lazy Mode"></a>6.3.1. Lazy Mode</h4><p>在开始冻结处理时,PostgreSQL 会计算 [Math Processing Error]，并冻结 t_xmin 小于<br>freezeLimit_txid 的元组。</p>
+<p>freezeLimit_txid 的定义如下:</p>
+<p><img src="/2025/05/05/DB/PostgreSQL%E6%8C%87%E5%8D%97/%E5%86%85%E5%B9%95%E6%8E%A2%E7%B4%A2_new_release/ch6/ch6/img_2.png" srcset="/img/loading.gif" lazyload alt="img_2.png"></p>
+<p>其中 OldestXmin 是当前正在运行的事务中最老的 txid。</p>
+<p>例如,当执行 VACUUM 命令时,有三个事务(txid 为 100、101 和 102)正在运行,<br>那么 OldestXmin 就是 100。如果没有其他事务存在,OldestXmin 就是执行这个 VACUUM 命令的 txid。<br>这里,vacuum_freeze_min_age 是一个配置参数,默认值为 50,000,000。</p>
+<p>图 6.3 展示了一个具体的例子。Table_1 由三个页面组成,每个页面有三个元组。<br>当执行 VACUUM 命令时,当前的 txid 是 50,002,500,且没有其他事务。在这种情况下,<br>OldestXmin 是 50,002,500,因此 freezeLimit_txid 为 2500。冻结处理执行如下:</p>
+<p><img src="/2025/05/05/DB/PostgreSQL%E6%8C%87%E5%8D%97/%E5%86%85%E5%B9%95%E6%8E%A2%E7%B4%A2_new_release/ch6/ch6/img_3.png" srcset="/img/loading.gif" lazyload alt="img_3.png"></p>
+<p>在完成 Vacuum 过程之前,与 Vacuum 相关的统计信息会被更新,<br>例如 pg_stat_all_tables 中的 n_live_tup、n_dead_tup、last_vacuum、vacuum_count 等。</p>
+<p>如上面的例子所示,懒惰模式可能无法完全冻结元组,因为它可以跳过某些页面。</p>
+<h4 id="6-3-2-Eager-Mode"><a href="#6-3-2-Eager-Mode" class="headerlink" title="6.3.2. Eager Mode"></a>6.3.2. Eager Mode</h4><p>积极模式弥补了懒惰模式的缺陷。它会扫描所有页面来检查表中的所有元组,<br>更新相关的系统目录,并在可能的情况下删除 clog 中不必要的文件和页面。</p>
+<p>当满足以下条件时,会执行积极模式:</p>
+<p><img src="/2025/05/05/DB/PostgreSQL%E6%8C%87%E5%8D%97/%E5%86%85%E5%B9%95%E6%8E%A2%E7%B4%A2_new_release/ch6/ch6/img_4.png" srcset="/img/loading.gif" lazyload alt="img_4.png"></p>
+<p>在上述条件中, [Math Processing Error] 代表 pg_database 系统目录的列,<br>保存了每个数据库最旧的冻结 txid。详细信息将在稍后描述;因此,我们假设所有<br>pg_database.datfrozenxid 的值都是 1821(这是在 9.5 版本中新安装的数据库集群的初始值)。<br>vacuum_freeze_table_age 是一个配置参数,默认值为 150,000,000。</p>
+<p>图 6.4 显示了一个具体的例子。在 Table_1 中,Tuple_1 和 Tuple_7 已被删除。<br>Tuple_10 和 Tuple_11 已插入到第 2 页。当执行 VACUUM 命令时,当前的 txid 是 150,002,000,<br>没有其他事务。因此,OldestXmin 是 150,002,000,freezeLimit_txid 是 100,002,000。<br>在这种情况下,上述条件得到满足,因为 [Math Processing Error]。因此,冻结处理以积极模式执行,<br>如下所示。</p>
+<p><strong>(请注意,这是 9.5 或更早版本的行为;最新的行为描述在第 6.3.3 节中。)</strong></p>
+<p><img src="/2025/05/05/DB/PostgreSQL%E6%8C%87%E5%8D%97/%E5%86%85%E5%B9%95%E6%8E%A2%E7%B4%A2_new_release/ch6/ch6/img_5.png" srcset="/img/loading.gif" lazyload alt="img_5.png"></p>
+<p>在冻结每个表之后,目标表的 pg_class.relfrozenxid 会被更新。pg_class 是一个系统目录,<br>每个 pg_class.relfrozenxid 列都保存了相应表的最新冻结 xid。在这个例子中,<br>Table_1 的 pg_class.relfrozenxid 被更新为当前的 freezeLimit_txid(即 100,002,000),<br>这意味着 Table_1 中 t_xmin 小于 100,002,000 的所有元组都被冻结了。</p>
+<p>在完成vacuum过程之前,如果必要的话会更新 pg_database.datfrozenxid。<br>每个 pg_database.datfrozenxid 列都保存了对应数据库中最小的 pg_class.relfrozenxid。<br>例如,如果只有 Table_1 在eager模式下被冻结,则该数据库的 pg_database.datfrozenxid 不会被更新,<br>因为其他关系(包括其他表和当前数据库可见的系统目录)的 pg_class.relfrozenxid 都没有变化<br>(图 6.5(1))。如果当前数据库中的所有关系都在eager模式下被冻结,那么该数据库的<br>pg_database.datfrozenxid 会被更新,因为该数据库所有关系的 pg_class.relfrozenxid<br>都被更新为当前的 freezeLimit_txid (图 6.5(2))。</p>
+<p><img src="/2025/05/05/DB/PostgreSQL%E6%8C%87%E5%8D%97/%E5%86%85%E5%B9%95%E6%8E%A2%E7%B4%A2_new_release/ch6/ch6/img_6.png" srcset="/img/loading.gif" lazyload alt="img_6.png"></p>
+<blockquote>
+<p>How to show pg_class.relfrozenxid and pg_database.datfrozenxid.</p>
+<p>下面的第一个查询显示了 ‘testdb’ 数据库中所有可见关系的 relfrozenxid,<br>第二个查询显示了 ‘testdb’ 数据库的 pg_database.datfrozenxld。</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><code class="hljs sql">testdb<span class="hljs-operator">=</span># VACUUM table_1;<br>VACUUM<br>testdb<span class="hljs-operator">=</span># <span class="hljs-keyword">SELECT</span> n.nspname <span class="hljs-keyword">as</span> &quot;Schema&quot;, c.relname <span class="hljs-keyword">as</span> &quot;Name&quot;, c.relfrozenxid<br><span class="hljs-keyword">FROM</span> pg_catalog.pg_class c<br><span class="hljs-keyword">LEFT</span> <span class="hljs-keyword">JOIN</span> pg_catalog.pg_namespace n <span class="hljs-keyword">ON</span> n.oid <span class="hljs-operator">=</span> c.relnamespace<br><span class="hljs-keyword">WHERE</span> c.relkind <span class="hljs-keyword">IN</span> (<span class="hljs-string">&#x27;r&#x27;</span>,<span class="hljs-string">&#x27;&#x27;</span>)<br><span class="hljs-keyword">AND</span> n.nspname <span class="hljs-operator">&lt;&gt;</span> <span class="hljs-string">&#x27;information_schema&#x27;</span> <span class="hljs-keyword">AND</span> n.nspname <span class="hljs-operator">!</span><span class="hljs-operator">~</span> <span class="hljs-string">&#x27;^pg_toast&#x27;</span><br><span class="hljs-keyword">AND</span> pg_catalog.pg_table_is_visible(c.oid)<br><span class="hljs-keyword">ORDER</span> <span class="hljs-keyword">BY</span> c.relfrozenxid::text::<span class="hljs-type">bigint</span> <span class="hljs-keyword">DESC</span>;<br>Schema   <span class="hljs-operator">|</span>            Name         <span class="hljs-operator">|</span> relfrozenxid<br><span class="hljs-comment">------------+-------------------------+--------------</span><br>public     <span class="hljs-operator">|</span> table_1                 <span class="hljs-operator">|</span>    <span class="hljs-number">100002000</span><br>public     <span class="hljs-operator">|</span> table_2                 <span class="hljs-operator">|</span>         <span class="hljs-number">1846</span><br>pg_catalog <span class="hljs-operator">|</span> pg_database             <span class="hljs-operator">|</span>         <span class="hljs-number">1827</span><br>pg_catalog <span class="hljs-operator">|</span> pg_user_mapping         <span class="hljs-operator">|</span>         <span class="hljs-number">1821</span><br>pg_catalog <span class="hljs-operator">|</span> pg_largeobject          <span class="hljs-operator">|</span>         <span class="hljs-number">1821</span><br><br>...<br><br>pg_catalog <span class="hljs-operator">|</span> pg_transform            <span class="hljs-operator">|</span>         <span class="hljs-number">1821</span><br>(<span class="hljs-number">57</span> <span class="hljs-keyword">rows</span>)<br><br>testdb<span class="hljs-operator">=</span># <span class="hljs-keyword">SELECT</span> datname, datfrozenxid <span class="hljs-keyword">FROM</span> pg_database <span class="hljs-keyword">WHERE</span> datname <span class="hljs-operator">=</span> <span class="hljs-string">&#x27;testdb&#x27;</span>;<br>datname <span class="hljs-operator">|</span> datfrozenxid<br><span class="hljs-comment">---------+--------------</span><br>testdb  <span class="hljs-operator">|</span>         <span class="hljs-number">1821</span><br>(<span class="hljs-number">1</span> <span class="hljs-type">row</span>)<br></code></pre></td></tr></table></figure></blockquote>
+<blockquote>
+<p>FREEZE option</p>
+<p>带有 FREEZE 选项的 VACUUM 命令会强制冻结指定表中的所有 txid。<br>这是在积极模式下执行的,但是 freezeLimit 被设置为 OldestXmin<br>(而不是 ‘OldestXmin - vacuum_freeze_min_age’)。例如,<br>当 VACUUM FULL 命令由 txid 5000 执行且没有其他正在运行的事务时,OldestXmin<br>被设置为 5000,小于 5000 的 txid 都会被冻结。</p>
+</blockquote>
+<h4 id="6-3-3-Improving-Freeze-Processing-in-Eager-Mode"><a href="#6-3-3-Improving-Freeze-Processing-in-Eager-Mode" class="headerlink" title="6.3.3. Improving Freeze Processing in Eager Mode"></a>6.3.3. Improving Freeze Processing in Eager Mode</h4><p>在9.5或更早版本中的eager模式并不高效,因为它总是扫描所有页面。<br>比如在6.3.2节的例子中,即使0号页面中的所有元组都已经被冻结,也还是会被扫描。</p>
+<p>为了解决这个问题,在9.6版本中对VM和冻结过程进行了改进。<br>如6.2.1节所述,新的VM包含了每个页面中是否所有元组都已冻结的信息。<br>在eager模式下执行冻结处理时,仅包含已冻结元组的页面可以被跳过。</p>
+<p>图6.6展示了一个例子。在冻结这个表时,通过参考VM的信息,0号页面被跳过了。在冻结完1号页面之后,<br>相关的VM信息也被更新,因为该页面的所有元组都已被冻结。</p>
+<p><img src="/2025/05/05/DB/PostgreSQL%E6%8C%87%E5%8D%97/%E5%86%85%E5%B9%95%E6%8E%A2%E7%B4%A2_new_release/ch6/ch6/img_7.png" srcset="/img/loading.gif" lazyload alt="img_7.png"></p>
+<h3 id="6-4-Removing-unnecessary-clog-files"><a href="#6-4-Removing-unnecessary-clog-files" class="headerlink" title="6.4 Removing unnecessary clog files"></a><a name="remove-clog"></a>6.4 Removing unnecessary clog files</h3><p>第5.4节描述了事务状态存储的Clog。当pg_database.datfrozenxid更新时,<br>PostgreSQL会尝试删除不必要的Clog文件。需要注意的是,相应的Clog页面也会被删除。</p>
+<p>图6.7展示了一个例子。如果最小的pg_database.datfrozenxid包含在Clog文件’0002’中,<br>那么较旧的文件(‘0000’和’0001’)就可以被删除,因为这些文件中存储的所有事务都可以被视为<br>整个数据库集群中已冻结的txid。</p>
+<p><img src="/2025/05/05/DB/PostgreSQL%E6%8C%87%E5%8D%97/%E5%86%85%E5%B9%95%E6%8E%A2%E7%B4%A2_new_release/ch6/ch6/img_8.png" srcset="/img/loading.gif" lazyload alt="img_8.png"></p>
+<blockquote>
+<p>pg_database.datfrozenxid and the clog file</p>
+<p>下面展示了pg_database.datfrozenxid和Clog文件的实际输出:</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><code class="hljs sql">$ psql testdb <span class="hljs-operator">-</span>c &quot;SELECT datname, datfrozenxid FROM pg_database&quot;<br>datname  <span class="hljs-operator">|</span> datfrozenxid<br><span class="hljs-comment">-----------+--------------</span><br>template1 <span class="hljs-operator">|</span>      <span class="hljs-number">7308883</span><br>template0 <span class="hljs-operator">|</span>      <span class="hljs-number">7556347</span><br>postgres  <span class="hljs-operator">|</span>      <span class="hljs-number">7339732</span><br>testdb    <span class="hljs-operator">|</span>      <span class="hljs-number">7506298</span><br>(<span class="hljs-number">4</span> <span class="hljs-keyword">rows</span>)<br><br>$ ls <span class="hljs-operator">-</span>la <span class="hljs-operator">-</span>h data<span class="hljs-operator">/</span>pg_xact<span class="hljs-operator">/</span>	# <span class="hljs-keyword">In</span> versions <span class="hljs-number">9.6</span> <span class="hljs-keyword">or</span> earlier, &quot;ls -la -h data/pg_clog/&quot;<br>total <span class="hljs-number">316</span>K<br>drwx<span class="hljs-comment">------  2 postgres postgres   28 Dec 29 17:15 .</span><br>drwx<span class="hljs-comment">------ 20 postgres postgres 4.0K Dec 29 17:13 ..</span><br><span class="hljs-operator">-</span>rw<span class="hljs-comment">-------  1 postgres postgres 256K Dec 29 17:15 0006</span><br><span class="hljs-operator">-</span>rw<span class="hljs-comment">-------  1 postgres postgres  56K Dec 29 17:15 0007</span><br></code></pre></td></tr></table></figure></blockquote>
+<h3 id="6-5-Autovacuum-Daemon"><a href="#6-5-Autovacuum-Daemon" class="headerlink" title="6.5 Autovacuum Daemon"></a><a name="autovacuum"></a>6.5 Autovacuum Daemon</h3><p>在 PostgreSQL 中,Vacuum 处理已经通过自动 vacuum 后台进程自动化了,<br>使得 PostgreSQL 的操作变得非常简单。</p>
+<p>自动 vacuum 后台进程会定期启动多个自动 vacuum 工作进程。默认情况下,<br>它每 1 分钟(由 autovacuum_naptime 定义)唤醒一次,并启动三个工作进程<br>(由 autovacuum_max_works 定义)。</p>
+<p>由自动 vacuum 后台进程启动的自动 vacuum 工作进程会并发地为<br>各自的表执行 vacuum 处理,逐步并且对数据库活动的影响很小。</p>
+<h4 id="6-5-1-Conditions-for-autovacuum-to-run"><a href="#6-5-1-Conditions-for-autovacuum-to-run" class="headerlink" title="6.5.1. Conditions for autovacuum to run"></a>6.5.1. Conditions for autovacuum to run</h4><p>自动 vacuum 进程会在以下任意条件满足时为目标表运行:</p>
+<p>1、当前 txid 先于以下表达式:  </p>
+<p>relfrozenxid + autovacuum_freeze_max_age</p>
+<p>其中 relfrozenxid 是定义在 pg_class 中的目标表的 relfrozenxid 值,<br>autovacuum_freeze_max_age 是一个配置参数(默认为 200,000,000)。<br>如果满足这个条件,则自动 vacuum 进程会对目标表执行冻结处理。</p>
+<p>2、死元组数量大于以下表达式:  </p>
+<p>autovacuum_vacuum_threshold + autovacuum_vacuum_scale_factor × reltuples</p>
+<p>其中 autovacuum_vacuum_threshold(默认为 50)和 autovacuum_vacuum_scale_factor(默认为 0.2)是配置参数,<br>reltuples 是目标表的元组数。<br>例如,如果目标表有 10,000 个元组和 2,100 个死元组,则自动<br>vacuum 进程会运行,因为 </p>
+<p>2,100 &gt; 50 + 0.2 × 10,000。</p>
+<p>3、插入的元组数量大于以下表达式:  </p>
+<p>autovacuum_vacuum_insert_threshold + autovacuum_vacuum_insert_scale_factor × reltuples</p>
+<p>其中 autovacuum_vacuum_insert_threshold(默认为 1000)和 autovacuum_vacuum_insert_scale_factor(默认为 0.2)<br>是配置参数, reltuples 是目标表的元组数。<br>例如,如果目标表有 10,000 个元组和 3,010 个插入元组,<br>则自动 vacuum 进程会运行,因为 </p>
+<p>3,010 &gt; 1000 + 0.2 × 10,000。</p>
+<p>这个条件是从 13 版本开始添加的。</p>
+<p>此外,如果以下条件对目标表满足,自动 vacuum 进程还将执行analyze处理:</p>
+<p>mod_since_analyze &gt; autovacuum_analyze_threshold + autovacuum_analyze_scale_factor × reltuples</p>
+<p>其中 mod_since_analyze 是上次分析处理后对表执行的修改次数(INSERT、DELETE 或 UPDATE)。<br>autovacuum_analyze_threshold(默认为 50)和 autovacuum_analyze_scale_factor(默认为 0.1)<br>是配置参数, reltuples 是目标表的元组数。</p>
+<p>例如,如果目标表有 10,000 个元组,且自上次分析处理后修改了 1,100 个元组,<br>则自动 vacuum 进程会运行,因为 </p>
+<p>1,100 &gt; 50 + 0.1 × 10,000。</p>
+<blockquote>
+<p>Info</p>
+<p>relation_needs_vacanalyze()函数负责确定目标表是否需要执行 vacuum 或分析操作。</p>
+</blockquote>
+<h4 id="6-5-2-Maintenance-tips"><a href="#6-5-2-Maintenance-tips" class="headerlink" title="6.5.2. Maintenance tips"></a>6.5.2. Maintenance tips</h4><p>经常提到的表膨胀是管理 PostgreSQL 最恼人的问题之一。造成这个问题的原因有几种,<br>其中自动 vacuum 就是其中之一。</p>
+<p>当死元组数量大于以下值时,自动 vacuum 就会运行:<br>对于 1,000 个关系,是 250 个; 对于 100,000 个关系,是 20,050 个;<br>对于 100,000,000 个关系,是 20,000,050 个。<br>从这些例子可以看出,一个表拥有的元组越多,自动 vacuum 运行的频率就越低。</p>
+<p>一个很好的建议是降低 autovacuum_vacuum_scale_factor 的值。<br>实际上,它的默认值(0.2)对于大型表来说太大了。</p>
+<p>PostgreSQL 可以使用 ALTER TABLE 命令为每个表设置合适的 autovacuum_vacuum_scale_factor 值。<br>例如,我将展示如何为 pgbench_accounts 表设置新的 autovacuum_vacuum_scale_factor 值。</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs sql">postgres<span class="hljs-operator">=</span># <span class="hljs-keyword">ALTER TABLE</span> pgbench_accounts <span class="hljs-keyword">SET</span> (autovacuum_vacuum_scale_factor <span class="hljs-operator">=</span> <span class="hljs-number">0.05</span>);<br><span class="hljs-keyword">ALTER TABLE</span><br></code></pre></td></tr></table></figure>
+
+<p>如果你希望自动 vacuum 对目标表进行处理,而不依赖于它们的元组数量,也是可以做到的。</p>
+<p>例如,假设你需要在死元组数量达到 10,000 时执行自动 vacuum 处理。在这种情况下,<br>通过为表设置以下存储参数,每当死元组数量达到 10,000 时,自动 vacuum 进程就会执行 vacuum 处理:</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs sql">postgres<span class="hljs-operator">=</span># <span class="hljs-keyword">ALTER TABLE</span> pgbench_accounts <span class="hljs-keyword">SET</span> (autovacuum_vacuum_threshold <span class="hljs-operator">=</span> <span class="hljs-number">10000</span>);<br><span class="hljs-keyword">ALTER TABLE</span><br>postgres<span class="hljs-operator">=</span># <span class="hljs-keyword">ALTER TABLE</span> pgbench_accounts <span class="hljs-keyword">SET</span> (autovacuum_vacuum_scale_factor <span class="hljs-operator">=</span> <span class="hljs-number">0.0</span>);<br><span class="hljs-keyword">ALTER TABLE</span><br></code></pre></td></tr></table></figure>
+
+<h3 id="6-6-Full-VACUUM"><a href="#6-6-Full-VACUUM" class="headerlink" title="6.6 Full VACUUM"></a><a name="full-vacuum"></a>6.6 Full VACUUM</h3><p>尽管并发 VACUUM 对于操作至关重要,但它并不够充分。例如,即使删除了许多死元组,<br>它也无法减小表的大小。</p>
+<p>图 6.8 展示了一个极端的例子。假设一个表由三个页面组成,每个页面包含六个元组。执<br>行以下 DELETE 命令删除元组,并执行 VACUUM 命令删除死元组:</p>
+<p><img src="/2025/05/05/DB/PostgreSQL%E6%8C%87%E5%8D%97/%E5%86%85%E5%B9%95%E6%8E%A2%E7%B4%A2_new_release/ch6/ch6/img_9.png" srcset="/img/loading.gif" lazyload alt="img_9.png"></p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs sql">testdb<span class="hljs-operator">=</span># <span class="hljs-keyword">DELETE</span> <span class="hljs-keyword">FROM</span> tbl <span class="hljs-keyword">WHERE</span> id <span class="hljs-operator">%</span> <span class="hljs-number">6</span> <span class="hljs-operator">!=</span> <span class="hljs-number">0</span>;<br>testdb<span class="hljs-operator">=</span># VACUUM tbl;<br></code></pre></td></tr></table></figure>
+
+<p>虽然死元组被移除了,但表的大小并没有减小。这不仅浪费了磁盘空间,还对数据库性能产生负面影响。<br>比如在上述示例中,当读取表中的三个元组时,必须从磁盘加载三个页面。</p>
+<p>为了处理这种情况,PostgreSQL 提供了完全 VACUUM 模式。图 6.9 概括了这种模式的工作原理。</p>
+<p><img src="/2025/05/05/DB/PostgreSQL%E6%8C%87%E5%8D%97/%E5%86%85%E5%B9%95%E6%8E%A2%E7%B4%A2_new_release/ch6/ch6/img_10.png" srcset="/img/loading.gif" lazyload alt="img_10.png"></p>
+<p>[1] 创建新的表文件: 图 6.9(1)<br>当对一个表执行 VACUUM FULL 命令时,PostgreSQL 首先为该表获取 AccessExclusiveLock 锁,<br>并创建一个大小为 8 KB 的新表文件。AccessExclusiveLock 锁阻止其他用户访问该表。</p>
+<p>[2] 将活元组复制到新表: 图 6.9(2)<br>PostgreSQL 只将旧表文件中的活元组复制到新表。</p>
+<p>[3] 删除旧文件,重建索引,并更新统计信息、FSM 和 VM: 图 6.9(3)<br>在复制所有活元组后,PostgreSQL 删除旧文件,重建所有相关的表索引,<br>更新该表的 FSM 和 VM,并更新相关的统计信息和系统目录。</p>
+<p>完全 VACUUM 的伪代码如下所示:</p>
+<blockquote>
+<p>Pseudocode: Full VACUUM</p>
+<p>(1)  FOR each table<br>(2)     Acquire AccessExclusiveLock lock for the table<br>(3)     Create a new table file<br>(4)     FOR each live tuple in the old table<br>(5)        Copy the live tuple to the new table file<br>(6)        Freeze the tuple IF necessary<br>END FOR<br>(7)     Remove the old table file<br>(8)     Rebuild all indexes<br>(9)     Update FSM and VM<br>(10)    Update statistics<br>Release AccessExclusiveLock lock<br>END FOR<br>(11) Remove unnecessary clog files and pages if possible</p>
+</blockquote>
+<p>在使用 VACUUM FULL 命令时,需要考虑以下两点:</p>
+<ol>
+<li>当完全 VACUUM 正在处理时,没有人可以访问(读取&#x2F;写入)该表。  </li>
+<li>最多使用该表两倍的磁盘空间临时存储;因此,在处理大型表时,需要检查剩余的磁盘容量。</li>
+</ol>
+<blockquote>
+<p>When should I do VACUUM FULL?</p>
+<p>对于什么时候执行 VACUUM FULL 这个问题,不幸没有一种通用的答案。不过,扩展 pg_freespacemap 可以给出一些好的建议。</p>
+<p>下面的查询可以显示您想要了解的表的平均空闲空间比例:</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs sql">testdb<span class="hljs-operator">=</span># <span class="hljs-keyword">CREATE</span> EXTENSION pg_freespacemap;<br><span class="hljs-keyword">CREATE</span> EXTENSION<br><br>testdb<span class="hljs-operator">=</span># <span class="hljs-keyword">SELECT</span> <span class="hljs-built_in">count</span>(<span class="hljs-operator">*</span>) <span class="hljs-keyword">as</span> &quot;number of pages&quot;,<br>pg_size_pretty(<span class="hljs-built_in">cast</span>(<span class="hljs-built_in">avg</span>(avail) <span class="hljs-keyword">as</span> <span class="hljs-type">bigint</span>)) <span class="hljs-keyword">as</span> &quot;Av. freespace size&quot;,<br>round(<span class="hljs-number">100</span> <span class="hljs-operator">*</span> <span class="hljs-built_in">avg</span>(avail)<span class="hljs-operator">/</span><span class="hljs-number">8192</span> ,<span class="hljs-number">2</span>) <span class="hljs-keyword">as</span> &quot;Av. freespace ratio&quot;<br><span class="hljs-keyword">FROM</span> pg_freespace(<span class="hljs-string">&#x27;accounts&#x27;</span>);<br>number <span class="hljs-keyword">of</span> pages <span class="hljs-operator">|</span> Av. freespace size <span class="hljs-operator">|</span> Av. freespace ratio<br><span class="hljs-comment">----------------+--------------------+---------------------</span><br>           <span class="hljs-number">1640</span> <span class="hljs-operator">|</span> <span class="hljs-number">99</span> bytes           <span class="hljs-operator">|</span>                <span class="hljs-number">1.21</span><br>(<span class="hljs-number">1</span> <span class="hljs-type">row</span>)<br></code></pre></td></tr></table></figure>
+
+<p>根据上述结果,您可以发现该表的空闲空间很少(1.21% 的空闲空间)。</p>
+<p>如果您删除了大部分元组并执行 VACUUM 命令,您会发现几乎所有页面都是空的(86.97% 的空闲空间),<br>但页面数量仍然保持不变。换句话说,表文件并没有被压缩。</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><code class="hljs sql">testdb<span class="hljs-operator">=</span># <span class="hljs-keyword">DELETE</span> <span class="hljs-keyword">FROM</span> accounts <span class="hljs-keyword">WHERE</span> aid <span class="hljs-operator">%</span><span class="hljs-number">10</span> <span class="hljs-operator">!=</span> <span class="hljs-number">0</span> <span class="hljs-keyword">OR</span> aid <span class="hljs-operator">&lt;</span> <span class="hljs-number">100</span>;<br><span class="hljs-keyword">DELETE</span> <span class="hljs-number">90009</span><br><br>testdb<span class="hljs-operator">=</span># VACUUM accounts;<br>VACUUM<br><br>testdb<span class="hljs-operator">=</span># <span class="hljs-keyword">SELECT</span> <span class="hljs-built_in">count</span>(<span class="hljs-operator">*</span>) <span class="hljs-keyword">as</span> &quot;number of pages&quot;,<br>pg_size_pretty(<span class="hljs-built_in">cast</span>(<span class="hljs-built_in">avg</span>(avail) <span class="hljs-keyword">as</span> <span class="hljs-type">bigint</span>)) <span class="hljs-keyword">as</span> &quot;Av. freespace size&quot;,<br>round(<span class="hljs-number">100</span> <span class="hljs-operator">*</span> <span class="hljs-built_in">avg</span>(avail)<span class="hljs-operator">/</span><span class="hljs-number">8192</span> ,<span class="hljs-number">2</span>) <span class="hljs-keyword">as</span> &quot;Av. freespace ratio&quot;<br><span class="hljs-keyword">FROM</span> pg_freespace(<span class="hljs-string">&#x27;accounts&#x27;</span>);<br>number <span class="hljs-keyword">of</span> pages <span class="hljs-operator">|</span> Av. freespace size <span class="hljs-operator">|</span> Av. freespace ratio<br><span class="hljs-comment">----------------+--------------------+---------------------</span><br>           <span class="hljs-number">1640</span> <span class="hljs-operator">|</span> <span class="hljs-number">7124</span> bytes         <span class="hljs-operator">|</span>               <span class="hljs-number">86.97</span><br>(<span class="hljs-number">1</span> <span class="hljs-type">row</span>)<br></code></pre></td></tr></table></figure>
+
+<p>下面的查询可以检查指定表的每个页面的空闲空间比例:</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs sql">testdb<span class="hljs-operator">=</span># <span class="hljs-keyword">SELECT</span> <span class="hljs-operator">*</span>, round(<span class="hljs-number">100</span> <span class="hljs-operator">*</span> avail<span class="hljs-operator">/</span><span class="hljs-number">8192</span> ,<span class="hljs-number">2</span>) <span class="hljs-keyword">as</span> &quot;freespace ratio&quot;<br><span class="hljs-keyword">FROM</span> pg_freespace(<span class="hljs-string">&#x27;accounts&#x27;</span>);<br>blkno <span class="hljs-operator">|</span> avail <span class="hljs-operator">|</span> freespace ratio<br><span class="hljs-comment">------+-------+-----------------</span><br>    <span class="hljs-number">0</span> <span class="hljs-operator">|</span>  <span class="hljs-number">7904</span> <span class="hljs-operator">|</span>           <span class="hljs-number">96.00</span><br>    <span class="hljs-number">1</span> <span class="hljs-operator">|</span>  <span class="hljs-number">7520</span> <span class="hljs-operator">|</span>           <span class="hljs-number">91.00</span><br>    <span class="hljs-number">2</span> <span class="hljs-operator">|</span>  <span class="hljs-number">7136</span> <span class="hljs-operator">|</span>           <span class="hljs-number">87.00</span><br>    <span class="hljs-number">3</span> <span class="hljs-operator">|</span>  <span class="hljs-number">7136</span> <span class="hljs-operator">|</span>           <span class="hljs-number">87.00</span><br>    <span class="hljs-number">4</span> <span class="hljs-operator">|</span>  <span class="hljs-number">7136</span> <span class="hljs-operator">|</span>           <span class="hljs-number">87.00</span><br>    <span class="hljs-number">5</span> <span class="hljs-operator">|</span>  <span class="hljs-number">7136</span> <span class="hljs-operator">|</span>           <span class="hljs-number">87.00</span><br>....<br></code></pre></td></tr></table></figure>
+
+<p>如果在这种情况下执行 VACUUM FULL，您将看到表文件已经被压缩。</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs sql">testdb<span class="hljs-operator">=</span># VACUUM <span class="hljs-keyword">FULL</span> accounts;<br>VACUUM<br>testdb<span class="hljs-operator">=</span># <span class="hljs-keyword">SELECT</span> <span class="hljs-built_in">count</span>(<span class="hljs-operator">*</span>) <span class="hljs-keyword">as</span> &quot;number of blocks&quot;,<br>pg_size_pretty(<span class="hljs-built_in">cast</span>(<span class="hljs-built_in">avg</span>(avail) <span class="hljs-keyword">as</span> <span class="hljs-type">bigint</span>)) <span class="hljs-keyword">as</span> &quot;Av. freespace size&quot;,<br>round(<span class="hljs-number">100</span> <span class="hljs-operator">*</span> <span class="hljs-built_in">avg</span>(avail)<span class="hljs-operator">/</span><span class="hljs-number">8192</span> ,<span class="hljs-number">2</span>) <span class="hljs-keyword">as</span> &quot;Av. freespace ratio&quot;<br><span class="hljs-keyword">FROM</span> pg_freespace(<span class="hljs-string">&#x27;accounts&#x27;</span>);<br>number <span class="hljs-keyword">of</span> pages <span class="hljs-operator">|</span> Av. freespace size <span class="hljs-operator">|</span> Av. freespace ratio<br><span class="hljs-comment">----------------+--------------------+---------------------</span><br>            <span class="hljs-number">164</span> <span class="hljs-operator">|</span> <span class="hljs-number">0</span> bytes            <span class="hljs-operator">|</span>                <span class="hljs-number">0.00</span><br>(<span class="hljs-number">1</span> <span class="hljs-type">row</span>)<br></code></pre></td></tr></table></figure></blockquote>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/BOOK/" class="category-chain-item">BOOK</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/BOOK/PostgreSQL%E6%8C%87%E5%8D%97%EF%BC%9A%E5%86%85%E5%B9%95%E6%8E%A2%E7%B4%A2/" class="category-chain-item">PostgreSQL指南：内幕探索</a>
+  
+  
+
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/book/" class="print-no-link">#book</a>
+      
+        <a href="/tags/database/" class="print-no-link">#database</a>
+      
+        <a href="/tags/transactions/" class="print-no-link">#transactions</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>ch6. VACUUM Processing</div>
+      <div>http://smilemzy.com/2025/05/05/DB/PostgreSQL指南/内幕探索_new_release/ch6/ch6/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Smile</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2025年5月5日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-cc-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2025/05/05/DB/PostgreSQL%E6%8C%87%E5%8D%97/%E5%86%85%E5%B9%95%E6%8E%A2%E7%B4%A2_new_release/ch7/ch7/" title="ch7. HOT and Index-Only Scans">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">ch7. HOT and Index-Only Scans</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2025/05/05/DB/PostgreSQL%E6%8C%87%E5%8D%97/%E5%86%85%E5%B9%95%E6%8E%A2%E7%B4%A2_new_release/ch5/ch5/" title="ch5. 并发控制">
+                        <span class="hidden-mobile">ch5. 并发控制</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/5.0.0/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>
