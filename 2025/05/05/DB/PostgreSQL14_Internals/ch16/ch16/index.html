@@ -36,7 +36,7 @@
 <meta property="og:image" content="http://smilemzy.com/2025/05/05/DB/PostgreSQL14_Internals/ch16/ch16/img_7.png">
 <meta property="og:image" content="http://smilemzy.com/2025/05/05/DB/PostgreSQL14_Internals/ch16/ch16/img_8.png">
 <meta property="article:published_time" content="2025-05-05T12:24:14.552Z">
-<meta property="article:modified_time" content="2025-05-05T12:56:52.132Z">
+<meta property="article:modified_time" content="2025-05-05T13:25:00.429Z">
 <meta property="article:author" content="Smile">
 <meta property="article:tag" content="book">
 <meta property="article:tag" content="database">
@@ -235,7 +235,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          7.5k 字
+          7.4k 字
         
       </span>
     
@@ -246,7 +246,7 @@
         
         
         
-          63 分钟
+          62 分钟
         
       </span>
     
@@ -477,20 +477,6 @@
 <h4 id="16-3-4-获取结果"><a href="#16-3-4-获取结果" class="headerlink" title="16.3.4 获取结果"></a>16.3.4 获取结果</h4><p>扩展查询协议允许批次检索数据，而不是一次性全部检索。SQL 游标几乎具有相同的效果 (除了服务器有一些额外的工作，并且规划器进行了优化，仅获取前面 cursor_tuple_fraction 比例的行，而不是整个结果集)：</p>
 <figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-operator">=</span><span class="hljs-operator">&gt;</span> <span class="hljs-keyword">BEGIN</span>;<br><span class="hljs-operator">=</span><span class="hljs-operator">&gt;</span> <span class="hljs-keyword">DECLARE</span> cur <span class="hljs-keyword">CURSOR</span> <span class="hljs-keyword">FOR</span><br>  <span class="hljs-keyword">SELECT</span> <span class="hljs-operator">*</span><br>  <span class="hljs-keyword">FROM</span> aircrafts<br>  <span class="hljs-keyword">ORDER</span> <span class="hljs-keyword">BY</span> aircraft_code;<br><span class="hljs-operator">=</span><span class="hljs-operator">&gt;</span> <span class="hljs-keyword">FETCH</span> <span class="hljs-number">3</span> <span class="hljs-keyword">FROM</span> cur;<br> aircraft_code <span class="hljs-operator">|</span>      model      <span class="hljs-operator">|</span> <span class="hljs-keyword">range</span><br>−−−−−−−−−−−−−−−<span class="hljs-operator">+</span>−−−−−−−−−−−−−−−−−<span class="hljs-operator">+</span>−−−−−−−<br> <span class="hljs-number">319</span>           <span class="hljs-operator">|</span> Airbus A319−<span class="hljs-number">100</span> <span class="hljs-operator">|</span>  <span class="hljs-number">6700</span><br> <span class="hljs-number">320</span>           <span class="hljs-operator">|</span> Airbus A320−<span class="hljs-number">200</span> <span class="hljs-operator">|</span> 	<span class="hljs-number">5700</span><br> <span class="hljs-number">321</span>           <span class="hljs-operator">|</span> Airbus A321−<span class="hljs-number">200</span> <span class="hljs-operator">|</span> 	<span class="hljs-number">5600</span><br>(<span class="hljs-number">3</span> <span class="hljs-keyword">rows</span>)<br><span class="hljs-operator">=</span><span class="hljs-operator">&gt;</span> <span class="hljs-keyword">FETCH</span> <span class="hljs-number">2</span> <span class="hljs-keyword">FROM</span> cur;<br> aircraft_code <span class="hljs-operator">|</span>      model     <span class="hljs-operator">|</span> <span class="hljs-keyword">range</span><br>−−−−−−−−−−−−−−−<span class="hljs-operator">+</span>−−−−−−−−−−−−−−−−<span class="hljs-operator">+</span>−−−−−−−<br> <span class="hljs-number">733</span>           <span class="hljs-operator">|</span> Boeing <span class="hljs-number">737</span>−<span class="hljs-number">300</span> <span class="hljs-operator">|</span>  <span class="hljs-number">4200</span><br> <span class="hljs-number">763</span>           <span class="hljs-operator">|</span> Boeing <span class="hljs-number">767</span>−<span class="hljs-number">300</span> <span class="hljs-operator">|</span>  <span class="hljs-number">7900</span><br>(<span class="hljs-number">2</span> <span class="hljs-keyword">rows</span>)<br><span class="hljs-operator">=</span><span class="hljs-operator">&gt;</span> <span class="hljs-keyword">COMMIT</span>;<br></code></pre></td></tr></table></figure>
 <p>如果查询返回了多行，并且客户端需要所有数据，那么系统吞吐量高度依赖于批次的大小。单个批次中的行数越多，那么访问服务器以及获取响应所产生的通信开销就越少。但是随着批次大小的增加，这些好处变得不那么明显了：虽然一次一行与每批十行获取行的差异可能巨大，但如果比较每批 100 行和每批 1000 行，这种差异就不是那么明显了。</p>
-<h4 id="参与贡献"><a href="#参与贡献" class="headerlink" title="参与贡献"></a>参与贡献</h4><ol>
-<li>Fork 本仓库</li>
-<li>新建 Feat_xxx 分支</li>
-<li>提交代码</li>
-<li>新建 Pull Request</li>
-</ol>
-<h4 id="特技"><a href="#特技" class="headerlink" title="特技"></a>特技</h4><ol>
-<li>使用 Readme_XXX.md 来支持不同的语言，例如 Readme_en.md, Readme_zh.md</li>
-<li>Gitee 官方博客 <a target="_blank" rel="noopener" href="https://blog.gitee.com/">blog.gitee.com</a></li>
-<li>你可以 <a target="_blank" rel="noopener" href="https://gitee.com/explore">https://gitee.com/explore</a> 这个地址来了解 Gitee 上的优秀开源项目</li>
-<li><a target="_blank" rel="noopener" href="https://gitee.com/gvp">GVP</a> 全称是 Gitee 最有价值开源项目，是综合评定出的优秀开源项目</li>
-<li>Gitee 官方提供的使用手册 <a target="_blank" rel="noopener" href="https://gitee.com/help">https://gitee.com/help</a></li>
-<li>Gitee 封面人物是一档用来展示 Gitee 会员风采的栏目 <a target="_blank" rel="noopener" href="https://gitee.com/gitee-stars/">https://gitee.com/gitee-stars/</a></li>
-</ol>
 
                 
               </div>

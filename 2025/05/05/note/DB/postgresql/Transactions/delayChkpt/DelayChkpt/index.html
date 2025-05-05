@@ -35,7 +35,7 @@
 <meta property="og:image" content="http://smilemzy.com/2025/05/05/note/DB/postgresql/Transactions/delayChkpt/DelayChkpt/img_8.png">
 <meta property="og:image" content="http://smilemzy.com/2025/05/05/note/DB/postgresql/Transactions/delayChkpt/DelayChkpt/img_7.png">
 <meta property="article:published_time" content="2025-05-05T12:24:14.188Z">
-<meta property="article:modified_time" content="2025-05-05T12:33:15.738Z">
+<meta property="article:modified_time" content="2025-05-05T13:24:35.203Z">
 <meta property="article:author" content="Smile">
 <meta property="article:tag" content="database">
 <meta property="article:tag" content="PostgreSQL">
@@ -233,7 +233,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          865 字
+          856 字
         
       </span>
     
@@ -316,16 +316,6 @@
 <p>重点分析情况二(1)~(3):</p>
 <p>对于(1)，任一节点发起 checkpoint,首先node1未被阻塞，可正常完成，node2<br>被阻塞，直到 xlog 和 node1 clog 写入完成并且delayChkpt 为false时才开始<br>checkpoint，如图中(4)时刻 node2开始执行checkpoint，那么 node1 的clog<br>页面不会刷盘。<br>但是，在这种情况下，发起checkpoint时已经获取过全部节点的redo point,而<br>本次事务的 xlog 在 redo point 之后，因此此时发生故障也会回放这条xlog.不<br>会导致事务状态丢失。</p>
 <p>对于(2)，处于 node1、node2的delayChkpt中，会被阻塞，发生故障则不会<br>丢失事务状态。<br>对于(3)，node1正常 checkpoint，将clog刷盘，node2 被阻塞。如果发生故<br>障，xlog 会被回放，不会丢失事务状态。</p>
-<h4 id="安装教程"><a href="#安装教程" class="headerlink" title="安装教程"></a>安装教程</h4><ol>
-<li>xxxx</li>
-<li>xxxx</li>
-<li>xxxx</li>
-</ol>
-<h4 id="使用说明"><a href="#使用说明" class="headerlink" title="使用说明"></a>使用说明</h4><ol>
-<li>xxxx</li>
-<li>xxxx</li>
-<li>xxxx</li>
-</ol>
 
                 
               </div>

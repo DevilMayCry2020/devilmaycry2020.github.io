@@ -27,7 +27,7 @@
 <meta property="og:description" content="介绍PostgreSQL技术内幕事务处理深度探索ch6. 逻辑解码与逻辑复制 内容PG的物理复制即流复制，它主要复制的是数据库中的WAL日志，并按照顺序在备机上回放，从而获得和主机一致的数据。逻辑复制放松很多限制。PG的物理日志的内容是二进制的，是对页面写操作的一种描述；PG的逻辑日志则是对当前事务操作的描述。是对物理日志进行解码得到，按照顺序。   6.1 复制槽复制槽 – 解决逻辑复制过程中的">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2025-05-05T12:24:14.736Z">
-<meta property="article:modified_time" content="2025-05-05T12:53:48.578Z">
+<meta property="article:modified_time" content="2025-05-05T13:24:33.841Z">
 <meta property="article:author" content="Smile">
 <meta property="article:tag" content="book">
 <meta property="article:tag" content="database">
@@ -225,7 +225,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          191 字
+          182 字
         
       </span>
     
@@ -281,16 +281,6 @@
                 <h4 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h4><p>PostgreSQL技术内幕<br>事务处理深度探索<br>ch6. 逻辑解码与逻辑复制</p>
 <h4 id="内容"><a href="#内容" class="headerlink" title="内容"></a>内容</h4><p>PG的物理复制即流复制，它主要复制的是数据库中的WAL日志，并按照顺序在备机上回放，<br>从而获得和主机一致的数据。<br>逻辑复制放松很多限制。<br>PG的物理日志的内容是二进制的，是对页面写操作的一种描述；<br>PG的逻辑日志则是对当前事务操作的描述。是对物理日志进行解码得到，按照顺序。  </p>
 <h5 id="6-1-复制槽"><a href="#6-1-复制槽" class="headerlink" title="6.1 复制槽"></a>6.1 复制槽</h5><p>复制槽 – 解决逻辑复制过程中的状态保存问题，PG分为物理复制槽和逻辑复制槽。  </p>
-<h4 id="安装教程"><a href="#安装教程" class="headerlink" title="安装教程"></a>安装教程</h4><ol>
-<li>xxxx</li>
-<li>xxxx</li>
-<li>xxxx</li>
-</ol>
-<h4 id="使用说明"><a href="#使用说明" class="headerlink" title="使用说明"></a>使用说明</h4><ol>
-<li>xxxx</li>
-<li>xxxx</li>
-<li>xxxx</li>
-</ol>
 
                 
               </div>

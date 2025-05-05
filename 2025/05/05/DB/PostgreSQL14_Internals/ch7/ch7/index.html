@@ -30,7 +30,7 @@
 <meta property="og:image" content="http://smilemzy.com/2025/05/05/DB/PostgreSQL14_Internals/ch7/ch7/img_1.png">
 <meta property="og:image" content="http://smilemzy.com/2025/05/05/DB/PostgreSQL14_Internals/ch7/ch7/img_2.png">
 <meta property="article:published_time" content="2025-05-05T12:24:14.670Z">
-<meta property="article:modified_time" content="2025-05-05T12:58:16.082Z">
+<meta property="article:modified_time" content="2025-05-05T13:25:00.421Z">
 <meta property="article:author" content="Smile">
 <meta property="article:tag" content="book">
 <meta property="article:tag" content="database">
@@ -229,7 +229,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          3.9k 字
+          3.8k 字
         
       </span>
     
@@ -240,7 +240,7 @@
         
         
         
-          33 分钟
+          32 分钟
         
       </span>
     
@@ -409,20 +409,6 @@ autovacuum_freeze_max_age 和 toast.autovacuum_freeze_max_age
 <p>如果在加载数据时进行冻结，那么会立即创建可见性映射，并且页头会接收到可见性属性：</p>
 <figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-operator">=</span><span class="hljs-operator">&gt;</span> <span class="hljs-keyword">SELECT</span> <span class="hljs-operator">*</span> <span class="hljs-keyword">FROM</span> pg_visibility_map(<span class="hljs-string">&#x27;tfreeze&#x27;</span>,<span class="hljs-number">0</span>);<br> all_visible <span class="hljs-operator">|</span> all_frozen<br>−−−−−−−−−−−−−<span class="hljs-operator">+</span>−−−−−−−−−−−−<br> t           <span class="hljs-operator">|</span> t<br>(<span class="hljs-number">1</span> <span class="hljs-type">row</span>)<br><span class="hljs-operator">=</span><span class="hljs-operator">&gt;</span> <span class="hljs-keyword">SELECT</span> flags <span class="hljs-operator">&amp;</span> <span class="hljs-number">4</span> <span class="hljs-operator">&gt;</span> <span class="hljs-number">0</span> <span class="hljs-keyword">AS</span> all_visible<br><span class="hljs-keyword">FROM</span> page_header(get_raw_page(<span class="hljs-string">&#x27;tfreeze&#x27;</span>,<span class="hljs-number">0</span>));<br> all_visible<br>−−−−−−−−−−−−−<br> t<br>(<span class="hljs-number">1</span> <span class="hljs-type">row</span>)<br></code></pre></td></tr></table></figure>
 <p>因此，如果数据已经在加载时被冻结，那么表将不会被 VACUUM 处理 (只要数据保持不变)。不幸的是，TOAST 表尚不支持此功能：如果加载了过大的值，VACUUM 将不得不重写整个 TOAST 表，以设置所有页头中的可见性属性。</p>
-<h4 id="参与贡献"><a href="#参与贡献" class="headerlink" title="参与贡献"></a>参与贡献</h4><ol>
-<li>Fork 本仓库</li>
-<li>新建 Feat_xxx 分支</li>
-<li>提交代码</li>
-<li>新建 Pull Request</li>
-</ol>
-<h4 id="特技"><a href="#特技" class="headerlink" title="特技"></a>特技</h4><ol>
-<li>使用 Readme_XXX.md 来支持不同的语言，例如 Readme_en.md, Readme_zh.md</li>
-<li>Gitee 官方博客 <a target="_blank" rel="noopener" href="https://blog.gitee.com/">blog.gitee.com</a></li>
-<li>你可以 <a target="_blank" rel="noopener" href="https://gitee.com/explore">https://gitee.com/explore</a> 这个地址来了解 Gitee 上的优秀开源项目</li>
-<li><a target="_blank" rel="noopener" href="https://gitee.com/gvp">GVP</a> 全称是 Gitee 最有价值开源项目，是综合评定出的优秀开源项目</li>
-<li>Gitee 官方提供的使用手册 <a target="_blank" rel="noopener" href="https://gitee.com/help">https://gitee.com/help</a></li>
-<li>Gitee 封面人物是一档用来展示 Gitee 会员风采的栏目 <a target="_blank" rel="noopener" href="https://gitee.com/gitee-stars/">https://gitee.com/gitee-stars/</a></li>
-</ol>
 
                 
               </div>
