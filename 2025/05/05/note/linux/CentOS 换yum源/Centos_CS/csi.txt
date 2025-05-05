@@ -1,0 +1,30 @@
+
+#### server ################
+targetcli
+
+/backstores/block/ create xendata /dev/sdb2
+/backstores/block/ create xendatatp /dev/sdb1
+
+ iscsi/ create iqn.2024-05.com.kingbase:kingbase1
+
+ cd iscsi/iqn.2024-05.com.kingbase:kingbase1/tpg1/
+
+luns/ create /backstores/block/xendata
+
+portals/ create 0.0.0.0 3261
+
+acls/ create iqn.2024-05.com.kbserver:client
+
+cd acls/iqn.2024-05.com.kbserver:client/
+
+set auth userid=kb
+set auth password=123456
+
+
+
+#### client ################
+iscsiadm --mode discovery --type st --portal 172.21.0.5:3261
+iscsiadm --mode node --targetname iqn.2024-05.com.kingbase:kingbase1 --portal 172.21.0.5:3261 --login
+
+ iscsiadm --mode discovery --type st --portal 172.21.0.3:3262
+ iscsiadm --mode node --targetname iqn.2024-05.com.kingbase:kingbase2 --portal 172.21.0.3:3262 --login
