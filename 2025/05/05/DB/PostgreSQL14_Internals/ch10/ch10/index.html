@@ -8,8 +8,8 @@
 <head>
   <meta charset="UTF-8">
 
-  <link rel="apple-touch-icon" sizes="76x76" href="/%E5%86%85%E5%AD%98%E6%B3%84%E6%BC%8F%E6%8E%92%E6%9F%A5/fluid.png">
-  <link rel="icon" href="/%E5%86%85%E5%AD%98%E6%B3%84%E6%BC%8F%E6%8E%92%E6%9F%A5/fluid.png">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
   
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
@@ -31,7 +31,7 @@
 <meta property="og:image" content="http://smilemzy.com/2025/05/05/DB/PostgreSQL14_Internals/ch10/ch10/img_2.png">
 <meta property="og:image" content="http://smilemzy.com/2025/05/05/DB/PostgreSQL14_Internals/ch10/ch10/img_3.png">
 <meta property="article:published_time" content="2025-05-05T12:24:14.464Z">
-<meta property="article:modified_time" content="2025-05-05T13:25:00.413Z">
+<meta property="article:modified_time" content="2025-05-06T11:53:13.482Z">
 <meta property="article:author" content="Smile">
 <meta property="article:tag" content="book">
 <meta property="article:tag" content="database">
@@ -79,7 +79,7 @@
   <script id="fluid-configs">
     var Fluid = window.Fluid || {};
     Fluid.ctx = Object.assign({}, Fluid.ctx)
-    var CONFIG = {"hostname":"smilemzy.com","root":"/","version":"1.9.8","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/内存泄漏排查/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false},"umami":{"src":null,"website_id":null,"domains":null,"start_time":"2024-01-01T00:00:00.000Z","token":null,"api_server":null}},"search_path":"/local-search.xml","include_content_in_search":true};
+    var CONFIG = {"hostname":"smilemzy.com","root":"/","version":"1.9.8","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false},"umami":{"src":null,"website_id":null,"domains":null,"start_time":"2024-01-01T00:00:00.000Z","token":null,"api_server":null}},"search_path":"/local-search.xml","include_content_in_search":true};
 
     if (CONFIG.web_analytics.follow_dnt) {
       var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
@@ -201,7 +201,7 @@
   
 
 <div id="banner" class="banner" parallax=true
-     style="background: url('/%E5%86%85%E5%AD%98%E6%B3%84%E6%BC%8F%E6%8E%92%E6%9F%A5/default.png') no-repeat center center; background-size: cover;">
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
   <div class="full-bg-img">
     <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
       <div class="banner-text text-center fade-in-up">
@@ -363,7 +363,7 @@
 <p>对于高负载系统，增加段大小是有意义的，因为这样可能会减少开销，但是此设置只能在集群初始化期间修改 (initdb –wal-segsize)。</p>
 <p>WAL 条目写入当前文件，直至空间用完；然后 PostgreSQL 会创建一个新的文件。</p>
 <p>我们可以了解特定条目位于哪个文件中，以及从文件开始的偏移量是多少：</p>
-<p><img src="/2025/05/05/DB/PostgreSQL14_Internals/ch10/ch10/img.png" srcset="/内存泄漏排查/loading.gif" lazyload alt="img.png"></p>
+<p><img src="/2025/05/05/DB/PostgreSQL14_Internals/ch10/ch10/img.png" srcset="/img/loading.gif" lazyload alt="img.png"></p>
 <p>文件名由两部分组成。最高的八位十六进制数字定义了时间线，用于从备份中恢复，而其余部分代表了最高的 LSN 位 (最低的 LSN 位显示在 file_offset 字段中)。</p>
 <p>要查看当前的 WAL 文件，你可以使用如下函数：</p>
 <figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-operator">=</span><span class="hljs-operator">&gt;</span> <span class="hljs-keyword">SELECT</span> <span class="hljs-operator">*</span><br><span class="hljs-keyword">FROM</span> pg_ls_waldir()<br><span class="hljs-keyword">WHERE</span> name <span class="hljs-operator">=</span> <span class="hljs-string">&#x27;00000001000000000000003E&#x27;</span>;<br>          name            <span class="hljs-operator">|</span>   size 	 <span class="hljs-operator">|</span>     modification<br>−−−−−−−−−−−−−−−−−−−−−−−−−−<span class="hljs-operator">+</span>−−−−−−−−−−<span class="hljs-operator">+</span>−−−−−−−−−−−−−−−−−−−−−−−−<br> <span class="hljs-number">00000001000000000000003</span>D <span class="hljs-operator">|</span> <span class="hljs-number">16777216</span> <span class="hljs-operator">|</span> <span class="hljs-number">2023</span>−<span class="hljs-number">03</span>−<span class="hljs-number">06</span> <span class="hljs-number">14</span>:<span class="hljs-number">01</span>:<span class="hljs-number">48</span><span class="hljs-operator">+</span><span class="hljs-number">03</span><br>(<span class="hljs-number">1</span> <span class="hljs-type">row</span>)<br></code></pre></td></tr></table></figure>
@@ -384,10 +384,10 @@
 <p>后台进程也可以将标记的缓冲区写入磁盘 — 如果后端进程先处理的话。无论如何，此阶段将移除缓冲区标记，因此对于检查点来说，每个缓冲区只会被写入一次。</p>
 <p>当然，当检查点正在进行时，缓冲区缓存中的页面仍然可以修改。但由于新的缓冲区脏页没有被标记，因此 checkpointer 进程会忽略它们。</p>
 <p><strong>检查点完成。</strong> 当检查点开始时，所有脏的缓冲区都写入磁盘后，检查点便认为完成了。从现在开始 (但不是更早！)，检查点的起始位置将用作恢复的新起点。在这个点之前写入的所有 WAL 条目都不再需要。</p>
-<p><img src="/2025/05/05/DB/PostgreSQL14_Internals/ch10/ch10/img_1.png" srcset="/内存泄漏排查/loading.gif" lazyload alt="img_1.png"></p>
+<p><img src="/2025/05/05/DB/PostgreSQL14_Internals/ch10/ch10/img_1.png" srcset="/img/loading.gif" lazyload alt="img_1.png"></p>
 <p>最后， checkpoiner 会创建一个与检查点完成相对应的 WAL 条目，并指定检查点开始的 LSN。由于检查点在开始时不记录任何内容，因此这个 LSN 可以属于任何类型的 WAL 条目。</p>
 <p>PGDATA&#x2F;global&#x2F;pg_control 文件也会更新，以引用最新完成的检查点 (直到这个过程结束，pg_control 都保持为之前的检查点)。</p>
-<p><img src="/2025/05/05/DB/PostgreSQL14_Internals/ch10/ch10/img_2.png" srcset="/内存泄漏排查/loading.gif" lazyload alt="img_2.png"></p>
+<p><img src="/2025/05/05/DB/PostgreSQL14_Internals/ch10/ch10/img_2.png" srcset="/img/loading.gif" lazyload alt="img_2.png"></p>
 <p>为了彻底弄清楚这些位点，让我们看一个简单的例子。首先使几个缓存页面变脏：</p>
 <figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-operator">=</span><span class="hljs-operator">&gt;</span> <span class="hljs-keyword">UPDATE</span> big <span class="hljs-keyword">SET</span> s <span class="hljs-operator">=</span> <span class="hljs-string">&#x27;FOO&#x27;</span>;<br><span class="hljs-operator">=</span><span class="hljs-operator">&gt;</span> <span class="hljs-keyword">SELECT</span> <span class="hljs-built_in">count</span>(<span class="hljs-operator">*</span>) <span class="hljs-keyword">FROM</span> pg_buffercache <span class="hljs-keyword">WHERE</span> isdirty;<br> count<br>−−−−−−−<br>  <span class="hljs-number">4119</span><br>(<span class="hljs-number">1</span> <span class="hljs-type">row</span>)<br></code></pre></td></tr></table></figure>
 
@@ -466,7 +466,7 @@
 <p>检查点完成后，不再需要恢复的 WAL 文件便会被删除 16；但是，部分文件 (总共最多 min_wal_size) 会被保留以供重复使用，并且简单地被重命名。</p>
 <p>这种重命名操作减少了频繁创建文件和删除文件所带来的开销，但如果你不需要这个功能的话，可以使用 wal_recycle 参数将其关闭。</p>
 <p>下图显示了正常情况下，存储在磁盘上的 WAL 文件大小是如何变化的。</p>
-<p><img src="/2025/05/05/DB/PostgreSQL14_Internals/ch10/ch10/img_3.png" srcset="/内存泄漏排查/loading.gif" lazyload alt="img_3.png"></p>
+<p><img src="/2025/05/05/DB/PostgreSQL14_Internals/ch10/ch10/img_3.png" srcset="/img/loading.gif" lazyload alt="img_3.png"></p>
 <p>请务必记住，磁盘上 WAL 文件的实际大小可能会超过 max_wal_size 值：</p>
 <pre><code class="hljs">max_wal_size 参数指定了预期的目标值，而不是硬限制。如果负载激增，写入可能会落后于计划。
 服务器无权删除尚未被复制或连续归档所处理的 WAL 文件。如果启用了此功能，那么必须不断监控，因为它很容易导致磁盘溢出。

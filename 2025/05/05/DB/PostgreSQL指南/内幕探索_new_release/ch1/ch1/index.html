@@ -8,8 +8,8 @@
 <head>
   <meta charset="UTF-8">
 
-  <link rel="apple-touch-icon" sizes="76x76" href="/%E5%86%85%E5%AD%98%E6%B3%84%E6%BC%8F%E6%8E%92%E6%9F%A5/fluid.png">
-  <link rel="icon" href="/%E5%86%85%E5%AD%98%E6%B3%84%E6%BC%8F%E6%8E%92%E6%9F%A5/fluid.png">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
   
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
@@ -33,7 +33,7 @@
 <meta property="og:image" content="http://smilemzy.com/2025/05/05/DB/PostgreSQL%E6%8C%87%E5%8D%97/%E5%86%85%E5%B9%95%E6%8E%A2%E7%B4%A2_new_release/ch1/ch1/img_4.png">
 <meta property="og:image" content="http://smilemzy.com/2025/05/05/DB/PostgreSQL%E6%8C%87%E5%8D%97/%E5%86%85%E5%B9%95%E6%8E%A2%E7%B4%A2_new_release/ch1/ch1/img_5.png">
 <meta property="article:published_time" content="2025-05-05T12:24:15.047Z">
-<meta property="article:modified_time" content="2025-05-05T12:52:47.646Z">
+<meta property="article:modified_time" content="2025-05-06T11:45:19.439Z">
 <meta property="article:author" content="Smile">
 <meta property="article:tag" content="book">
 <meta property="article:tag" content="database">
@@ -81,7 +81,7 @@
   <script id="fluid-configs">
     var Fluid = window.Fluid || {};
     Fluid.ctx = Object.assign({}, Fluid.ctx)
-    var CONFIG = {"hostname":"smilemzy.com","root":"/","version":"1.9.8","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/内存泄漏排查/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false},"umami":{"src":null,"website_id":null,"domains":null,"start_time":"2024-01-01T00:00:00.000Z","token":null,"api_server":null}},"search_path":"/local-search.xml","include_content_in_search":true};
+    var CONFIG = {"hostname":"smilemzy.com","root":"/","version":"1.9.8","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false},"umami":{"src":null,"website_id":null,"domains":null,"start_time":"2024-01-01T00:00:00.000Z","token":null,"api_server":null}},"search_path":"/local-search.xml","include_content_in_search":true};
 
     if (CONFIG.web_analytics.follow_dnt) {
       var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
@@ -203,7 +203,7 @@
   
 
 <div id="banner" class="banner" parallax=true
-     style="background: url('/%E5%86%85%E5%AD%98%E6%B3%84%E6%BC%8F%E6%8E%92%E6%9F%A5/default.png') no-repeat center center; background-size: cover;">
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
   <div class="full-bg-img">
     <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
       <div class="banner-text text-center fade-in-up">
@@ -307,14 +307,14 @@
 </tbody></table>
 <p>如果您已经熟悉这些主题，您可以跳过本章。</p>
 <h3 id="1-1-数据库集簇的逻辑结构"><a href="#1-1-数据库集簇的逻辑结构" class="headerlink" title="1.1 数据库集簇的逻辑结构"></a><a name="logical-structure"></a>1.1 数据库集簇的逻辑结构</h3><p>数据库集群是由PostgreSQL服务器管理的一系列数据库的集合。如果您是首次听到这个定义，<br>可能对此概念感到好奇。在PostgreSQL中，“数据库集群”这个词并不意味着“一组数据库服务器”。<br>一个PostgreSQL服务器运行在一个单一主机上并管理着一个单独的数据库集群。</p>
-<p>图1.1展示了数据库集群的逻辑结构。一个数据库是数据库对象的集合。在关系型数据库理论中，<br>数据库对象是一种用于存储或引用数据的数据结构。堆表是一个典型的例子，还有许多其他类型，<br>比如索引、序列、视图、函数等。在PostgreSQL中，数据库自身也是数据库对象，并且在逻辑上相互独立。<br>所有其他的数据库对象（如表、索引等）都归属于各自的数据库。<br><img src="/2025/05/05/DB/PostgreSQL%E6%8C%87%E5%8D%97/%E5%86%85%E5%B9%95%E6%8E%A2%E7%B4%A2_new_release/ch1/ch1/img.png" srcset="/内存泄漏排查/loading.gif" lazyload alt="img.png"></p>
+<p>图1.1展示了数据库集群的逻辑结构。一个数据库是数据库对象的集合。在关系型数据库理论中，<br>数据库对象是一种用于存储或引用数据的数据结构。堆表是一个典型的例子，还有许多其他类型，<br>比如索引、序列、视图、函数等。在PostgreSQL中，数据库自身也是数据库对象，并且在逻辑上相互独立。<br>所有其他的数据库对象（如表、索引等）都归属于各自的数据库。<br><img src="/2025/05/05/DB/PostgreSQL%E6%8C%87%E5%8D%97/%E5%86%85%E5%B9%95%E6%8E%A2%E7%B4%A2_new_release/ch1/ch1/img.png" srcset="/img/loading.gif" lazyload alt="img.png"></p>
 <p>PostgreSQL中的所有数据库对象都通过各自的对象标识符（OID）进行内部管理，这些标识符是无符号<br>的4字节整数。数据库对象及其相应OID之间的关联关系会根据对象的类型存储在相应的系统目录中。<br>例如，数据库的OID存储在pg_database表中，而堆表（普通表）的OID则存储在pg_class表中。<br>您可以通过执行如下类似的查询来找出您想要了解的OID：</p>
 <figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs sql">sampledb<span class="hljs-operator">=</span># <span class="hljs-keyword">SELECT</span> datname, oid <span class="hljs-keyword">FROM</span> pg_database <span class="hljs-keyword">WHERE</span> datname <span class="hljs-operator">=</span> <span class="hljs-string">&#x27;sampledb&#x27;</span>;<br> datname  <span class="hljs-operator">|</span>  oid<br><span class="hljs-comment">----------+-------</span><br> sampledb <span class="hljs-operator">|</span> <span class="hljs-number">16384</span><br>(<span class="hljs-number">1</span> <span class="hljs-type">row</span>)<br><br>sampledb<span class="hljs-operator">=</span># <span class="hljs-keyword">SELECT</span> relname, oid <span class="hljs-keyword">FROM</span> pg_class <span class="hljs-keyword">WHERE</span> relname <span class="hljs-operator">=</span> <span class="hljs-string">&#x27;sampletbl&#x27;</span>;<br>  relname  <span class="hljs-operator">|</span>  oid<br><span class="hljs-comment">-----------+-------</span><br> sampletbl <span class="hljs-operator">|</span> <span class="hljs-number">18740</span><br>(<span class="hljs-number">1</span> <span class="hljs-type">row</span>)<br></code></pre></td></tr></table></figure>
 
 <h3 id="1-2-数据库集簇的物理结构"><a href="#1-2-数据库集簇的物理结构" class="headerlink" title="1.2 数据库集簇的物理结构"></a><a name="logical-structure"></a>1.2 数据库集簇的物理结构</h3><p>数据库集群基本上就是一个单一的目录，称为基本目录（base directory）。它包含一些子目录和<br>众多文件。当你执行initdb工具初始化一个新的数据库集群时，会在指定的目录下创建一个基本目录。<br>基本目录的路径通常被设置为环境变量 <em>PGDATA</em> 的值。</p>
 <p>图1.2展示了PostgreSQL中数据库集群的一个示例。一个数据库是基本子目录下的一个子目录，<br>而每个表和索引至少是存储在其所属数据库子目录下的一个文件。还有几个包含特定数据和配置文件的子目录。</p>
 <p>虽然PostgreSQL支持表空间（tablespaces），但这一术语的含义与其他关系型数据库管理系统（RDBMS）有所不同。在PostgreSQL中，表空间是一个包含基本目录之外某些数据的单一目录。</p>
-<p><img src="/2025/05/05/DB/PostgreSQL%E6%8C%87%E5%8D%97/%E5%86%85%E5%B9%95%E6%8E%A2%E7%B4%A2_new_release/ch1/ch1/img_1.png" srcset="/内存泄漏排查/loading.gif" lazyload alt="img_1.png"></p>
+<p><img src="/2025/05/05/DB/PostgreSQL%E6%8C%87%E5%8D%97/%E5%86%85%E5%B9%95%E6%8E%A2%E7%B4%A2_new_release/ch1/ch1/img_1.png" srcset="/img/loading.gif" lazyload alt="img_1.png"></p>
 <p>在接下来的各个小节中，将详细描述PostgreSQL中数据库集群的结构布局、数据库、与表和索引相关的文件，以及表空间的安排。</p>
 <h4 id="1-2-1-数据库集簇的布局"><a href="#1-2-1-数据库集簇的布局" class="headerlink" title="1.2.1 数据库集簇的布局"></a>1.2.1 数据库集簇的布局</h4><p>数据库集群的布局已在官方文档中进行了描述。文档的一部分列出了主要文件和子目录，如表1.1所示：</p>
 <p>表1.1：基础目录下文件与子目录的布局（出自官方文档）</p>
@@ -463,7 +463,7 @@
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs shell"><span class="hljs-meta prompt_">$ </span><span class="language-bash"><span class="hljs-built_in">cd</span> <span class="hljs-variable">$PGDATA</span></span><br><span class="hljs-meta prompt_">$ </span><span class="language-bash"><span class="hljs-built_in">ls</span> -la base/16384/18751*</span><br>-rw------- 1 postgres postgres  8192 Apr 21 10:21 base/16384/18751<br>-rw------- 1 postgres postgres 24576 Apr 21 10:18 base/16384/18751_fsm<br>-rw------- 1 postgres postgres  8192 Apr 21 10:18 base/16384/18751_vm<br></code></pre></td></tr></table></figure>
 <p>空闲空间映射和可见性映射在内部也可能被称为每个关系的数据文件的分叉。其中，空闲空间映射是表或索引数据文件的第一个分叉（分叉编号为1），<br>可见性映射则是表数据文件的第二个分叉（分叉编号为2）。数据文件本身的分叉编号为0。</p>
 <h4 id="1-2-4-表空间"><a href="#1-2-4-表空间" class="headerlink" title="1.2.4 表空间"></a>1.2.4 表空间</h4><p>PostgreSQL中的表空间是一个位于基本目录之外的额外数据区域。此功能在8.0版本中实现。</p>
-<p>图1.3展示了表空间的内部结构及其与主数据区域的关系:<br><img src="/2025/05/05/DB/PostgreSQL%E6%8C%87%E5%8D%97/%E5%86%85%E5%B9%95%E6%8E%A2%E7%B4%A2_new_release/ch1/ch1/img_2.png" srcset="/内存泄漏排查/loading.gif" lazyload alt="img_2.png"><br>Fig. 1.3. A Tablespace in the Database Cluster.</p>
+<p>图1.3展示了表空间的内部结构及其与主数据区域的关系:<br><img src="/2025/05/05/DB/PostgreSQL%E6%8C%87%E5%8D%97/%E5%86%85%E5%B9%95%E6%8E%A2%E7%B4%A2_new_release/ch1/ch1/img_2.png" srcset="/img/loading.gif" lazyload alt="img_2.png"><br>Fig. 1.3. A Tablespace in the Database Cluster.</p>
 <p>表空间在执行CREATE TABLESPACE语句时指定的目录下创建。在该目录下，会创建一个版本特定的子目录<br>（例如，PG_14_202011044）。版本特定子目录的命名规则如下所示。</p>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs shell">PG _ &#x27;Major version&#x27; _ &#x27;Catalogue version number&#x27;<br></code></pre></td></tr></table></figure>
 <p>例如，如果在目录‘&#x2F;home&#x2F;postgres&#x2F;tblspc’下创建了一个名为’new_tblspc’的表空间，其OID为16386，则在该表空间下会创建一个名为‘PG_14_202011044’的子目录。</p>
@@ -477,7 +477,7 @@
 
 <h3 id="1-3-堆表文件的内部布局"><a href="#1-3-堆表文件的内部布局" class="headerlink" title="1.3 堆表文件的内部布局"></a><a name="heap-table-layout"></a>1.3 堆表文件的内部布局</h3><p>在数据文件（堆表、索引、自由空间映射和可见性映射）内部，它被划分为固定长度的页（或块），<br>默认长度为8192字节（8 KB）。每个文件内的页从0开始顺序编号，这些编号称为块号。如果文件已满，<br>PostgreSQL会在文件末尾添加一个新的空白页以增大文件尺寸。</p>
 <p>页的内部布局取决于数据文件类型。本节将描述表的布局，因为这些信息在后续章节中将会用到。</p>
-<p><img src="/2025/05/05/DB/PostgreSQL%E6%8C%87%E5%8D%97/%E5%86%85%E5%B9%95%E6%8E%A2%E7%B4%A2_new_release/ch1/ch1/img_3.png" srcset="/内存泄漏排查/loading.gif" lazyload alt="img_3.png"></p>
+<p><img src="/2025/05/05/DB/PostgreSQL%E6%8C%87%E5%8D%97/%E5%86%85%E5%B9%95%E6%8E%A2%E7%B4%A2_new_release/ch1/ch1/img_3.png" srcset="/img/loading.gif" lazyload alt="img_3.png"></p>
 <p>表内的一页包含三种数据：</p>
 <ol>
 <li><p>堆元组（heap tuple） - 堆元组是记录数据本身。<br>堆元组按照从页底部开始的顺序堆叠。 堆元组的内部结构在第5.2节和第9章中有描述，<br>因为这需要了解PostgreSQL中的并发控制（CC）和预写日志（WAL）知识。</p>
@@ -502,11 +502,11 @@
 <p>此外，大小超过约2KB（8KB的大约1&#x2F;4）的堆元组将使用一种称为TOAST（The Oversized-Attribute Storage Technique，大属性存储技术）<br>的方法进行存储和管理。详细信息请参考PostgreSQL文档。</p>
 <h3 id="1-4-向表中读写元组的方式"><a href="#1-4-向表中读写元组的方式" class="headerlink" title="1.4 向表中读写元组的方式"></a><a name="read-write-methods"></a>1.4 向表中读写元组的方式</h3><p>在本章的最后，将描述写入和读取堆元组的方法。</p>
 <h4 id="1-4-1-写入堆元组的过程"><a href="#1-4-1-写入堆元组的过程" class="headerlink" title="1.4.1 写入堆元组的过程"></a>1.4.1 写入堆元组的过程</h4><p>假设一个表由仅包含一个堆元组的一页构成。该页的pd_lower指向第一个行指针，行指针和pd_upper都指向第一个堆元组。<br>参见图1.5(a)。</p>
-<p>当插入第二个元组时，它被放置在第一个元组之后。第二个行指针追加在第一个之后，并指向第二个元组。<br>pd_lower更新为指向第二个行指针，pd_upper则指向第二个堆元组。参见图1.5(b)。<br>此页内的其他头部数据（如pd_lsn、pd_checksum、pd_flags等）也会被更新为合适的值；<br>更多细节在第5.3节和第9.4节中有描述。<br><img src="/2025/05/05/DB/PostgreSQL%E6%8C%87%E5%8D%97/%E5%86%85%E5%B9%95%E6%8E%A2%E7%B4%A2_new_release/ch1/ch1/img_4.png" srcset="/内存泄漏排查/loading.gif" lazyload alt="img_4.png"></p>
+<p>当插入第二个元组时，它被放置在第一个元组之后。第二个行指针追加在第一个之后，并指向第二个元组。<br>pd_lower更新为指向第二个行指针，pd_upper则指向第二个堆元组。参见图1.5(b)。<br>此页内的其他头部数据（如pd_lsn、pd_checksum、pd_flags等）也会被更新为合适的值；<br>更多细节在第5.3节和第9.4节中有描述。<br><img src="/2025/05/05/DB/PostgreSQL%E6%8C%87%E5%8D%97/%E5%86%85%E5%B9%95%E6%8E%A2%E7%B4%A2_new_release/ch1/ch1/img_4.png" srcset="/img/loading.gif" lazyload alt="img_4.png"></p>
 <h4 id="1-4-2-读取堆元组的过程"><a href="#1-4-2-读取堆元组的过程" class="headerlink" title="1.4.2 读取堆元组的过程"></a>1.4.2 读取堆元组的过程</h4><p>这里概述两种典型的访问方法：顺序扫描和B-树索引扫描：</p>
 <p>顺序扫描 – 通过遍历每个页中的所有行指针，顺序读取所有页中的所有元组。参见图1.6(a)。</p>
 <p>B-树索引扫描 – 读取包含索引元组的索引文件，每个索引元组由索引键和指向目标堆元组的TID组成。<br>如果找到了具有所需键的索引元组，PostgreSQL将使用获得的TID值读取目标堆元组。(这里未解释如何在B-树索引中查找索引元组的具体方法，<br>因其过程较为常见且篇幅有限。详情请参阅相关资料。) 例如，在图1.6(b)中，<br>获取的索引元组的TID值为‘(块 &#x3D; 7, 偏移 &#x3D; 2)’。这意味着目标堆元组位于表中第7页的第2个元组，<br>因此PostgreSQL可以直接读取所需的堆元组，无需在其他页中进行不必要的扫描。</p>
-<p><img src="/2025/05/05/DB/PostgreSQL%E6%8C%87%E5%8D%97/%E5%86%85%E5%B9%95%E6%8E%A2%E7%B4%A2_new_release/ch1/ch1/img_5.png" srcset="/内存泄漏排查/loading.gif" lazyload alt="img_5.png"></p>
+<p><img src="/2025/05/05/DB/PostgreSQL%E6%8C%87%E5%8D%97/%E5%86%85%E5%B9%95%E6%8E%A2%E7%B4%A2_new_release/ch1/ch1/img_5.png" srcset="/img/loading.gif" lazyload alt="img_5.png"></p>
 <p>This document does not explain indexes in details.<br>To understand them, I recommend to read the valuable posts shown below:</p>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs shell">https://postgrespro.com/blog/pgsql<br></code></pre></td></tr></table></figure>
 

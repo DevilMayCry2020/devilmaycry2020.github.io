@@ -8,8 +8,8 @@
 <head>
   <meta charset="UTF-8">
 
-  <link rel="apple-touch-icon" sizes="76x76" href="/%E5%86%85%E5%AD%98%E6%B3%84%E6%BC%8F%E6%8E%92%E6%9F%A5/fluid.png">
-  <link rel="icon" href="/%E5%86%85%E5%AD%98%E6%B3%84%E6%BC%8F%E6%8E%92%E6%9F%A5/fluid.png">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
   
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
@@ -41,7 +41,7 @@
 <meta property="og:image" content="http://smilemzy.com/2025/05/05/DB/PostgreSQL%E6%8C%87%E5%8D%97/%E5%86%85%E5%B9%95%E6%8E%A2%E7%B4%A2_new_release/ch8/ch8/img_12.png">
 <meta property="og:image" content="http://smilemzy.com/2025/05/05/DB/PostgreSQL%E6%8C%87%E5%8D%97/%E5%86%85%E5%B9%95%E6%8E%A2%E7%B4%A2_new_release/ch8/ch8/img_13.png">
 <meta property="article:published_time" content="2025-05-05T12:24:15.180Z">
-<meta property="article:modified_time" content="2025-05-05T12:51:46.261Z">
+<meta property="article:modified_time" content="2025-05-06T11:45:19.245Z">
 <meta property="article:author" content="Smile">
 <meta property="article:tag" content="book">
 <meta property="article:tag" content="database">
@@ -89,7 +89,7 @@
   <script id="fluid-configs">
     var Fluid = window.Fluid || {};
     Fluid.ctx = Object.assign({}, Fluid.ctx)
-    var CONFIG = {"hostname":"smilemzy.com","root":"/","version":"1.9.8","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/内存泄漏排查/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false},"umami":{"src":null,"website_id":null,"domains":null,"start_time":"2024-01-01T00:00:00.000Z","token":null,"api_server":null}},"search_path":"/local-search.xml","include_content_in_search":true};
+    var CONFIG = {"hostname":"smilemzy.com","root":"/","version":"1.9.8","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false},"umami":{"src":null,"website_id":null,"domains":null,"start_time":"2024-01-01T00:00:00.000Z","token":null,"api_server":null}},"search_path":"/local-search.xml","include_content_in_search":true};
 
     if (CONFIG.web_analytics.follow_dnt) {
       var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
@@ -211,7 +211,7 @@
   
 
 <div id="banner" class="banner" parallax=true
-     style="background: url('/%E5%86%85%E5%AD%98%E6%B3%84%E6%BC%8F%E6%8E%92%E6%9F%A5/default.png') no-repeat center center; background-size: cover;">
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
   <div class="full-bg-img">
     <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
       <div class="banner-text text-center fade-in-up">
@@ -302,7 +302,7 @@
 <li>环形缓冲区  </li>
 <li>脏页刷新</li>
 </ol>
-<p><img src="/2025/05/05/DB/PostgreSQL%E6%8C%87%E5%8D%97/%E5%86%85%E5%B9%95%E6%8E%A2%E7%B4%A2_new_release/ch8/ch8/img.png" srcset="/内存泄漏排查/loading.gif" lazyload alt="img.png"></p>
+<p><img src="/2025/05/05/DB/PostgreSQL%E6%8C%87%E5%8D%97/%E5%86%85%E5%B9%95%E6%8E%A2%E7%B4%A2_new_release/ch8/ch8/img.png" srcset="/img/loading.gif" lazyload alt="img.png"></p>
 <table>
 <thead>
 <tr>
@@ -341,7 +341,7 @@
 <p>例如，缓冲区标签‘{16821, 16384, 37721, 0, 7}’标识了一个特定页面，该页面位于表空间OID为16821、<br>数据库OID为16384的数据库中，具体是OID为37721的表的第一个分叉（fork number为0）的第七个块。</p>
 <p>同样，缓冲区标签‘{16821, 16384, 37721, 1, 3}’标识了另一个页面，该页面位于表空间OID为16821、<br>数据库OID为16384的数据库中，但这次是OID为37721的表的空闲空间映射分叉（fork number为1）的第三个块。</p>
 <h4 id="8-1-3-How-a-Backend-Process-Reads-Pages"><a href="#8-1-3-How-a-Backend-Process-Reads-Pages" class="headerlink" title="8.1.3. How a Backend Process Reads Pages"></a>8.1.3. How a Backend Process Reads Pages</h4><p>本小节将描述后台进程如何从缓冲区管理器中读取页面（参见图8.2）。</p>
-<p><img src="/2025/05/05/DB/PostgreSQL%E6%8C%87%E5%8D%97/%E5%86%85%E5%B9%95%E6%8E%A2%E7%B4%A2_new_release/ch8/ch8/img_1.png" srcset="/内存泄漏排查/loading.gif" lazyload alt="img_1.png"></p>
+<p><img src="/2025/05/05/DB/PostgreSQL%E6%8C%87%E5%8D%97/%E5%86%85%E5%B9%95%E6%8E%A2%E7%B4%A2_new_release/ch8/ch8/img_1.png" srcset="/img/loading.gif" lazyload alt="img_1.png"></p>
 <p>(1) 当需要读取表或索引页面时，后台进程会向缓冲区管理器发送一个请求，该请求包含了页面的缓冲区标签（buffer_tag）。</p>
 <p>(2) 缓冲区管理器根据该标签返回存储请求页面的缓冲池槽位的缓冲区ID（buffer_ID）。如果请求的页面不在缓冲池中，缓冲区管理器会将页面从持久化存储加载到缓冲池的一个槽位中，然后返回该槽位的缓冲区ID。</p>
 <p>(3) 后台进程根据得到的缓冲区ID访问相应的槽位（以读取所需页面）。</p>
@@ -358,7 +358,7 @@
 <p>在版本16中，新增了一个debug-io-direct选项。这个选项是为了让开发者能够<br>改进PostgreSQL中直接I&#x2F;O的使用。如果开发进展顺利，直接I&#x2F;O有望在不久的将来得到正式的支持。</p>
 </blockquote>
 <h3 id="8-2-Buffer-Manager-Structure"><a href="#8-2-Buffer-Manager-Structure" class="headerlink" title="8.2 Buffer Manager Structure"></a><a name="buffer-ms"></a>8.2 Buffer Manager Structure</h3><p>PostgreSQL的缓冲区管理器包含三层结构：“缓冲池”、“缓冲描述符”和“缓冲表”（如图8.3所示）：</p>
-<p><img src="/2025/05/05/DB/PostgreSQL%E6%8C%87%E5%8D%97/%E5%86%85%E5%B9%95%E6%8E%A2%E7%B4%A2_new_release/ch8/ch8/img_2.png" srcset="/内存泄漏排查/loading.gif" lazyload alt="img_2.png"></p>
+<p><img src="/2025/05/05/DB/PostgreSQL%E6%8C%87%E5%8D%97/%E5%86%85%E5%B9%95%E6%8E%A2%E7%B4%A2_new_release/ch8/ch8/img_2.png" srcset="/img/loading.gif" lazyload alt="img_2.png"></p>
 <ol>
 <li><p>缓冲池：一个用于存储数据文件页面的数组。数组中的每个位置称为缓冲区ID（buffer_ids）。</p>
 </li>
@@ -370,7 +370,7 @@
 <p>以下各小节将详细描述这些层次结构。</p>
 <h4 id="8-2-1-Buffer-Table"><a href="#8-2-1-Buffer-Table" class="headerlink" title="8.2.1. Buffer Table"></a>8.2.1. Buffer Table</h4><p>缓冲表逻辑上可以分为三部分：哈希函数、哈希桶槽位和数据项（如图8.4所示）。</p>
 <p>内置的哈希函数将缓冲区标签（buffer_tags）映射到哈希桶槽位。尽管哈希桶槽位的数量大于缓冲池槽位的数量，<br>但仍可能发生碰撞。因此，缓冲表使用带有链表的分离链接法来解决碰撞问题。当数据项被映射到同一个桶槽时，<br>该方法将这些项存储在同一链表中，如图8.4所示。</p>
-<p><img src="/2025/05/05/DB/PostgreSQL%E6%8C%87%E5%8D%97/%E5%86%85%E5%B9%95%E6%8E%A2%E7%B4%A2_new_release/ch8/ch8/img_3.png" srcset="/内存泄漏排查/loading.gif" lazyload alt="img_3.png"></p>
+<p><img src="/2025/05/05/DB/PostgreSQL%E6%8C%87%E5%8D%97/%E5%86%85%E5%B9%95%E6%8E%A2%E7%B4%A2_new_release/ch8/ch8/img_3.png" srcset="/img/loading.gif" lazyload alt="img_3.png"></p>
 <p>数据条目由两个值组成：页面的buffer_tag和存储该页面元数据的描述符的buffer_id。<br>例如，数据条目‘Tag_A, id&#x3D;1’表示buffer_id为‘1’的缓冲描述符存储了标记为Tag_A的页面的元数据。</p>
 <blockquote>
 <p>Hash Function</p>
@@ -413,11 +413,11 @@
 </ol>
 <p>每个描述符都将处于上述三种状态之一。描述符的状态会根据特定条件发生变化，这些条件在下一小节中描述。</p>
 <p>在接下来的图示中，缓冲描述符的状态通过不同颜色的方框表示：</p>
-<p><img src="/2025/05/05/DB/PostgreSQL%E6%8C%87%E5%8D%97/%E5%86%85%E5%B9%95%E6%8E%A2%E7%B4%A2_new_release/ch8/ch8/img_4.png" srcset="/内存泄漏排查/loading.gif" lazyload alt="img_4.png"></p>
-<p><img src="/2025/05/05/DB/PostgreSQL%E6%8C%87%E5%8D%97/%E5%86%85%E5%B9%95%E6%8E%A2%E7%B4%A2_new_release/ch8/ch8/img_5.png" srcset="/内存泄漏排查/loading.gif" lazyload alt="img_5.png"></p>
+<p><img src="/2025/05/05/DB/PostgreSQL%E6%8C%87%E5%8D%97/%E5%86%85%E5%B9%95%E6%8E%A2%E7%B4%A2_new_release/ch8/ch8/img_4.png" srcset="/img/loading.gif" lazyload alt="img_4.png"></p>
+<p><img src="/2025/05/05/DB/PostgreSQL%E6%8C%87%E5%8D%97/%E5%86%85%E5%B9%95%E6%8E%A2%E7%B4%A2_new_release/ch8/ch8/img_5.png" srcset="/img/loading.gif" lazyload alt="img_5.png"></p>
 <h4 id="8-2-3-Buffer-Descriptors-Layer"><a href="#8-2-3-Buffer-Descriptors-Layer" class="headerlink" title="8.2.3. Buffer Descriptors Layer"></a>8.2.3. Buffer Descriptors Layer</h4><p>一组缓冲描述符构成了一个数组，在本文档中被称为缓冲描述符层。</p>
 <p>当PostgreSQL服务器启动时，所有缓冲描述符的状态都是’空闲’。<br>在PostgreSQL中，这些描述符构成一个被称为空闲列表（freelist）的链表（图8.5）。</p>
-<p><img src="/2025/05/05/DB/PostgreSQL%E6%8C%87%E5%8D%97/%E5%86%85%E5%B9%95%E6%8E%A2%E7%B4%A2_new_release/ch8/ch8/img_6.png" srcset="/内存泄漏排查/loading.gif" lazyload alt="img_6.png"></p>
+<p><img src="/2025/05/05/DB/PostgreSQL%E6%8C%87%E5%8D%97/%E5%86%85%E5%B9%95%E6%8E%A2%E7%B4%A2_new_release/ch8/ch8/img_6.png" srcset="/img/loading.gif" lazyload alt="img_6.png"></p>
 <blockquote>
 <p>Note</p>
 <p>重要的是要注意，PostgreSQL中的空闲列表（freelist）与Oracle中的空闲列表概念完全不同。<br>PostgreSQL中的空闲列表仅仅是<strong>空缓冲描述符</strong>的简单链表。而在PostgreSQL中，用于追踪块内可用空间的<br>自由空间映射（Freespace Maps，FSM），在5.3.4节中有描述，它们起到了与Oracle中空闲列表相似的作用。</p>
@@ -425,7 +425,7 @@
 <p>图8.6展示了如何加载第一个页面。</p>
 <p>(1) 从空闲列表的顶部检索一个空闲的描述符，并对其进行固定（即增加其refcount和usage_count各1）。<br>(2) 在缓冲表中插入一条新记录，该记录将第一个页面的标签映射到检索到的描述符的buffer_id。<br>(3) 从存储中将新页面加载到相应的缓冲池槽位中。<br>(4) 将新页面的元数据保存到检索到的描述符中。  </p>
 <p>第二页及之后的页面以类似的方式加载。更多细节在8.4.2节中提供。</p>
-<p><img src="/2025/05/05/DB/PostgreSQL%E6%8C%87%E5%8D%97/%E5%86%85%E5%B9%95%E6%8E%A2%E7%B4%A2_new_release/ch8/ch8/img_7.png" srcset="/内存泄漏排查/loading.gif" lazyload alt="img_7.png"></p>
+<p><img src="/2025/05/05/DB/PostgreSQL%E6%8C%87%E5%8D%97/%E5%86%85%E5%B9%95%E6%8E%A2%E7%B4%A2_new_release/ch8/ch8/img_7.png" srcset="/img/loading.gif" lazyload alt="img_7.png"></p>
 <p>从空闲列表中检索过的描述符始终会持有页面的元数据。换句话说，一旦被使用过，<br>非空的描述符就不会再返回到空闲列表中。然而，当发生以下情况之一时，相应的描述符会被再次添加到空闲列表中，<br>并且描述符的状态会被设置为’空闲’：</p>
 <ol>
 <li>表或索引被删除。  </li>
@@ -447,7 +447,7 @@
 <h4 id="8-3-1-Buffer-Table-Locks"><a href="#8-3-1-Buffer-Table-Locks" class="headerlink" title="8.3.1. Buffer Table Locks"></a>8.3.1. Buffer Table Locks</h4><p>BufMappingLock用于保护整个缓冲表的数据完整性。它是一种轻量级锁，<br>既可用于共享模式也可用于排他模式。当在缓冲表中搜索条目时，后端进程持有共享的BufMappingLock。<br>而在插入或删除条目时，后端进程则持有排他的锁。</p>
 <p>为了减少缓冲表中的竞争状况，BufMappingLock被分割成多个分区（默认为128个分区）。<br>每个BufMappingLock分区负责保护相应哈希桶槽位的一部分。</p>
 <p>图8.7展示了一个典型的例子，说明了分割BufMappingLock的效果。两个后端进程可以同时<br>以排他模式持有各自的BufMappingLock分区来插入新的数据条目。如果BufMappingLock是一个单一的系统范围锁，<br>那么这两个进程就不得不根据哪个进程先开始而等待对方完成。通过分割，提高了并发性能，减少了锁竞争导致的等待时间。</p>
-<p><img src="/2025/05/05/DB/PostgreSQL%E6%8C%87%E5%8D%97/%E5%86%85%E5%B9%95%E6%8E%A2%E7%B4%A2_new_release/ch8/ch8/img_8.png" srcset="/内存泄漏排查/loading.gif" lazyload alt="img_8.png"><br>图8.7展示了两个进程同时以排他模式获取BufMappingLock的各自分区以插入新数据条目的场景。</p>
+<p><img src="/2025/05/05/DB/PostgreSQL%E6%8C%87%E5%8D%97/%E5%86%85%E5%B9%95%E6%8E%A2%E7%B4%A2_new_release/ch8/ch8/img_8.png" srcset="/img/loading.gif" lazyload alt="img_8.png"><br>图8.7展示了两个进程同时以排他模式获取BufMappingLock的各自分区以插入新数据条目的场景。</p>
 <p>缓冲表还需要许多其他锁。例如，缓冲表内部在删除条目时使用了自旋锁。<br>但是，这些其他锁的描述在此文档中被省略，因为它们不是本说明所需的内容。</p>
 <blockquote>
 <p>Info</p>
@@ -491,7 +491,7 @@
 <p>(4) 为buffer_id为2的缓冲描述符设置固定（pin），将描述符的refcount和usage_count各增加1。（第8.3.2节描述了固定操作）</p>
 <p>(5) 释放BufMappingLock。</p>
 <p>(6) 访问buffer_id为2的缓冲池槽位。</p>
-<p><img src="/2025/05/05/DB/PostgreSQL%E6%8C%87%E5%8D%97/%E5%86%85%E5%B9%95%E6%8E%A2%E7%B4%A2_new_release/ch8/ch8/img_9.png" srcset="/内存泄漏排查/loading.gif" lazyload alt="img_9.png"></p>
+<p><img src="/2025/05/05/DB/PostgreSQL%E6%8C%87%E5%8D%97/%E5%86%85%E5%B9%95%E6%8E%A2%E7%B4%A2_new_release/ch8/ch8/img_9.png" srcset="/img/loading.gif" lazyload alt="img_9.png"></p>
 <p>接着，当从缓冲池槽位的页面中读取行时，PostgreSQL进程会获取相应缓冲描述符的共享content_lock。<br>因此，多个进程可以同时读取缓冲池槽位中的页面。</p>
 <p>当向页面中插入（以及更新或删除）行时，Postgres进程会获取相应缓冲描述符的排他content_lock。<br>（需要注意的是，页面的脏位必须设置为1。）</p>
 <p>访问页面后，相应缓冲描述符的refcount值会减1。</p>
@@ -517,7 +517,7 @@
 </ol>
 <p>(6) 释放BufMappingLock。</p>
 <p>(7) 访问buffer_id为4的缓冲池槽位。</p>
-<p><img src="/2025/05/05/DB/PostgreSQL%E6%8C%87%E5%8D%97/%E5%86%85%E5%B9%95%E6%8E%A2%E7%B4%A2_new_release/ch8/ch8/img_10.png" srcset="/内存泄漏排查/loading.gif" lazyload alt="img_10.png"></p>
+<p><img src="/2025/05/05/DB/PostgreSQL%E6%8C%87%E5%8D%97/%E5%86%85%E5%B9%95%E6%8E%A2%E7%B4%A2_new_release/ch8/ch8/img_10.png" srcset="/img/loading.gif" lazyload alt="img_10.png"></p>
 <h4 id="8-4-3-Loading-a-Page-from-Storage-to-a-Victim-Buffer-Pool-Slot"><a href="#8-4-3-Loading-a-Page-from-Storage-to-a-Victim-Buffer-Pool-Slot" class="headerlink" title="8.4.3. Loading a Page from Storage to a Victim Buffer Pool Slot"></a>8.4.3. Loading a Page from Storage to a Victim Buffer Pool Slot</h4><p><strong>从存储加载页面到牺牲缓冲池槽位</strong></p>
 <p>在这种情况下，假设所有缓冲池槽位都被页面占用，但所需的页面并未存储在其中。缓冲区管理器执行以下步骤：</p>
 <p>(1) 创建所需页面的buffer_tag并查找缓冲表。在此例中，我们假设buffer_tag为’Tag_M’（未找到所需页面）。</p>
@@ -538,12 +538,12 @@
 <li>获取包含新条目的槽位的新BufMappingLock分区的排他锁。  </li>
 <li>将新条目插入缓冲表中。</li>
 </ol>
-<p><img src="/2025/05/05/DB/PostgreSQL%E6%8C%87%E5%8D%97/%E5%86%85%E5%B9%95%E6%8E%A2%E7%B4%A2_new_release/ch8/ch8/img_11.png" srcset="/内存泄漏排查/loading.gif" lazyload alt="img_11.png"></p>
+<p><img src="/2025/05/05/DB/PostgreSQL%E6%8C%87%E5%8D%97/%E5%86%85%E5%B9%95%E6%8E%A2%E7%B4%A2_new_release/ch8/ch8/img_11.png" srcset="/img/loading.gif" lazyload alt="img_11.png"></p>
 <p>(6) 从缓冲表中删除旧条目，并释放旧的BufMappingLock分区。</p>
 <p>(7) 从存储加载所需页面数据到牺牲缓冲槽位。然后，更新buffer_id为5的描述符的标志位；<br>将脏位设为0，并初始化其他位。</p>
 <p>(8) 释放新的BufMappingLock分区。</p>
 <p>(9) 访问buffer_id为5的缓冲池槽位。</p>
-<p><img src="/2025/05/05/DB/PostgreSQL%E6%8C%87%E5%8D%97/%E5%86%85%E5%B9%95%E6%8E%A2%E7%B4%A2_new_release/ch8/ch8/img_12.png" srcset="/内存泄漏排查/loading.gif" lazyload alt="img_12.png"></p>
+<p><img src="/2025/05/05/DB/PostgreSQL%E6%8C%87%E5%8D%97/%E5%86%85%E5%B9%95%E6%8E%A2%E7%B4%A2_new_release/ch8/ch8/img_12.png" srcset="/img/loading.gif" lazyload alt="img_12.png"></p>
 <h4 id="8-4-4-Page-Replacement-Algorithm-Clock-Sweep"><a href="#8-4-4-Page-Replacement-Algorithm-Clock-Sweep" class="headerlink" title="8.4.4. Page Replacement Algorithm: Clock Sweep"></a>8.4.4. Page Replacement Algorithm: Clock Sweep</h4><p><strong>页面替换算法：时钟扫描</strong></p>
 <p>本节剩余部分将描述时钟扫描算法。此算法是低开销的NFU（不经常使用）算法变体，<br>能高效地选择使用频率较低的页面。</p>
 <p>想象缓冲描述符组成一个环形列表（见图8.12）。一个无符号的32位整数nextVictimBuffer总是指向其中一个缓冲描述符，<br>并顺时针旋转。该算法的伪代码及描述如下：</p>
@@ -554,7 +554,7 @@
 <p>(1) 获取由nextVictimBuffer指向的候选缓冲描述符。<br>(2) 如果候选缓冲描述符未被固定，进入步骤(3)。否则，进入步骤(4)。<br>(3) 如果候选描述符的usage_count为0，选择该描述符对应的槽位作为牺牲者，进入步骤(5)。<br>否则，将此描述符的usage_count减1，然后回到步骤(4)。<br>(4) 将nextVictimBuffer推进到下一个描述符（如果是最后一个，则回绕到开头），<br>然后返回步骤(1)。重复此过程，直到找到牺牲者。<br>(5) 返回牺牲者的buffer_id。  </p>
 </blockquote>
 <p>图8.12展示了一个具体示例。缓冲描述符以蓝色或青色方框表示，方框内的数字展示了每个描述符的usage_count。</p>
-<p><img src="/2025/05/05/DB/PostgreSQL%E6%8C%87%E5%8D%97/%E5%86%85%E5%B9%95%E6%8E%A2%E7%B4%A2_new_release/ch8/ch8/img_13.png" srcset="/内存泄漏排查/loading.gif" lazyload alt="img_13.png"></p>
+<p><img src="/2025/05/05/DB/PostgreSQL%E6%8C%87%E5%8D%97/%E5%86%85%E5%B9%95%E6%8E%A2%E7%B4%A2_new_release/ch8/ch8/img_13.png" srcset="/img/loading.gif" lazyload alt="img_13.png"></p>
 <ol>
 <li>nextVictimBuffer指向第一个描述符（buffer_id为1）。但是，由于该描述符被固定，所以跳过了它。  </li>
 <li>nextVictimBuffer指向第二个描述符（buffer_id为2）。此描述符未被固定，但其usage_count为2。<br>因此，将usage_count减1，并将nextVictimBuffer推进到第三个候选描述符。  </li>

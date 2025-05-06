@@ -8,8 +8,8 @@
 <head>
   <meta charset="UTF-8">
 
-  <link rel="apple-touch-icon" sizes="76x76" href="/%E5%86%85%E5%AD%98%E6%B3%84%E6%BC%8F%E6%8E%92%E6%9F%A5/fluid.png">
-  <link rel="icon" href="/%E5%86%85%E5%AD%98%E6%B3%84%E6%BC%8F%E6%8E%92%E6%9F%A5/fluid.png">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
   
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
@@ -21,7 +21,7 @@
   
     <meta name="description" content="介绍ch4. PostgreSQL事务管理与并发控制 PostgreSQL支持ACID，对于不同的特性，分别使用了如下技术予以支持： A：原子性，通过提供事务的完整管理模型，在系统的运行过程中实现事务的提交和回滚功能，以支持运行原子性。提供WAL日志和恢复机制，以支持恢复原子性。 C：一致性，通过提供基于封锁技术和MVCC与快照项结合的技术，以支持数据在运行期间数据被并发修改情况下的运行一致（事务">
 <meta property="og:type" content="article">
-<meta property="og:title" content="ch4. PostgreSQL事务管理与并发控制">
+<meta property="og:title" content="ch3. PostgreSQL事务管理与并发控制">
 <meta property="og:url" content="http://smilemzy.com/2025/05/05/DB/%E6%95%B0%E6%8D%AE%E5%BA%93%E4%BA%8B%E5%8A%A1%E5%A4%84%E7%90%86%E7%9A%84%E8%89%BA%E6%9C%AF/ch04/ch04/index.html">
 <meta property="og:site_name" content="Smile">
 <meta property="og:description" content="介绍ch4. PostgreSQL事务管理与并发控制 PostgreSQL支持ACID，对于不同的特性，分别使用了如下技术予以支持： A：原子性，通过提供事务的完整管理模型，在系统的运行过程中实现事务的提交和回滚功能，以支持运行原子性。提供WAL日志和恢复机制，以支持恢复原子性。 C：一致性，通过提供基于封锁技术和MVCC与快照项结合的技术，以支持数据在运行期间数据被并发修改情况下的运行一致（事务">
@@ -29,7 +29,7 @@
 <meta property="og:image" content="http://smilemzy.com/2025/05/05/DB/%E6%95%B0%E6%8D%AE%E5%BA%93%E4%BA%8B%E5%8A%A1%E5%A4%84%E7%90%86%E7%9A%84%E8%89%BA%E6%9C%AF/ch04/ch04/img.png">
 <meta property="og:image" content="http://smilemzy.com/2025/05/05/DB/%E6%95%B0%E6%8D%AE%E5%BA%93%E4%BA%8B%E5%8A%A1%E5%A4%84%E7%90%86%E7%9A%84%E8%89%BA%E6%9C%AF/ch04/ch04/img_1.png">
 <meta property="article:published_time" content="2025-05-05T12:24:15.536Z">
-<meta property="article:modified_time" content="2025-05-05T13:24:33.838Z">
+<meta property="article:modified_time" content="2025-05-06T11:50:19.297Z">
 <meta property="article:author" content="Smile">
 <meta property="article:tag" content="book">
 <meta property="article:tag" content="database">
@@ -39,7 +39,7 @@
   
   
   
-  <title>ch4. PostgreSQL事务管理与并发控制 - Smile</title>
+  <title>ch3. PostgreSQL事务管理与并发控制 - Smile</title>
 
   <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
 
@@ -77,7 +77,7 @@
   <script id="fluid-configs">
     var Fluid = window.Fluid || {};
     Fluid.ctx = Object.assign({}, Fluid.ctx)
-    var CONFIG = {"hostname":"smilemzy.com","root":"/","version":"1.9.8","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/内存泄漏排查/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false},"umami":{"src":null,"website_id":null,"domains":null,"start_time":"2024-01-01T00:00:00.000Z","token":null,"api_server":null}},"search_path":"/local-search.xml","include_content_in_search":true};
+    var CONFIG = {"hostname":"smilemzy.com","root":"/","version":"1.9.8","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false},"umami":{"src":null,"website_id":null,"domains":null,"start_time":"2024-01-01T00:00:00.000Z","token":null,"api_server":null}},"search_path":"/local-search.xml","include_content_in_search":true};
 
     if (CONFIG.web_analytics.follow_dnt) {
       var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
@@ -199,13 +199,13 @@
   
 
 <div id="banner" class="banner" parallax=true
-     style="background: url('/%E5%86%85%E5%AD%98%E6%B3%84%E6%BC%8F%E6%8E%92%E6%9F%A5/default.png') no-repeat center center; background-size: cover;">
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
   <div class="full-bg-img">
     <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
       <div class="banner-text text-center fade-in-up">
         <div class="h2">
           
-            <span id="subtitle" data-typed-text="ch4. PostgreSQL事务管理与并发控制"></span>
+            <span id="subtitle" data-typed-text="ch3. PostgreSQL事务管理与并发控制"></span>
           
         </div>
 
@@ -276,7 +276,7 @@
       <div class="container nopadding-x-md" id="board-ctn">
         <div id="board">
           <article class="post-content mx-auto">
-            <h1 id="seo-header">ch4. PostgreSQL事务管理与并发控制</h1>
+            <h1 id="seo-header">ch3. PostgreSQL事务管理与并发控制</h1>
             
             
               <div class="markdown-body">
@@ -300,9 +300,9 @@
 <figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-keyword">CREATE</span> <span class="hljs-keyword">VIEW</span> active_locks <span class="hljs-keyword">AS</span><br><span class="hljs-operator">/</span><span class="hljs-operator">/</span>创建视图，用于查询数据对象上加锁的情况。PostgreSQL V9<span class="hljs-number">.6</span>验证通过<br><span class="hljs-keyword">SELECT</span> pg_class.relname, pg_locks.locktype, pg_locks.database,<br>       pg_locks.relation, pg_locks.page, pg_locks.tuple, pg_locks.virtualtransaction,<br>       pg_locks.pid, pg_locks.mode, pg_locks.granted, <br>       <span class="hljs-keyword">CASE</span><br>          <span class="hljs-keyword">WHEN</span> virtualxid <span class="hljs-keyword">IS</span> <span class="hljs-keyword">NOT NULL</span> <span class="hljs-keyword">AND</span> transactionid <span class="hljs-keyword">IS</span> <span class="hljs-keyword">NOT NULL</span><br>          <span class="hljs-keyword">THEN</span> virtualxid <span class="hljs-operator">||</span> <span class="hljs-string">&#x27; &#x27;</span> <span class="hljs-operator">||</span> transactionid<br>          <span class="hljs-keyword">WHEN</span> virtualxid::text <span class="hljs-keyword">IS</span> <span class="hljs-keyword">NOT NULL</span><br>          <span class="hljs-keyword">THEN</span> virtualxid<br>          <span class="hljs-keyword">ELSE</span> transactionid::text<br>       <span class="hljs-keyword">END</span> <span class="hljs-keyword">AS</span> xid_lock<br><span class="hljs-keyword">FROM</span> pg_locks <span class="hljs-keyword">LEFT</span> <span class="hljs-keyword">JOIN</span> pg_class <span class="hljs-keyword">ON</span> pg_locks.relation <span class="hljs-operator">=</span> pg_class.oid<br><span class="hljs-keyword">WHERE</span> relname <span class="hljs-operator">!</span><span class="hljs-operator">~</span> <span class="hljs-string">&#x27;^pg_&#x27;</span> <span class="hljs-keyword">and</span> relname <span class="hljs-operator">&lt;&gt;</span> <span class="hljs-string">&#x27;active_locks&#x27;</span>;<br><br><span class="hljs-keyword">SELECT</span> <span class="hljs-operator">*</span> <span class="hljs-keyword">FROM</span> active_locks;  <span class="hljs-operator">/</span><span class="hljs-operator">/</span>查询视图<br></code></pre></td></tr></table></figure>
 
 <h6 id="4-2-2-INSERT操作触发的锁"><a href="#4-2-2-INSERT操作触发的锁" class="headerlink" title="4.2.2　INSERT操作触发的锁"></a>4.2.2　INSERT操作触发的锁</h6><p>插入语句所加的锁“RowExclusiveLock”操作与隔离级别没有关系。</p>
-<h6 id="4-2-3-SELECT操作触发的锁"><a href="#4-2-3-SELECT操作触发的锁" class="headerlink" title="4.2.3　SELECT操作触发的锁"></a>4.2.3　SELECT操作触发的锁</h6><p><img src="/2025/05/05/DB/%E6%95%B0%E6%8D%AE%E5%BA%93%E4%BA%8B%E5%8A%A1%E5%A4%84%E7%90%86%E7%9A%84%E8%89%BA%E6%9C%AF/ch04/ch04/img.png" srcset="/内存泄漏排查/loading.gif" lazyload alt="img.png"></p>
+<h6 id="4-2-3-SELECT操作触发的锁"><a href="#4-2-3-SELECT操作触发的锁" class="headerlink" title="4.2.3　SELECT操作触发的锁"></a>4.2.3　SELECT操作触发的锁</h6><p><img src="/2025/05/05/DB/%E6%95%B0%E6%8D%AE%E5%BA%93%E4%BA%8B%E5%8A%A1%E5%A4%84%E7%90%86%E7%9A%84%E8%89%BA%E6%9C%AF/ch04/ch04/img.png" srcset="/img/loading.gif" lazyload alt="img.png"></p>
 <h6 id="4-2-4-SELECT-FOR-UPDATE操作触发的锁"><a href="#4-2-4-SELECT-FOR-UPDATE操作触发的锁" class="headerlink" title="4.2.4　SELECT FOR UPDATE操作触发的锁"></a>4.2.4　SELECT FOR UPDATE操作触发的锁</h6><p>对例1～例7进行对比如表4-3所示，可以看出，带有FOR UPDATE操作的查询语句所加的锁与隔离级别有关系，<br>可串行化隔离级别使用谓词锁，其加锁多于已提交读。而且，与单纯的SELECT操作的查询语句相比，带有FOR UPDATE操作的<br>查询语句使用了“RowShareLock”锁，而单纯的SELECT操作的查询语句使用了“AccessShareLock”锁，<br>后者加锁的级别低于前者。</p>
-<p><img src="/2025/05/05/DB/%E6%95%B0%E6%8D%AE%E5%BA%93%E4%BA%8B%E5%8A%A1%E5%A4%84%E7%90%86%E7%9A%84%E8%89%BA%E6%9C%AF/ch04/ch04/img_1.png" srcset="/内存泄漏排查/loading.gif" lazyload alt="img_1.png"></p>
+<p><img src="/2025/05/05/DB/%E6%95%B0%E6%8D%AE%E5%BA%93%E4%BA%8B%E5%8A%A1%E5%A4%84%E7%90%86%E7%9A%84%E8%89%BA%E6%9C%AF/ch04/ch04/img_1.png" srcset="/img/loading.gif" lazyload alt="img_1.png"></p>
 <h6 id="4-2-5-UPDATE操作触发的锁"><a href="#4-2-5-UPDATE操作触发的锁" class="headerlink" title="4.2.5　UPDATE操作触发的锁"></a>4.2.5　UPDATE操作触发的锁</h6><h6 id="4-2-6-DELETE操作触发的锁"><a href="#4-2-6-DELETE操作触发的锁" class="headerlink" title="4.2.6　DELETE操作触发的锁"></a>4.2.6　DELETE操作触发的锁</h6><h6 id="4-2-7-ANALYZE操作触发的锁"><a href="#4-2-7-ANALYZE操作触发的锁" class="headerlink" title="4.2.7　ANALYZE操作触发的锁"></a>4.2.7　ANALYZE操作触发的锁</h6><p>表明ANALYZE操作在表上和索引增加锁与不同的隔离级别没有关系</p>
 <figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-keyword">BEGIN</span>;<br><span class="hljs-keyword">SET</span> TRANSACTION ISOLATION LEVEL SERIALIZABLE;<br>ANALYZE parent;<br><span class="hljs-keyword">SELECT</span> <span class="hljs-operator">*</span> <span class="hljs-keyword">FROM</span> active_locks;<br><span class="hljs-keyword">ROLLBACK</span>;<br><br>relname <span class="hljs-operator">|</span> locktype <span class="hljs-operator">|</span> database <span class="hljs-operator">|</span> relation <span class="hljs-operator">|</span> page <span class="hljs-operator">|</span> tuple <span class="hljs-operator">|</span> virtualtransaction <span class="hljs-operator">|</span> pid <span class="hljs-operator">|</span> mode<span class="hljs-operator">|</span> granted<br><span class="hljs-comment">------+--------+--------+--------+-----+-----+----------------+----+----+------</span><br>parent_pkey <span class="hljs-operator">|</span> relation <span class="hljs-operator">|</span> <span class="hljs-number">12401</span> <span class="hljs-operator">|</span> <span class="hljs-number">16392</span> <span class="hljs-operator">|</span> <span class="hljs-operator">|</span> <span class="hljs-operator">|</span> <span class="hljs-number">2</span><span class="hljs-operator">/</span><span class="hljs-number">7</span> <span class="hljs-operator">|</span> <span class="hljs-number">10460</span> <span class="hljs-operator">|</span> AccessShareLock   <span class="hljs-operator">|</span> t<br>parent <span class="hljs-operator">|</span> relation <span class="hljs-operator">|</span> <span class="hljs-number">12401</span> <span class="hljs-operator">|</span> <span class="hljs-number">16389</span> <span class="hljs-operator">|</span> <span class="hljs-operator">|</span> <span class="hljs-operator">|</span> <span class="hljs-number">2</span><span class="hljs-operator">/</span><span class="hljs-number">7</span> <span class="hljs-operator">|</span> <span class="hljs-number">10460</span> <span class="hljs-operator">|</span> ShareUpdateExclusiveLock <span class="hljs-operator">|</span> t<br></code></pre></td></tr></table></figure>
 <h6 id="4-2-8-CREATE-INDEX操作触发的锁"><a href="#4-2-8-CREATE-INDEX操作触发的锁" class="headerlink" title="4.2.8　CREATE INDEX操作触发的锁"></a>4.2.8　CREATE INDEX操作触发的锁</h6><p>表明CREATE INDEX操作在表上和索引增加锁与不同的隔离级别没有关系</p>
@@ -378,7 +378,7 @@
 
   <div class="license-box my-3">
     <div class="license-title">
-      <div>ch4. PostgreSQL事务管理与并发控制</div>
+      <div>ch3. PostgreSQL事务管理与并发控制</div>
       <div>http://smilemzy.com/2025/05/05/DB/数据库事务处理的艺术/ch04/ch04/</div>
     </div>
     <div class="license-meta">

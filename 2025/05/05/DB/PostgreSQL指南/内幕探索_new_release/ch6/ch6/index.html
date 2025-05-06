@@ -8,8 +8,8 @@
 <head>
   <meta charset="UTF-8">
 
-  <link rel="apple-touch-icon" sizes="76x76" href="/%E5%86%85%E5%AD%98%E6%B3%84%E6%BC%8F%E6%8E%92%E6%9F%A5/fluid.png">
-  <link rel="icon" href="/%E5%86%85%E5%AD%98%E6%B3%84%E6%BC%8F%E6%8E%92%E6%9F%A5/fluid.png">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
   
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
@@ -38,7 +38,7 @@
 <meta property="og:image" content="http://smilemzy.com/2025/05/05/DB/PostgreSQL%E6%8C%87%E5%8D%97/%E5%86%85%E5%B9%95%E6%8E%A2%E7%B4%A2_new_release/ch6/ch6/img_9.png">
 <meta property="og:image" content="http://smilemzy.com/2025/05/05/DB/PostgreSQL%E6%8C%87%E5%8D%97/%E5%86%85%E5%B9%95%E6%8E%A2%E7%B4%A2_new_release/ch6/ch6/img_10.png">
 <meta property="article:published_time" content="2025-05-05T12:24:15.147Z">
-<meta property="article:modified_time" content="2025-05-05T12:52:02.938Z">
+<meta property="article:modified_time" content="2025-05-06T11:45:19.221Z">
 <meta property="article:author" content="Smile">
 <meta property="article:tag" content="book">
 <meta property="article:tag" content="database">
@@ -86,7 +86,7 @@
   <script id="fluid-configs">
     var Fluid = window.Fluid || {};
     Fluid.ctx = Object.assign({}, Fluid.ctx)
-    var CONFIG = {"hostname":"smilemzy.com","root":"/","version":"1.9.8","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/内存泄漏排查/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false},"umami":{"src":null,"website_id":null,"domains":null,"start_time":"2024-01-01T00:00:00.000Z","token":null,"api_server":null}},"search_path":"/local-search.xml","include_content_in_search":true};
+    var CONFIG = {"hostname":"smilemzy.com","root":"/","version":"1.9.8","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false},"umami":{"src":null,"website_id":null,"domains":null,"start_time":"2024-01-01T00:00:00.000Z","token":null,"api_server":null}},"search_path":"/local-search.xml","include_content_in_search":true};
 
     if (CONFIG.web_analytics.follow_dnt) {
       var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
@@ -208,7 +208,7 @@
   
 
 <div id="banner" class="banner" parallax=true
-     style="background: url('/%E5%86%85%E5%AD%98%E6%B3%84%E6%BC%8F%E6%8E%92%E6%9F%A5/default.png') no-repeat center center; background-size: cover;">
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
   <div class="full-bg-img">
     <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
       <div class="banner-text text-center fade-in-up">
@@ -344,7 +344,7 @@
 <p>请参阅该参数的详细描述。</p>
 <p>如果 maintenance_work_mem 已满且扫描未完成,PostgreSQL 将进入下一个任务,<br>即步骤(4)到(7)。然后,它会回到步骤(3),继续剩余的扫描。</p>
 <h4 id="6-1-2-Second-Block"><a href="#6-1-2-Second-Block" class="headerlink" title="6.1.2. Second Block"></a>6.1.2. Second Block</h4><p>这个块按逐页的方式删除死元组,并更新 FSM 和 VM。图 6.1 展示了一个示例:</p>
-<p><img src="/2025/05/05/DB/PostgreSQL%E6%8C%87%E5%8D%97/%E5%86%85%E5%B9%95%E6%8E%A2%E7%B4%A2_new_release/ch6/ch6/img.png" srcset="/内存泄漏排查/loading.gif" lazyload alt="img.png"></p>
+<p><img src="/2025/05/05/DB/PostgreSQL%E6%8C%87%E5%8D%97/%E5%86%85%E5%B9%95%E6%8E%A2%E7%B4%A2_new_release/ch6/ch6/img.png" srcset="/img/loading.gif" lazyload alt="img.png"></p>
 <p>假设这个表包含三个页面。我们关注第 0 页(即第一页)。这个页面有三个元组。<br>Tuple_2 是一个死元组(图 6.1(1))。在这种情况下,PostgreSQL<br>删除 Tuple 2 并重新排序剩余的元组以修复碎片。然后,它更新这个页面的 FSM 和 VM(图 6.1(2))。<br>PostgreSQL 继续这个过程,直到最后一页。</p>
 <p>请注意,不必要的行指针不会被删除。它们将在将来被重复使用。这是因为,如果删除了行指针,<br>所有相关索引的索引元组都必须更新。</p>
 <h4 id="6-1-3-Third-Block"><a href="#6-1-3-Third-Block" class="headerlink" title="6.1.3. Third Block"></a>6.1.3. Third Block</h4><p>第三个块执行索引删除后的清理操作,并更新与 vacuum 处理相关的统计信息和系统目录,针对每个目标表。</p>
@@ -357,7 +357,7 @@
 <h3 id="6-2-Visibility-Map"><a href="#6-2-Visibility-Map" class="headerlink" title="6.2 Visibility Map"></a><a name="vmap"></a>6.2 Visibility Map</h3><p>Vacuum 处理是一个代价高昂的操作。因此,在 8.4 版本中引入了 VM(可见性映射)来降低这种成本。</p>
 <p>VM 的基本概念很简单。每个表都有一个独立的可见性映射,用于保存表文件中每个页面的可见性状态。<br>页面的可见性决定了该页面是否包含死元组。Vacuum 处理可以通过使用相应的可见性映射(VM)<br>跳过没有死元组的页面。</p>
 <p>图 6.2 展示了 VM 的使用方式。</p>
-<p><img src="/2025/05/05/DB/PostgreSQL%E6%8C%87%E5%8D%97/%E5%86%85%E5%B9%95%E6%8E%A2%E7%B4%A2_new_release/ch6/ch6/img_1.png" srcset="/内存泄漏排查/loading.gif" lazyload alt="img_1.png"></p>
+<p><img src="/2025/05/05/DB/PostgreSQL%E6%8C%87%E5%8D%97/%E5%86%85%E5%B9%95%E6%8E%A2%E7%B4%A2_new_release/ch6/ch6/img_1.png" srcset="/img/loading.gif" lazyload alt="img_1.png"></p>
 <p>假设这个表由三个页面组成,其中第 0 页和第 2 页包含死元组,而第 1 页不包含。这个表<br>的 VM 保存了哪些页面包含死元组的信息。在这种情况下, Vacuum 处理可以通过查看 VM 的信息,<br>跳过第 1 页。</p>
 <p>每个 VM 由一个或多个 8 KB 的页面组成,并以 ‘vm’ 后缀存储在文件系统中。<br>例如,一个 relfilenode 为 18751 的表文件,其对应的 FSM (18751_fsm) 和 VM (18751_vm) 文件<br>如下所示。</p>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs shell"><span class="hljs-meta prompt_">$ </span><span class="language-bash"><span class="hljs-built_in">cd</span> <span class="hljs-variable">$PGDATA</span></span><br><span class="hljs-meta prompt_">$ </span><span class="language-bash"><span class="hljs-built_in">ls</span> -la base/16384/18751*</span><br>-rw------- 1 postgres postgres  8192 Apr 21 10:21 base/16384/18751<br>-rw------- 1 postgres postgres 24576 Apr 21 10:18 base/16384/18751_fsm<br>-rw------- 1 postgres postgres  8192 Apr 21 10:18 base/16384/18751_vm<br></code></pre></td></tr></table></figure>
@@ -374,23 +374,23 @@
 <p>第 6.3.1 节和第 6.3.2 节分别描述了这两种模式。<br>第 6.3.3 节描述了如何在积极模式下改进冻结过程。</p>
 <h4 id="6-3-1-Lazy-Mode"><a href="#6-3-1-Lazy-Mode" class="headerlink" title="6.3.1. Lazy Mode"></a>6.3.1. Lazy Mode</h4><p>在开始冻结处理时,PostgreSQL 会计算 [Math Processing Error]，并冻结 t_xmin 小于<br>freezeLimit_txid 的元组。</p>
 <p>freezeLimit_txid 的定义如下:</p>
-<p><img src="/2025/05/05/DB/PostgreSQL%E6%8C%87%E5%8D%97/%E5%86%85%E5%B9%95%E6%8E%A2%E7%B4%A2_new_release/ch6/ch6/img_2.png" srcset="/内存泄漏排查/loading.gif" lazyload alt="img_2.png"></p>
+<p><img src="/2025/05/05/DB/PostgreSQL%E6%8C%87%E5%8D%97/%E5%86%85%E5%B9%95%E6%8E%A2%E7%B4%A2_new_release/ch6/ch6/img_2.png" srcset="/img/loading.gif" lazyload alt="img_2.png"></p>
 <p>其中 OldestXmin 是当前正在运行的事务中最老的 txid。</p>
 <p>例如,当执行 VACUUM 命令时,有三个事务(txid 为 100、101 和 102)正在运行,<br>那么 OldestXmin 就是 100。如果没有其他事务存在,OldestXmin 就是执行这个 VACUUM 命令的 txid。<br>这里,vacuum_freeze_min_age 是一个配置参数,默认值为 50,000,000。</p>
 <p>图 6.3 展示了一个具体的例子。Table_1 由三个页面组成,每个页面有三个元组。<br>当执行 VACUUM 命令时,当前的 txid 是 50,002,500,且没有其他事务。在这种情况下,<br>OldestXmin 是 50,002,500,因此 freezeLimit_txid 为 2500。冻结处理执行如下:</p>
-<p><img src="/2025/05/05/DB/PostgreSQL%E6%8C%87%E5%8D%97/%E5%86%85%E5%B9%95%E6%8E%A2%E7%B4%A2_new_release/ch6/ch6/img_3.png" srcset="/内存泄漏排查/loading.gif" lazyload alt="img_3.png"></p>
+<p><img src="/2025/05/05/DB/PostgreSQL%E6%8C%87%E5%8D%97/%E5%86%85%E5%B9%95%E6%8E%A2%E7%B4%A2_new_release/ch6/ch6/img_3.png" srcset="/img/loading.gif" lazyload alt="img_3.png"></p>
 <p>在完成 Vacuum 过程之前,与 Vacuum 相关的统计信息会被更新,<br>例如 pg_stat_all_tables 中的 n_live_tup、n_dead_tup、last_vacuum、vacuum_count 等。</p>
 <p>如上面的例子所示,懒惰模式可能无法完全冻结元组,因为它可以跳过某些页面。</p>
 <h4 id="6-3-2-Eager-Mode"><a href="#6-3-2-Eager-Mode" class="headerlink" title="6.3.2. Eager Mode"></a>6.3.2. Eager Mode</h4><p>积极模式弥补了懒惰模式的缺陷。它会扫描所有页面来检查表中的所有元组,<br>更新相关的系统目录,并在可能的情况下删除 clog 中不必要的文件和页面。</p>
 <p>当满足以下条件时,会执行积极模式:</p>
-<p><img src="/2025/05/05/DB/PostgreSQL%E6%8C%87%E5%8D%97/%E5%86%85%E5%B9%95%E6%8E%A2%E7%B4%A2_new_release/ch6/ch6/img_4.png" srcset="/内存泄漏排查/loading.gif" lazyload alt="img_4.png"></p>
+<p><img src="/2025/05/05/DB/PostgreSQL%E6%8C%87%E5%8D%97/%E5%86%85%E5%B9%95%E6%8E%A2%E7%B4%A2_new_release/ch6/ch6/img_4.png" srcset="/img/loading.gif" lazyload alt="img_4.png"></p>
 <p>在上述条件中, [Math Processing Error] 代表 pg_database 系统目录的列,<br>保存了每个数据库最旧的冻结 txid。详细信息将在稍后描述;因此,我们假设所有<br>pg_database.datfrozenxid 的值都是 1821(这是在 9.5 版本中新安装的数据库集群的初始值)。<br>vacuum_freeze_table_age 是一个配置参数,默认值为 150,000,000。</p>
 <p>图 6.4 显示了一个具体的例子。在 Table_1 中,Tuple_1 和 Tuple_7 已被删除。<br>Tuple_10 和 Tuple_11 已插入到第 2 页。当执行 VACUUM 命令时,当前的 txid 是 150,002,000,<br>没有其他事务。因此,OldestXmin 是 150,002,000,freezeLimit_txid 是 100,002,000。<br>在这种情况下,上述条件得到满足,因为 [Math Processing Error]。因此,冻结处理以积极模式执行,<br>如下所示。</p>
 <p><strong>(请注意,这是 9.5 或更早版本的行为;最新的行为描述在第 6.3.3 节中。)</strong></p>
-<p><img src="/2025/05/05/DB/PostgreSQL%E6%8C%87%E5%8D%97/%E5%86%85%E5%B9%95%E6%8E%A2%E7%B4%A2_new_release/ch6/ch6/img_5.png" srcset="/内存泄漏排查/loading.gif" lazyload alt="img_5.png"></p>
+<p><img src="/2025/05/05/DB/PostgreSQL%E6%8C%87%E5%8D%97/%E5%86%85%E5%B9%95%E6%8E%A2%E7%B4%A2_new_release/ch6/ch6/img_5.png" srcset="/img/loading.gif" lazyload alt="img_5.png"></p>
 <p>在冻结每个表之后,目标表的 pg_class.relfrozenxid 会被更新。pg_class 是一个系统目录,<br>每个 pg_class.relfrozenxid 列都保存了相应表的最新冻结 xid。在这个例子中,<br>Table_1 的 pg_class.relfrozenxid 被更新为当前的 freezeLimit_txid(即 100,002,000),<br>这意味着 Table_1 中 t_xmin 小于 100,002,000 的所有元组都被冻结了。</p>
 <p>在完成vacuum过程之前,如果必要的话会更新 pg_database.datfrozenxid。<br>每个 pg_database.datfrozenxid 列都保存了对应数据库中最小的 pg_class.relfrozenxid。<br>例如,如果只有 Table_1 在eager模式下被冻结,则该数据库的 pg_database.datfrozenxid 不会被更新,<br>因为其他关系(包括其他表和当前数据库可见的系统目录)的 pg_class.relfrozenxid 都没有变化<br>(图 6.5(1))。如果当前数据库中的所有关系都在eager模式下被冻结,那么该数据库的<br>pg_database.datfrozenxid 会被更新,因为该数据库所有关系的 pg_class.relfrozenxid<br>都被更新为当前的 freezeLimit_txid (图 6.5(2))。</p>
-<p><img src="/2025/05/05/DB/PostgreSQL%E6%8C%87%E5%8D%97/%E5%86%85%E5%B9%95%E6%8E%A2%E7%B4%A2_new_release/ch6/ch6/img_6.png" srcset="/内存泄漏排查/loading.gif" lazyload alt="img_6.png"></p>
+<p><img src="/2025/05/05/DB/PostgreSQL%E6%8C%87%E5%8D%97/%E5%86%85%E5%B9%95%E6%8E%A2%E7%B4%A2_new_release/ch6/ch6/img_6.png" srcset="/img/loading.gif" lazyload alt="img_6.png"></p>
 <blockquote>
 <p>How to show pg_class.relfrozenxid and pg_database.datfrozenxid.</p>
 <p>下面的第一个查询显示了 ‘testdb’ 数据库中所有可见关系的 relfrozenxid,<br>第二个查询显示了 ‘testdb’ 数据库的 pg_database.datfrozenxld。</p>
@@ -402,10 +402,10 @@
 <h4 id="6-3-3-Improving-Freeze-Processing-in-Eager-Mode"><a href="#6-3-3-Improving-Freeze-Processing-in-Eager-Mode" class="headerlink" title="6.3.3. Improving Freeze Processing in Eager Mode"></a>6.3.3. Improving Freeze Processing in Eager Mode</h4><p>在9.5或更早版本中的eager模式并不高效,因为它总是扫描所有页面。<br>比如在6.3.2节的例子中,即使0号页面中的所有元组都已经被冻结,也还是会被扫描。</p>
 <p>为了解决这个问题,在9.6版本中对VM和冻结过程进行了改进。<br>如6.2.1节所述,新的VM包含了每个页面中是否所有元组都已冻结的信息。<br>在eager模式下执行冻结处理时,仅包含已冻结元组的页面可以被跳过。</p>
 <p>图6.6展示了一个例子。在冻结这个表时,通过参考VM的信息,0号页面被跳过了。在冻结完1号页面之后,<br>相关的VM信息也被更新,因为该页面的所有元组都已被冻结。</p>
-<p><img src="/2025/05/05/DB/PostgreSQL%E6%8C%87%E5%8D%97/%E5%86%85%E5%B9%95%E6%8E%A2%E7%B4%A2_new_release/ch6/ch6/img_7.png" srcset="/内存泄漏排查/loading.gif" lazyload alt="img_7.png"></p>
+<p><img src="/2025/05/05/DB/PostgreSQL%E6%8C%87%E5%8D%97/%E5%86%85%E5%B9%95%E6%8E%A2%E7%B4%A2_new_release/ch6/ch6/img_7.png" srcset="/img/loading.gif" lazyload alt="img_7.png"></p>
 <h3 id="6-4-Removing-unnecessary-clog-files"><a href="#6-4-Removing-unnecessary-clog-files" class="headerlink" title="6.4 Removing unnecessary clog files"></a><a name="remove-clog"></a>6.4 Removing unnecessary clog files</h3><p>第5.4节描述了事务状态存储的Clog。当pg_database.datfrozenxid更新时,<br>PostgreSQL会尝试删除不必要的Clog文件。需要注意的是,相应的Clog页面也会被删除。</p>
 <p>图6.7展示了一个例子。如果最小的pg_database.datfrozenxid包含在Clog文件’0002’中,<br>那么较旧的文件(‘0000’和’0001’)就可以被删除,因为这些文件中存储的所有事务都可以被视为<br>整个数据库集群中已冻结的txid。</p>
-<p><img src="/2025/05/05/DB/PostgreSQL%E6%8C%87%E5%8D%97/%E5%86%85%E5%B9%95%E6%8E%A2%E7%B4%A2_new_release/ch6/ch6/img_8.png" srcset="/内存泄漏排查/loading.gif" lazyload alt="img_8.png"></p>
+<p><img src="/2025/05/05/DB/PostgreSQL%E6%8C%87%E5%8D%97/%E5%86%85%E5%B9%95%E6%8E%A2%E7%B4%A2_new_release/ch6/ch6/img_8.png" srcset="/img/loading.gif" lazyload alt="img_8.png"></p>
 <blockquote>
 <p>pg_database.datfrozenxid and the clog file</p>
 <p>下面展示了pg_database.datfrozenxid和Clog文件的实际输出:</p>
@@ -447,12 +447,12 @@
 
 <h3 id="6-6-Full-VACUUM"><a href="#6-6-Full-VACUUM" class="headerlink" title="6.6 Full VACUUM"></a><a name="full-vacuum"></a>6.6 Full VACUUM</h3><p>尽管并发 VACUUM 对于操作至关重要,但它并不够充分。例如,即使删除了许多死元组,<br>它也无法减小表的大小。</p>
 <p>图 6.8 展示了一个极端的例子。假设一个表由三个页面组成,每个页面包含六个元组。执<br>行以下 DELETE 命令删除元组,并执行 VACUUM 命令删除死元组:</p>
-<p><img src="/2025/05/05/DB/PostgreSQL%E6%8C%87%E5%8D%97/%E5%86%85%E5%B9%95%E6%8E%A2%E7%B4%A2_new_release/ch6/ch6/img_9.png" srcset="/内存泄漏排查/loading.gif" lazyload alt="img_9.png"></p>
+<p><img src="/2025/05/05/DB/PostgreSQL%E6%8C%87%E5%8D%97/%E5%86%85%E5%B9%95%E6%8E%A2%E7%B4%A2_new_release/ch6/ch6/img_9.png" srcset="/img/loading.gif" lazyload alt="img_9.png"></p>
 <figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs sql">testdb<span class="hljs-operator">=</span># <span class="hljs-keyword">DELETE</span> <span class="hljs-keyword">FROM</span> tbl <span class="hljs-keyword">WHERE</span> id <span class="hljs-operator">%</span> <span class="hljs-number">6</span> <span class="hljs-operator">!=</span> <span class="hljs-number">0</span>;<br>testdb<span class="hljs-operator">=</span># VACUUM tbl;<br></code></pre></td></tr></table></figure>
 
 <p>虽然死元组被移除了,但表的大小并没有减小。这不仅浪费了磁盘空间,还对数据库性能产生负面影响。<br>比如在上述示例中,当读取表中的三个元组时,必须从磁盘加载三个页面。</p>
 <p>为了处理这种情况,PostgreSQL 提供了完全 VACUUM 模式。图 6.9 概括了这种模式的工作原理。</p>
-<p><img src="/2025/05/05/DB/PostgreSQL%E6%8C%87%E5%8D%97/%E5%86%85%E5%B9%95%E6%8E%A2%E7%B4%A2_new_release/ch6/ch6/img_10.png" srcset="/内存泄漏排查/loading.gif" lazyload alt="img_10.png"></p>
+<p><img src="/2025/05/05/DB/PostgreSQL%E6%8C%87%E5%8D%97/%E5%86%85%E5%B9%95%E6%8E%A2%E7%B4%A2_new_release/ch6/ch6/img_10.png" srcset="/img/loading.gif" lazyload alt="img_10.png"></p>
 <p>[1] 创建新的表文件: 图 6.9(1)<br>当对一个表执行 VACUUM FULL 命令时,PostgreSQL 首先为该表获取 AccessExclusiveLock 锁,<br>并创建一个大小为 8 KB 的新表文件。AccessExclusiveLock 锁阻止其他用户访问该表。</p>
 <p>[2] 将活元组复制到新表: 图 6.9(2)<br>PostgreSQL 只将旧表文件中的活元组复制到新表。</p>
 <p>[3] 删除旧文件,重建索引,并更新统计信息、FSM 和 VM: 图 6.9(3)<br>在复制所有活元组后,PostgreSQL 删除旧文件,重建所有相关的表索引,<br>更新该表的 FSM 和 VM,并更新相关的统计信息和系统目录。</p>

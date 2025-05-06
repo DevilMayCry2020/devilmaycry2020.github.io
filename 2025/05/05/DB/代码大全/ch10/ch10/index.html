@@ -8,8 +8,8 @@
 <head>
   <meta charset="UTF-8">
 
-  <link rel="apple-touch-icon" sizes="76x76" href="/%E5%86%85%E5%AD%98%E6%B3%84%E6%BC%8F%E6%8E%92%E6%9F%A5/fluid.png">
-  <link rel="icon" href="/%E5%86%85%E5%AD%98%E6%B3%84%E6%BC%8F%E6%8E%92%E6%9F%A5/fluid.png">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
   
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
@@ -39,7 +39,7 @@
 <meta property="og:image" content="http://smilemzy.com/2025/05/05/DB/%E4%BB%A3%E7%A0%81%E5%A4%A7%E5%85%A8/ch10/ch10/image-10.png">
 <meta property="og:image" content="http://smilemzy.com/2025/05/05/DB/%E4%BB%A3%E7%A0%81%E5%A4%A7%E5%85%A8/ch10/ch10/image-11.png">
 <meta property="article:published_time" content="2025-05-05T12:24:15.345Z">
-<meta property="article:modified_time" content="2025-05-05T13:24:33.825Z">
+<meta property="article:modified_time" content="2025-05-06T11:45:19.463Z">
 <meta property="article:author" content="Smile">
 <meta property="article:tag" content="book">
 <meta property="article:tag" content="code">
@@ -87,7 +87,7 @@
   <script id="fluid-configs">
     var Fluid = window.Fluid || {};
     Fluid.ctx = Object.assign({}, Fluid.ctx)
-    var CONFIG = {"hostname":"smilemzy.com","root":"/","version":"1.9.8","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/内存泄漏排查/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false},"umami":{"src":null,"website_id":null,"domains":null,"start_time":"2024-01-01T00:00:00.000Z","token":null,"api_server":null}},"search_path":"/local-search.xml","include_content_in_search":true};
+    var CONFIG = {"hostname":"smilemzy.com","root":"/","version":"1.9.8","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false},"umami":{"src":null,"website_id":null,"domains":null,"start_time":"2024-01-01T00:00:00.000Z","token":null,"api_server":null}},"search_path":"/local-search.xml","include_content_in_search":true};
 
     if (CONFIG.web_analytics.follow_dnt) {
       var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
@@ -209,7 +209,7 @@
   
 
 <div id="banner" class="banner" parallax=true
-     style="background: url('/%E5%86%85%E5%AD%98%E6%B3%84%E6%BC%8F%E6%8E%92%E6%9F%A5/default.png') no-repeat center center; background-size: cover;">
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
   <div class="full-bg-img">
     <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
       <div class="banner-text text-center fade-in-up">
@@ -293,14 +293,14 @@
                 
                 <h4 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h4><p>ch10. 使用变量的一般事项</p>
 <h4 id="内容"><a href="#内容" class="headerlink" title="内容"></a>内容</h4><h5 id="10-1-数据认知"><a href="#10-1-数据认知" class="headerlink" title="10.1 数据认知"></a>10.1 数据认知</h5><h5 id="10-2-轻松掌握变量定义"><a href="#10-2-轻松掌握变量定义" class="headerlink" title="10.2 轻松掌握变量定义"></a>10.2 轻松掌握变量定义</h5><p>加快变量定义的工作<br>隐式声明：<br>1、关闭隐式声明<br>2、声明全部变量<br>3、遵循某种命名规则<br>4、检查变量名  </p>
-<h5 id="10-3-变量初始化原则"><a href="#10-3-变量初始化原则" class="headerlink" title="10.3 变量初始化原则"></a>10.3 变量初始化原则</h5><p>不合理的初始化数据是产生编程错误的常见根源之一。<br>避免产生初始化错误的建议：<br>1、在声明变量的时候初始化<br>2、在靠近变量第一次使用的位置初始化它<br>3、理想情况下，在靠近第一次使用变量的位置声明和定义该变量<br>4、在可能的情况下使用final或const<br>5、特别注意计数器和累加器<br>下一次使用忘记重置<br>6、在类的构造函数里初始化该类的数据成员<br>7、检查是否需要重新初始化<br>8、一次性初始化具名变量：用可执行代码来初始化变量<br>9、使用编译器设置来自动初始化所有变量<br>10、利用编译器的警告信息<br>11、检查输入参数的合法性<br>12、使用内存访问检查工具来检查错误的指针<br>13、在程序开始时初始化工作内存<br><img src="/2025/05/05/DB/%E4%BB%A3%E7%A0%81%E5%A4%A7%E5%85%A8/ch10/ch10/image.png" srcset="/内存泄漏排查/loading.gif" lazyload alt="Alt text">  </p>
+<h5 id="10-3-变量初始化原则"><a href="#10-3-变量初始化原则" class="headerlink" title="10.3 变量初始化原则"></a>10.3 变量初始化原则</h5><p>不合理的初始化数据是产生编程错误的常见根源之一。<br>避免产生初始化错误的建议：<br>1、在声明变量的时候初始化<br>2、在靠近变量第一次使用的位置初始化它<br>3、理想情况下，在靠近第一次使用变量的位置声明和定义该变量<br>4、在可能的情况下使用final或const<br>5、特别注意计数器和累加器<br>下一次使用忘记重置<br>6、在类的构造函数里初始化该类的数据成员<br>7、检查是否需要重新初始化<br>8、一次性初始化具名变量：用可执行代码来初始化变量<br>9、使用编译器设置来自动初始化所有变量<br>10、利用编译器的警告信息<br>11、检查输入参数的合法性<br>12、使用内存访问检查工具来检查错误的指针<br>13、在程序开始时初始化工作内存<br><img src="/2025/05/05/DB/%E4%BB%A3%E7%A0%81%E5%A4%A7%E5%85%A8/ch10/ch10/image.png" srcset="/img/loading.gif" lazyload alt="Alt text">  </p>
 <h5 id="10-4-作用域"><a href="#10-4-作用域" class="headerlink" title="10.4 作用域"></a>10.4 作用域</h5><p>1、是变量引用局部化<br>2、尽可能缩短变量的存活时间<br>3、测量变量的生存时间<br>4、减小作用域的一般原则<br>(1) 在循环开始之前再去初始化该循环里使用的变量，而不是在该循环所属的子程序开始处初始化这些变量<br>(2) 直到变量即将被使用时再为其赋值<br>(3) 把相关语句放到一起<br>(4) 把相关的语句组提取成单独的子程序<br>(5) 开始时采用最严格的可见性，然后根据需要拓展变量的作用域<br>5、有关缩小变量作用域的说明  </p>
-<h5 id="10-5-持续性"><a href="#10-5-持续性" class="headerlink" title="10.5 持续性"></a>10.5 持续性</h5><p><img src="/2025/05/05/DB/%E4%BB%A3%E7%A0%81%E5%A4%A7%E5%85%A8/ch10/ch10/image-1.png" srcset="/内存泄漏排查/loading.gif" lazyload alt="Alt text"><br><img src="/2025/05/05/DB/%E4%BB%A3%E7%A0%81%E5%A4%A7%E5%85%A8/ch10/ch10/image-2.png" srcset="/内存泄漏排查/loading.gif" lazyload alt="Alt text">  </p>
-<h5 id="10-6-绑定时间"><a href="#10-6-绑定时间" class="headerlink" title="10.6 绑定时间"></a>10.6 绑定时间</h5><p><img src="/2025/05/05/DB/%E4%BB%A3%E7%A0%81%E5%A4%A7%E5%85%A8/ch10/ch10/image-3.png" srcset="/内存泄漏排查/loading.gif" lazyload alt="Alt text"><br><img src="/2025/05/05/DB/%E4%BB%A3%E7%A0%81%E5%A4%A7%E5%85%A8/ch10/ch10/image-4.png" srcset="/内存泄漏排查/loading.gif" lazyload alt="Alt text">  </p>
-<h5 id="10-7-数据类型和控制结构之间的关系"><a href="#10-7-数据类型和控制结构之间的关系" class="headerlink" title="10.7 数据类型和控制结构之间的关系"></a>10.7 数据类型和控制结构之间的关系</h5><p><img src="/2025/05/05/DB/%E4%BB%A3%E7%A0%81%E5%A4%A7%E5%85%A8/ch10/ch10/image-5.png" srcset="/内存泄漏排查/loading.gif" lazyload alt="Alt text"><br><img src="/2025/05/05/DB/%E4%BB%A3%E7%A0%81%E5%A4%A7%E5%85%A8/ch10/ch10/image-6.png" srcset="/内存泄漏排查/loading.gif" lazyload alt="Alt text"><br><img src="/2025/05/05/DB/%E4%BB%A3%E7%A0%81%E5%A4%A7%E5%85%A8/ch10/ch10/image-7.png" srcset="/内存泄漏排查/loading.gif" lazyload alt="Alt text">  </p>
-<h5 id="10-8-、为变量指定单一用途"><a href="#10-8-、为变量指定单一用途" class="headerlink" title="10.8 、为变量指定单一用途"></a>10.8 、为变量指定单一用途</h5><p>1、每个变量只用于单一用途<br>2、避免让代码具有隐含含义<br><img src="/2025/05/05/DB/%E4%BB%A3%E7%A0%81%E5%A4%A7%E5%85%A8/ch10/ch10/image-8.png" srcset="/内存泄漏排查/loading.gif" lazyload alt="Alt text"><br>3、确保使用了所有已声明的变量</p>
-<h5 id="CHECKLIST"><a href="#CHECKLIST" class="headerlink" title="CHECKLIST"></a>CHECKLIST</h5><p><img src="/2025/05/05/DB/%E4%BB%A3%E7%A0%81%E5%A4%A7%E5%85%A8/ch10/ch10/image-9.png" srcset="/内存泄漏排查/loading.gif" lazyload alt="Alt text"><br><img src="/2025/05/05/DB/%E4%BB%A3%E7%A0%81%E5%A4%A7%E5%85%A8/ch10/ch10/image-10.png" srcset="/内存泄漏排查/loading.gif" lazyload alt="Alt text"></p>
-<h5 id="Key-Points"><a href="#Key-Points" class="headerlink" title="Key Points"></a>Key Points</h5><p><img src="/2025/05/05/DB/%E4%BB%A3%E7%A0%81%E5%A4%A7%E5%85%A8/ch10/ch10/image-11.png" srcset="/内存泄漏排查/loading.gif" lazyload alt="Alt text"></p>
+<h5 id="10-5-持续性"><a href="#10-5-持续性" class="headerlink" title="10.5 持续性"></a>10.5 持续性</h5><p><img src="/2025/05/05/DB/%E4%BB%A3%E7%A0%81%E5%A4%A7%E5%85%A8/ch10/ch10/image-1.png" srcset="/img/loading.gif" lazyload alt="Alt text"><br><img src="/2025/05/05/DB/%E4%BB%A3%E7%A0%81%E5%A4%A7%E5%85%A8/ch10/ch10/image-2.png" srcset="/img/loading.gif" lazyload alt="Alt text">  </p>
+<h5 id="10-6-绑定时间"><a href="#10-6-绑定时间" class="headerlink" title="10.6 绑定时间"></a>10.6 绑定时间</h5><p><img src="/2025/05/05/DB/%E4%BB%A3%E7%A0%81%E5%A4%A7%E5%85%A8/ch10/ch10/image-3.png" srcset="/img/loading.gif" lazyload alt="Alt text"><br><img src="/2025/05/05/DB/%E4%BB%A3%E7%A0%81%E5%A4%A7%E5%85%A8/ch10/ch10/image-4.png" srcset="/img/loading.gif" lazyload alt="Alt text">  </p>
+<h5 id="10-7-数据类型和控制结构之间的关系"><a href="#10-7-数据类型和控制结构之间的关系" class="headerlink" title="10.7 数据类型和控制结构之间的关系"></a>10.7 数据类型和控制结构之间的关系</h5><p><img src="/2025/05/05/DB/%E4%BB%A3%E7%A0%81%E5%A4%A7%E5%85%A8/ch10/ch10/image-5.png" srcset="/img/loading.gif" lazyload alt="Alt text"><br><img src="/2025/05/05/DB/%E4%BB%A3%E7%A0%81%E5%A4%A7%E5%85%A8/ch10/ch10/image-6.png" srcset="/img/loading.gif" lazyload alt="Alt text"><br><img src="/2025/05/05/DB/%E4%BB%A3%E7%A0%81%E5%A4%A7%E5%85%A8/ch10/ch10/image-7.png" srcset="/img/loading.gif" lazyload alt="Alt text">  </p>
+<h5 id="10-8-、为变量指定单一用途"><a href="#10-8-、为变量指定单一用途" class="headerlink" title="10.8 、为变量指定单一用途"></a>10.8 、为变量指定单一用途</h5><p>1、每个变量只用于单一用途<br>2、避免让代码具有隐含含义<br><img src="/2025/05/05/DB/%E4%BB%A3%E7%A0%81%E5%A4%A7%E5%85%A8/ch10/ch10/image-8.png" srcset="/img/loading.gif" lazyload alt="Alt text"><br>3、确保使用了所有已声明的变量</p>
+<h5 id="CHECKLIST"><a href="#CHECKLIST" class="headerlink" title="CHECKLIST"></a>CHECKLIST</h5><p><img src="/2025/05/05/DB/%E4%BB%A3%E7%A0%81%E5%A4%A7%E5%85%A8/ch10/ch10/image-9.png" srcset="/img/loading.gif" lazyload alt="Alt text"><br><img src="/2025/05/05/DB/%E4%BB%A3%E7%A0%81%E5%A4%A7%E5%85%A8/ch10/ch10/image-10.png" srcset="/img/loading.gif" lazyload alt="Alt text"></p>
+<h5 id="Key-Points"><a href="#Key-Points" class="headerlink" title="Key Points"></a>Key Points</h5><p><img src="/2025/05/05/DB/%E4%BB%A3%E7%A0%81%E5%A4%A7%E5%85%A8/ch10/ch10/image-11.png" srcset="/img/loading.gif" lazyload alt="Alt text"></p>
 
                 
               </div>

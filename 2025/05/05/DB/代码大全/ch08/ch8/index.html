@@ -8,8 +8,8 @@
 <head>
   <meta charset="UTF-8">
 
-  <link rel="apple-touch-icon" sizes="76x76" href="/%E5%86%85%E5%AD%98%E6%B3%84%E6%BC%8F%E6%8E%92%E6%9F%A5/fluid.png">
-  <link rel="icon" href="/%E5%86%85%E5%AD%98%E6%B3%84%E6%BC%8F%E6%8E%92%E6%9F%A5/fluid.png">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
   
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
@@ -41,7 +41,7 @@
 <meta property="og:image" content="http://smilemzy.com/2025/05/05/DB/%E4%BB%A3%E7%A0%81%E5%A4%A7%E5%85%A8/ch08/ch8/image-12.png">
 <meta property="og:image" content="http://smilemzy.com/2025/05/05/DB/%E4%BB%A3%E7%A0%81%E5%A4%A7%E5%85%A8/ch08/ch8/image-13.png">
 <meta property="article:published_time" content="2025-05-05T12:24:15.301Z">
-<meta property="article:modified_time" content="2025-05-05T13:24:33.825Z">
+<meta property="article:modified_time" content="2025-05-06T11:45:19.224Z">
 <meta property="article:author" content="Smile">
 <meta property="article:tag" content="book">
 <meta property="article:tag" content="code">
@@ -89,7 +89,7 @@
   <script id="fluid-configs">
     var Fluid = window.Fluid || {};
     Fluid.ctx = Object.assign({}, Fluid.ctx)
-    var CONFIG = {"hostname":"smilemzy.com","root":"/","version":"1.9.8","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/内存泄漏排查/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false},"umami":{"src":null,"website_id":null,"domains":null,"start_time":"2024-01-01T00:00:00.000Z","token":null,"api_server":null}},"search_path":"/local-search.xml","include_content_in_search":true};
+    var CONFIG = {"hostname":"smilemzy.com","root":"/","version":"1.9.8","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false},"umami":{"src":null,"website_id":null,"domains":null,"start_time":"2024-01-01T00:00:00.000Z","token":null,"api_server":null}},"search_path":"/local-search.xml","include_content_in_search":true};
 
     if (CONFIG.web_analytics.follow_dnt) {
       var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
@@ -211,7 +211,7 @@
   
 
 <div id="banner" class="banner" parallax=true
-     style="background: url('/%E5%86%85%E5%AD%98%E6%B3%84%E6%BC%8F%E6%8E%92%E6%9F%A5/default.png') no-repeat center center; background-size: cover;">
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
   <div class="full-bg-img">
     <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
       <div class="banner-text text-center fade-in-up">
@@ -296,19 +296,19 @@
                 <h4 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h4><p>ch8. 防御性编程</p>
 <h4 id="内容"><a href="#内容" class="headerlink" title="内容"></a>内容</h4><p>子程序应该不因传入错误数据而被破坏，哪怕是由其他子程序产生的错误数据。  </p>
 <h5 id="8-1-保护程序免遭非法输入数据的破坏"><a href="#8-1-保护程序免遭非法输入数据的破坏" class="headerlink" title="8.1 保护程序免遭非法输入数据的破坏"></a>8.1 保护程序免遭非法输入数据的破坏</h5><p>garbage in， garbage out – 缺乏安全性代表  </p>
-<h6 id="三种方法处理："><a href="#三种方法处理：" class="headerlink" title="三种方法处理："></a>三种方法处理：</h6><p>1、检查所有来源于外部的数据的值<br>2、检查子程序所有输入参数的值<br>3、决定如何处理错误的输入数据<br><img src="/2025/05/05/DB/%E4%BB%A3%E7%A0%81%E5%A4%A7%E5%85%A8/ch08/ch8/image.png" srcset="/内存泄漏排查/loading.gif" lazyload alt="防御式编程"></p>
-<h5 id="8-2-断言"><a href="#8-2-断言" class="headerlink" title="8.2 断言"></a>8.2 断言</h5><p>断言(assertion)是指在开发期间使用的、让程序在运行时进行自检的代码(通常是一个子程序或宏)<br><img src="/2025/05/05/DB/%E4%BB%A3%E7%A0%81%E5%A4%A7%E5%85%A8/ch08/ch8/image-1.png" srcset="/内存泄漏排查/loading.gif" lazyload alt="断言的假定">  </p>
-<h6 id="使用断言的指导性建议"><a href="#使用断言的指导性建议" class="headerlink" title="使用断言的指导性建议"></a>使用断言的指导性建议</h6><p>1、用错误处理代码来处理预期会发生的状况，用断言来处理绝不应该发生的状况<br>错误处理 – 检查有害的输入数据<br>断言 – 检查代码中的bug<br>2、避免把需要执行的代码放到断言中<br>3、用断言来注解并验证前条件和后条件<br><img src="/2025/05/05/DB/%E4%BB%A3%E7%A0%81%E5%A4%A7%E5%85%A8/ch08/ch8/image-2.png" srcset="/内存泄漏排查/loading.gif" lazyload alt="前条件后条件"><br>4、对于高健壮性的代码，应该先使用断言再处理错误  </p>
+<h6 id="三种方法处理："><a href="#三种方法处理：" class="headerlink" title="三种方法处理："></a>三种方法处理：</h6><p>1、检查所有来源于外部的数据的值<br>2、检查子程序所有输入参数的值<br>3、决定如何处理错误的输入数据<br><img src="/2025/05/05/DB/%E4%BB%A3%E7%A0%81%E5%A4%A7%E5%85%A8/ch08/ch8/image.png" srcset="/img/loading.gif" lazyload alt="防御式编程"></p>
+<h5 id="8-2-断言"><a href="#8-2-断言" class="headerlink" title="8.2 断言"></a>8.2 断言</h5><p>断言(assertion)是指在开发期间使用的、让程序在运行时进行自检的代码(通常是一个子程序或宏)<br><img src="/2025/05/05/DB/%E4%BB%A3%E7%A0%81%E5%A4%A7%E5%85%A8/ch08/ch8/image-1.png" srcset="/img/loading.gif" lazyload alt="断言的假定">  </p>
+<h6 id="使用断言的指导性建议"><a href="#使用断言的指导性建议" class="headerlink" title="使用断言的指导性建议"></a>使用断言的指导性建议</h6><p>1、用错误处理代码来处理预期会发生的状况，用断言来处理绝不应该发生的状况<br>错误处理 – 检查有害的输入数据<br>断言 – 检查代码中的bug<br>2、避免把需要执行的代码放到断言中<br>3、用断言来注解并验证前条件和后条件<br><img src="/2025/05/05/DB/%E4%BB%A3%E7%A0%81%E5%A4%A7%E5%85%A8/ch08/ch8/image-2.png" srcset="/img/loading.gif" lazyload alt="前条件后条件"><br>4、对于高健壮性的代码，应该先使用断言再处理错误  </p>
 <h5 id="8-3-错误处理技术"><a href="#8-3-错误处理技术" class="headerlink" title="8.3 错误处理技术"></a>8.3 错误处理技术</h5><p>1、返回中立值<br>有时，处理错误数据的最佳做法就是继续执行操作并简单地返回一个没有危害的数值。<br>2、换用下一个正确的数据<br>在处理数据流的时候，有时只需返回下一个正确的数据即可。<br>3、返回与前次相同的数据<br>4、换用最接近的合法值<br>在有些情况下，你可以选择返回最接近的那个合法值。<br>5、把警告信息记录到日志文件中<br>在检测到错误数据的时候，你可以选择在日志文件中记录一条警告信息，然后继续执行。<br>6、返回一个错误码<br>你可以决定只让系统的某些部分处理错误。其他部分则不在本地(局部)处理错误，而只是<br>简单地报告说有错误发生，并信任调用链上游的某个子程序会处理该错误。<br>通知其余部分已经发生错误：<br>(1) 设置一个状态变量的值<br>(2) 用状态值作为函数的返回值<br>(3) 用语言内建的异常机制抛出一个异常<br>7、调用错误处理子程序或对象<br>把错误处理都集中在一个全局的错误处理子程序或对象中。<br>8、当错误发生时显示出错信息<br>9、用最妥当的方式在局部处理错误<br>10、关闭程序<br>有些系统一但检测到错误发生就会关闭。  </p>
 <h6 id="健壮性与正确性"><a href="#健壮性与正确性" class="headerlink" title="健壮性与正确性"></a>健壮性与正确性</h6><p>正确性 – 永不返回不准确的结果，哪怕不返回结果也比返回不正确的结果好<br>健壮性 – 不断尝试采取某些措施，保证软件可以持续地运转下去，哪怕有时做出一些不够准确的结果  </p>
 <h6 id="高层次设计对错误处理方式的影响"><a href="#高层次设计对错误处理方式的影响" class="headerlink" title="高层次设计对错误处理方式的影响"></a>高层次设计对错误处理方式的影响</h6><p>确定一种通用的处理错误参数的方法，是架构层次(或称高层次)的设计决策，需要在那里的某个层次上解决。</p>
 <h5 id="8-4-异常"><a href="#8-4-异常" class="headerlink" title="8.4 异常"></a>8.4 异常</h5><p>1、用异常通知程序的其他部分，发生了不可忽略的错误<br>2、只在真正例外的情况下才抛出异常<br>用于处理不仅罕见甚至永远不该发生的情况<br>异常需要做出一个取舍：一方面它是一种强大的用来处理预料之外的情况的途径；另一方面程序的复杂度会因此增加。<br>3、不能用异常来推卸责任<br>4、避免在构造函数和析构函数中抛出异常，除非你在同一地方把它们捕获<br>5、在恰当的抽象层次抛出异常<br>6、在异常消息中加入关于导致异常发生的全部信息<br>7、避免使用空的catch语句<br>8、了解所用函数库可能抛出的异常<br>9、考虑创建一个集中的异常报告机制<br>10、把项目中对异常的使用标准化<br>11、考虑异常的替代方案  </p>
-<h5 id="8-5-隔离程序，使之包容由错误造成的损害"><a href="#8-5-隔离程序，使之包容由错误造成的损害" class="headerlink" title="8.5 隔离程序，使之包容由错误造成的损害"></a>8.5 隔离程序，使之包容由错误造成的损害</h5><p><img src="/2025/05/05/DB/%E4%BB%A3%E7%A0%81%E5%A4%A7%E5%85%A8/ch08/ch8/image-3.png" srcset="/内存泄漏排查/loading.gif" lazyload alt="隔栏"><br>在输入数据时，将其转换为恰当的类型<br><img src="/2025/05/05/DB/%E4%BB%A3%E7%A0%81%E5%A4%A7%E5%85%A8/ch08/ch8/image-4.png" srcset="/内存泄漏排查/loading.gif" lazyload alt="隔栏与断言"></p>
-<h5 id="8-6-辅助调试的代码"><a href="#8-6-辅助调试的代码" class="headerlink" title="8.6 辅助调试的代码"></a>8.6 辅助调试的代码</h5><p>不要自动地把产品版的限制强加于开发板之上<br><img src="/2025/05/05/DB/%E4%BB%A3%E7%A0%81%E5%A4%A7%E5%85%A8/ch08/ch8/image-5.png" srcset="/内存泄漏排查/loading.gif" lazyload alt="Alt text"><br>尽早引入辅助调试的代码<br><strong>采用进攻式编程</strong><br><img src="/2025/05/05/DB/%E4%BB%A3%E7%A0%81%E5%A4%A7%E5%85%A8/ch08/ch8/image-6.png" srcset="/内存泄漏排查/loading.gif" lazyload alt="进攻式编程"><br><strong>计划移除调试辅助的代码</strong><br>1、使用类似ant、make这样的版本控制工具<br>2、使用内置的预处理器<br><img src="/2025/05/05/DB/%E4%BB%A3%E7%A0%81%E5%A4%A7%E5%85%A8/ch08/ch8/image-7.png" srcset="/内存泄漏排查/loading.gif" lazyload alt="Alt text"><br><img src="/2025/05/05/DB/%E4%BB%A3%E7%A0%81%E5%A4%A7%E5%85%A8/ch08/ch8/image-8.png" srcset="/内存泄漏排查/loading.gif" lazyload alt="Alt text"><br>3、编写你自己的预处理器<br>4、使用调试存根 debuging stubs<br><img src="/2025/05/05/DB/%E4%BB%A3%E7%A0%81%E5%A4%A7%E5%85%A8/ch08/ch8/image-9.png" srcset="/内存泄漏排查/loading.gif" lazyload alt="Alt text"><br><img src="/2025/05/05/DB/%E4%BB%A3%E7%A0%81%E5%A4%A7%E5%85%A8/ch08/ch8/image-10.png" srcset="/内存泄漏排查/loading.gif" lazyload alt="Alt text">  </p>
+<h5 id="8-5-隔离程序，使之包容由错误造成的损害"><a href="#8-5-隔离程序，使之包容由错误造成的损害" class="headerlink" title="8.5 隔离程序，使之包容由错误造成的损害"></a>8.5 隔离程序，使之包容由错误造成的损害</h5><p><img src="/2025/05/05/DB/%E4%BB%A3%E7%A0%81%E5%A4%A7%E5%85%A8/ch08/ch8/image-3.png" srcset="/img/loading.gif" lazyload alt="隔栏"><br>在输入数据时，将其转换为恰当的类型<br><img src="/2025/05/05/DB/%E4%BB%A3%E7%A0%81%E5%A4%A7%E5%85%A8/ch08/ch8/image-4.png" srcset="/img/loading.gif" lazyload alt="隔栏与断言"></p>
+<h5 id="8-6-辅助调试的代码"><a href="#8-6-辅助调试的代码" class="headerlink" title="8.6 辅助调试的代码"></a>8.6 辅助调试的代码</h5><p>不要自动地把产品版的限制强加于开发板之上<br><img src="/2025/05/05/DB/%E4%BB%A3%E7%A0%81%E5%A4%A7%E5%85%A8/ch08/ch8/image-5.png" srcset="/img/loading.gif" lazyload alt="Alt text"><br>尽早引入辅助调试的代码<br><strong>采用进攻式编程</strong><br><img src="/2025/05/05/DB/%E4%BB%A3%E7%A0%81%E5%A4%A7%E5%85%A8/ch08/ch8/image-6.png" srcset="/img/loading.gif" lazyload alt="进攻式编程"><br><strong>计划移除调试辅助的代码</strong><br>1、使用类似ant、make这样的版本控制工具<br>2、使用内置的预处理器<br><img src="/2025/05/05/DB/%E4%BB%A3%E7%A0%81%E5%A4%A7%E5%85%A8/ch08/ch8/image-7.png" srcset="/img/loading.gif" lazyload alt="Alt text"><br><img src="/2025/05/05/DB/%E4%BB%A3%E7%A0%81%E5%A4%A7%E5%85%A8/ch08/ch8/image-8.png" srcset="/img/loading.gif" lazyload alt="Alt text"><br>3、编写你自己的预处理器<br>4、使用调试存根 debuging stubs<br><img src="/2025/05/05/DB/%E4%BB%A3%E7%A0%81%E5%A4%A7%E5%85%A8/ch08/ch8/image-9.png" srcset="/img/loading.gif" lazyload alt="Alt text"><br><img src="/2025/05/05/DB/%E4%BB%A3%E7%A0%81%E5%A4%A7%E5%85%A8/ch08/ch8/image-10.png" srcset="/img/loading.gif" lazyload alt="Alt text">  </p>
 <h5 id="8-7-确定在产品代码中该保留多少防御式代码"><a href="#8-7-确定在产品代码中该保留多少防御式代码" class="headerlink" title="8.7 确定在产品代码中该保留多少防御式代码"></a>8.7 确定在产品代码中该保留多少防御式代码</h5><p>哪些可以留，哪些应该排除在外<br>1、保留那些检查重要错误的代码<br>2、去掉检查细微错误的代码<br>3、去掉可以导致程序硬性崩溃的代码<br>4、保留可以让程序稳妥的崩溃的代码<br>5、为你的技术支持人员记录错误信息<br>6、确认留在代码中的错误消息是友好的  </p>
 <h5 id="8-8-对防御式编程采取防御的姿态"><a href="#8-8-对防御式编程采取防御的姿态" class="headerlink" title="8.8 对防御式编程采取防御的姿态"></a>8.8 对防御式编程采取防御的姿态</h5><p>过度的防御式编程也会引起问题。  </p>
-<h5 id="CHECKLIST"><a href="#CHECKLIST" class="headerlink" title="CHECKLIST"></a>CHECKLIST</h5><p><img src="/2025/05/05/DB/%E4%BB%A3%E7%A0%81%E5%A4%A7%E5%85%A8/ch08/ch8/image-11.png" srcset="/内存泄漏排查/loading.gif" lazyload alt="Alt text"><br><img src="/2025/05/05/DB/%E4%BB%A3%E7%A0%81%E5%A4%A7%E5%85%A8/ch08/ch8/image-12.png" srcset="/内存泄漏排查/loading.gif" lazyload alt="Alt text">  </p>
-<h5 id="Key-Points"><a href="#Key-Points" class="headerlink" title="Key Points"></a>Key Points</h5><p><img src="/2025/05/05/DB/%E4%BB%A3%E7%A0%81%E5%A4%A7%E5%85%A8/ch08/ch8/image-13.png" srcset="/内存泄漏排查/loading.gif" lazyload alt="Alt text"></p>
+<h5 id="CHECKLIST"><a href="#CHECKLIST" class="headerlink" title="CHECKLIST"></a>CHECKLIST</h5><p><img src="/2025/05/05/DB/%E4%BB%A3%E7%A0%81%E5%A4%A7%E5%85%A8/ch08/ch8/image-11.png" srcset="/img/loading.gif" lazyload alt="Alt text"><br><img src="/2025/05/05/DB/%E4%BB%A3%E7%A0%81%E5%A4%A7%E5%85%A8/ch08/ch8/image-12.png" srcset="/img/loading.gif" lazyload alt="Alt text">  </p>
+<h5 id="Key-Points"><a href="#Key-Points" class="headerlink" title="Key Points"></a>Key Points</h5><p><img src="/2025/05/05/DB/%E4%BB%A3%E7%A0%81%E5%A4%A7%E5%85%A8/ch08/ch8/image-13.png" srcset="/img/loading.gif" lazyload alt="Alt text"></p>
 
                 
               </div>

@@ -8,8 +8,8 @@
 <head>
   <meta charset="UTF-8">
 
-  <link rel="apple-touch-icon" sizes="76x76" href="/%E5%86%85%E5%AD%98%E6%B3%84%E6%BC%8F%E6%8E%92%E6%9F%A5/fluid.png">
-  <link rel="icon" href="/%E5%86%85%E5%AD%98%E6%B3%84%E6%BC%8F%E6%8E%92%E6%9F%A5/fluid.png">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
   
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
@@ -35,7 +35,7 @@
 <meta property="og:image" content="http://smilemzy.com/2025/05/05/note/DB/postgresql/Transactions/delayChkpt/DelayChkpt/img_8.png">
 <meta property="og:image" content="http://smilemzy.com/2025/05/05/note/DB/postgresql/Transactions/delayChkpt/DelayChkpt/img_7.png">
 <meta property="article:published_time" content="2025-05-05T12:24:14.188Z">
-<meta property="article:modified_time" content="2025-05-05T13:24:35.203Z">
+<meta property="article:modified_time" content="2025-05-06T11:45:19.402Z">
 <meta property="article:author" content="Smile">
 <meta property="article:tag" content="database">
 <meta property="article:tag" content="PostgreSQL">
@@ -82,7 +82,7 @@
   <script id="fluid-configs">
     var Fluid = window.Fluid || {};
     Fluid.ctx = Object.assign({}, Fluid.ctx)
-    var CONFIG = {"hostname":"smilemzy.com","root":"/","version":"1.9.8","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/内存泄漏排查/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false},"umami":{"src":null,"website_id":null,"domains":null,"start_time":"2024-01-01T00:00:00.000Z","token":null,"api_server":null}},"search_path":"/local-search.xml","include_content_in_search":true};
+    var CONFIG = {"hostname":"smilemzy.com","root":"/","version":"1.9.8","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false},"umami":{"src":null,"website_id":null,"domains":null,"start_time":"2024-01-01T00:00:00.000Z","token":null,"api_server":null}},"search_path":"/local-search.xml","include_content_in_search":true};
 
     if (CONFIG.web_analytics.follow_dnt) {
       var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
@@ -204,7 +204,7 @@
   
 
 <div id="banner" class="banner" parallax=true
-     style="background: url('/%E5%86%85%E5%AD%98%E6%B3%84%E6%BC%8F%E6%8E%92%E6%9F%A5/default.png') no-repeat center center; background-size: cover;">
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
   <div class="full-bg-img">
     <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
       <div class="banner-text text-center fade-in-up">
@@ -292,9 +292,9 @@
 <p>记载到日志 ：调用RecordTransactionCommit（）记录日志并刷出日志<br>（不一定刷出到物理存储，需要根据fsync参数的设置值确定）。</p>
 <p>释放锁 ：释放锁的位置是在设置提交标志之前还是之后，可以表明使用的封锁算法是否是<br>SS2PL。</p>
 <p>CommitTransaction函数：</p>
-<p><img src="/2025/05/05/note/DB/postgresql/Transactions/delayChkpt/DelayChkpt/img.png" srcset="/内存泄漏排查/loading.gif" lazyload alt="img.png"></p>
+<p><img src="/2025/05/05/note/DB/postgresql/Transactions/delayChkpt/DelayChkpt/img.png" srcset="/img/loading.gif" lazyload alt="img.png"></p>
 <p>RecordTransactionCommit 函数<br>为了保证事务的原子性、一致性，<br>日志一定要在提交事务前刷出完成。</p>
-<p><img src="/2025/05/05/note/DB/postgresql/Transactions/delayChkpt/DelayChkpt/img_1.png" srcset="/内存泄漏排查/loading.gif" lazyload alt="img_1.png"><br><img src="/2025/05/05/note/DB/postgresql/Transactions/delayChkpt/DelayChkpt/img_2.png" srcset="/内存泄漏排查/loading.gif" lazyload alt="img_2.png"><br><img src="/2025/05/05/note/DB/postgresql/Transactions/delayChkpt/DelayChkpt/img_3.png" srcset="/内存泄漏排查/loading.gif" lazyload alt="img_3.png"><br><img src="/2025/05/05/note/DB/postgresql/Transactions/delayChkpt/DelayChkpt/img_4.png" srcset="/内存泄漏排查/loading.gif" lazyload alt="img_4.png"></p>
+<p><img src="/2025/05/05/note/DB/postgresql/Transactions/delayChkpt/DelayChkpt/img_1.png" srcset="/img/loading.gif" lazyload alt="img_1.png"><br><img src="/2025/05/05/note/DB/postgresql/Transactions/delayChkpt/DelayChkpt/img_2.png" srcset="/img/loading.gif" lazyload alt="img_2.png"><br><img src="/2025/05/05/note/DB/postgresql/Transactions/delayChkpt/DelayChkpt/img_3.png" srcset="/img/loading.gif" lazyload alt="img_3.png"><br><img src="/2025/05/05/note/DB/postgresql/Transactions/delayChkpt/DelayChkpt/img_4.png" srcset="/img/loading.gif" lazyload alt="img_4.png"></p>
 <h5 id="2、DelayChkpt是什么"><a href="#2、DelayChkpt是什么" class="headerlink" title="2、DelayChkpt是什么"></a>2、DelayChkpt是什么</h5><p>综合上述代码，delayChkpt阻塞checkpoint发生位置如下：</p>
 <figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs text">RecordTransactionCommit<br>  ...<br>  START_CRIT_SECTION();<br>  MyPgXact-&gt;delayChkpt = true;<br>  /* 写XLOG：COMMIT */<br>  /* 写CLOG：内存写不刷盘 */<br>  MyPgXact-&gt;delayChkpt = false;<br>  ...<br></code></pre></td></tr></table></figure>
 
@@ -302,16 +302,16 @@
 <figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><code class="hljs text">CreateCheckPoint<br>  // 【1】计算位置（重要）<br>  WALInsertLockAcquireExclusive();<br>  curInsert = XLogBytePosToRecPtr(Insert-&gt;CurrBytePos);<br>  freespace = INSERT_FREESPACE(curInsert);<br>	if (freespace == 0)<br>	&#123;<br>		if (curInsert % XLogSegSize == 0)<br>			curInsert += SizeOfXLogLongPHD;<br>		else<br>			curInsert += SizeOfXLogShortPHD;<br>	&#125;<br>	checkPoint.redo = curInsert;<br>	RedoRecPtr = XLogCtl-&gt;Insert.RedoRecPtr = checkPoint.redo;<br>	WALInsertLockRelease();<br>  <br>	// 【2】通过delayChkpt等其他所有正在提交中、正在写日志的事务<br>	vxids = GetVirtualXIDsDelayingChkpt(&amp;nvxids);<br>	if (nvxids &gt; 0)<br>	&#123;<br>		do<br>		&#123;<br>			pg_usleep(10000L);	/* wait for 10 msec */<br>		&#125; while (HaveVirtualXIDsDelayingChkpt(vxids, nvxids));<br>	&#125;<br>	pfree(vxids);<br>  <br>  // 【3】刷数据<br>	CheckPointGuts(checkPoint.redo, flags);<br>  // 【4】记chkpt日志<br>	XLogBeginInsert();<br>	XLogRegisterData((char *) (&amp;checkPoint), sizeof(checkPoint));<br>	recptr = XLogInsert(RM_XLOG_ID,<br>						shutdown ? XLOG_CHECKPOINT_SHUTDOWN :<br>						XLOG_CHECKPOINT_ONLINE);<br><br>	XLogFlush(recptr);<br></code></pre></td></tr></table></figure>
 
 <h5 id="3、为什么需要DelayChkpt"><a href="#3、为什么需要DelayChkpt" class="headerlink" title="3、为什么需要DelayChkpt"></a>3、为什么需要DelayChkpt</h5><p>确定REDO点位是在createCheckpoint的函数前面执行的，<br>checkpoint和事务提交并发会有下面三种情况发生：</p>
-<p><img src="/2025/05/05/note/DB/postgresql/Transactions/delayChkpt/DelayChkpt/img_5.png" srcset="/内存泄漏排查/loading.gif" lazyload alt="img_5.png"></p>
+<p><img src="/2025/05/05/note/DB/postgresql/Transactions/delayChkpt/DelayChkpt/img_5.png" srcset="/img/loading.gif" lazyload alt="img_5.png"></p>
 <p>情况一：redo point在commit提交前，那么如果crash发生了，redo过程会覆盖这条xlog，<br>不会有问题</p>
 <p>情况三：redo point在事务提交后，redo时xlog虽然还是做不到，但是clog一定会被刷下去，<br>所以我们不会丢失事务提交信息。</p>
 <p>情况二：如果没有delayChkpt，redo point可能发生在上图中的位置<br>（然后checkpoint刷完数据后，当前事务才写clog），XLOG已经先写了，如果crash发生了，<br>redo过程不会覆盖这条xlog，而且clog信息不存在，那么commit信息彻底丢掉了。</p>
 <h5 id="4、目前RAC中的DelayChkpt"><a href="#4、目前RAC中的DelayChkpt" class="headerlink" title="4、目前RAC中的DelayChkpt"></a>4、目前RAC中的DelayChkpt</h5><p>各个节点分别进行</p>
 <h5 id="5、RAC支持2PC中的DelayChkpt"><a href="#5、RAC支持2PC中的DelayChkpt" class="headerlink" title="5、RAC支持2PC中的DelayChkpt"></a>5、RAC支持2PC中的DelayChkpt</h5><p>在RAC支持2PC的需求中，支持跨界点提交事务。<br>即node1 执行prepare的事务 p1，node2 可以执行 commit prepared ‘p1’进行提交操作。<br>如果执行了跨节点的事务提交，<br>那么目前的实现中，RecordTransactionCommit函数中xlog、clog的写入分别在两个节点进行，<br>其中xlog由执行SQL的节点写入，clog由执行prepare节点写入。</p>
 <p>由于目前实现delayChkpt是各个节点分别进行，就需要考虑DelayChkpt的问题，</p>
-<p>目前采用下图实现方法：假设node2提交node1 prepare的事务。<br><img src="/2025/05/05/note/DB/postgresql/Transactions/delayChkpt/DelayChkpt/img_8.png" srcset="/内存泄漏排查/loading.gif" lazyload alt="img_8.png"></p>
+<p>目前采用下图实现方法：假设node2提交node1 prepare的事务。<br><img src="/2025/05/05/note/DB/postgresql/Transactions/delayChkpt/DelayChkpt/img_8.png" srcset="/img/loading.gif" lazyload alt="img_8.png"></p>
 <p>分析可行性：</p>
-<p><img src="/2025/05/05/note/DB/postgresql/Transactions/delayChkpt/DelayChkpt/img_7.png" srcset="/内存泄漏排查/loading.gif" lazyload alt="img_7.png"></p>
+<p><img src="/2025/05/05/note/DB/postgresql/Transactions/delayChkpt/DelayChkpt/img_7.png" srcset="/img/loading.gif" lazyload alt="img_7.png"></p>
 <p>对于情况一、情况三，事务clog 不会发生丢失;</p>
 <p>重点分析情况二(1)~(3):</p>
 <p>对于(1)，任一节点发起 checkpoint,首先node1未被阻塞，可正常完成，node2<br>被阻塞，直到 xlog 和 node1 clog 写入完成并且delayChkpt 为false时才开始<br>checkpoint，如图中(4)时刻 node2开始执行checkpoint，那么 node1 的clog<br>页面不会刷盘。<br>但是，在这种情况下，发起checkpoint时已经获取过全部节点的redo point,而<br>本次事务的 xlog 在 redo point 之后，因此此时发生故障也会回放这条xlog.不<br>会导致事务状态丢失。</p>

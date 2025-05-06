@@ -1,7 +1,7 @@
 /* global Fluid, CONFIG */
 
 (function(window, document) {
-  for (const each of document.querySelectorAll('内存泄漏排查[lazyload]')) {
+  for (const each of document.querySelectorAll('img[lazyload]')) {
     Fluid.utils.waitElementVisible(each, function() {
       each.removeAttribute('srcset');
       each.removeAttribute('lazyload');

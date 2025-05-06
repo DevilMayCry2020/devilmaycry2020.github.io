@@ -8,8 +8,8 @@
 <head>
   <meta charset="UTF-8">
 
-  <link rel="apple-touch-icon" sizes="76x76" href="/%E5%86%85%E5%AD%98%E6%B3%84%E6%BC%8F%E6%8E%92%E6%9F%A5/fluid.png">
-  <link rel="icon" href="/%E5%86%85%E5%AD%98%E6%B3%84%E6%BC%8F%E6%8E%92%E6%9F%A5/fluid.png">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
   
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
@@ -28,7 +28,7 @@
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="http://smilemzy.com/2025/05/05/DB/PostgreSQL14_Internals/ch3/ch3/img.png">
 <meta property="article:published_time" content="2025-05-05T12:24:14.636Z">
-<meta property="article:modified_time" content="2025-05-05T12:59:48.327Z">
+<meta property="article:modified_time" content="2025-05-06T11:50:19.327Z">
 <meta property="article:author" content="Smile">
 <meta property="article:tag" content="book">
 <meta property="article:tag" content="database">
@@ -76,7 +76,7 @@
   <script id="fluid-configs">
     var Fluid = window.Fluid || {};
     Fluid.ctx = Object.assign({}, Fluid.ctx)
-    var CONFIG = {"hostname":"smilemzy.com","root":"/","version":"1.9.8","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/内存泄漏排查/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false},"umami":{"src":null,"website_id":null,"domains":null,"start_time":"2024-01-01T00:00:00.000Z","token":null,"api_server":null}},"search_path":"/local-search.xml","include_content_in_search":true};
+    var CONFIG = {"hostname":"smilemzy.com","root":"/","version":"1.9.8","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false},"umami":{"src":null,"website_id":null,"domains":null,"start_time":"2024-01-01T00:00:00.000Z","token":null,"api_server":null}},"search_path":"/local-search.xml","include_content_in_search":true};
 
     if (CONFIG.web_analytics.follow_dnt) {
       var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
@@ -198,7 +198,7 @@
   
 
 <div id="banner" class="banner" parallax=true
-     style="background: url('/%E5%86%85%E5%AD%98%E6%B3%84%E6%BC%8F%E6%8E%92%E6%9F%A5/default.png') no-repeat center center; background-size: cover;">
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
   <div class="full-bg-img">
     <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
       <div class="banner-text text-center fade-in-up">
@@ -317,7 +317,7 @@
 <p>这些大小可以通过 pageinspect 扩展 (postgresql.org&#x2F;docs&#x2F;14&#x2F;pageinspect.html) 查看。让我们看下表的第一个页面，页号从零开始：</p>
 <figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-operator">=</span><span class="hljs-operator">&gt;</span> <span class="hljs-keyword">CREATE</span> EXTENSION pageinspect;<br><span class="hljs-operator">=</span><span class="hljs-operator">&gt;</span> <span class="hljs-keyword">SELECT</span> lower, upper, special, pagesize<br><span class="hljs-keyword">FROM</span> page_header(get_raw_page(<span class="hljs-string">&#x27;accounts&#x27;</span>,<span class="hljs-number">0</span>));<br> lower <span class="hljs-operator">|</span> upper <span class="hljs-operator">|</span> special <span class="hljs-operator">|</span> pagesize<br>−−−−−−−<span class="hljs-operator">+</span>−−−−−−−<span class="hljs-operator">+</span>−−−−−−−−−<span class="hljs-operator">+</span>−−−−−−−−−−<br>   <span class="hljs-number">152</span> <span class="hljs-operator">|</span>  <span class="hljs-number">6904</span> <span class="hljs-operator">|</span>    <span class="hljs-number">8192</span> <span class="hljs-operator">|</span>     <span class="hljs-number">8192</span><br>(<span class="hljs-number">1</span> <span class="hljs-type">row</span>)<br></code></pre></td></tr></table></figure>
 
-<p><img src="/2025/05/05/DB/PostgreSQL14_Internals/ch3/ch3/img.png" srcset="/内存泄漏排查/loading.gif" lazyload alt="img.png"></p>
+<p><img src="/2025/05/05/DB/PostgreSQL14_Internals/ch3/ch3/img.png" srcset="/img/loading.gif" lazyload alt="img.png"></p>
 <h4 id="3-1-2-特殊空间"><a href="#3-1-2-特殊空间" class="headerlink" title="3.1.2 特殊空间"></a>3.1.2 特殊空间</h4><p>特殊空间位于页面的另一边，占据最高地址。它被某些索引用来存储辅助信息；在其他索引和表页面中，这个空间的大小为零。</p>
 <p>一般来说，索引页面的布局相当多样；它们的内容很大程度上取决于特定的索引类型。即使是同一个索引也可以有不同类型的页面：例如，B 树有一个特殊结构的元数据页面 (第零页) 和与表页面非常相似的常规页面。</p>
 <h4 id="3-1-3-元组"><a href="#3-1-3-元组" class="headerlink" title="3.1.3 元组"></a>3.1.3 元组</h4><p>行 (rows) 包含存储在数据库中的实际数据以及一些额外信息。它们位于特殊空间之前。</p>

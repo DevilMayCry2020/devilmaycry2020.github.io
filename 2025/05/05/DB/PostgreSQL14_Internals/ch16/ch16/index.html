@@ -8,8 +8,8 @@
 <head>
   <meta charset="UTF-8">
 
-  <link rel="apple-touch-icon" sizes="76x76" href="/%E5%86%85%E5%AD%98%E6%B3%84%E6%BC%8F%E6%8E%92%E6%9F%A5/fluid.png">
-  <link rel="icon" href="/%E5%86%85%E5%AD%98%E6%B3%84%E6%BC%8F%E6%8E%92%E6%9F%A5/fluid.png">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
   
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
@@ -36,7 +36,7 @@
 <meta property="og:image" content="http://smilemzy.com/2025/05/05/DB/PostgreSQL14_Internals/ch16/ch16/img_7.png">
 <meta property="og:image" content="http://smilemzy.com/2025/05/05/DB/PostgreSQL14_Internals/ch16/ch16/img_8.png">
 <meta property="article:published_time" content="2025-05-05T12:24:14.552Z">
-<meta property="article:modified_time" content="2025-05-05T13:25:00.429Z">
+<meta property="article:modified_time" content="2025-05-06T11:53:13.518Z">
 <meta property="article:author" content="Smile">
 <meta property="article:tag" content="book">
 <meta property="article:tag" content="database">
@@ -84,7 +84,7 @@
   <script id="fluid-configs">
     var Fluid = window.Fluid || {};
     Fluid.ctx = Object.assign({}, Fluid.ctx)
-    var CONFIG = {"hostname":"smilemzy.com","root":"/","version":"1.9.8","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/内存泄漏排查/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false},"umami":{"src":null,"website_id":null,"domains":null,"start_time":"2024-01-01T00:00:00.000Z","token":null,"api_server":null}},"search_path":"/local-search.xml","include_content_in_search":true};
+    var CONFIG = {"hostname":"smilemzy.com","root":"/","version":"1.9.8","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false},"umami":{"src":null,"website_id":null,"domains":null,"start_time":"2024-01-01T00:00:00.000Z","token":null,"api_server":null}},"search_path":"/local-search.xml","include_content_in_search":true};
 
     if (CONFIG.web_analytics.follow_dnt) {
       var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
@@ -206,7 +206,7 @@
   
 
 <div id="banner" class="banner" parallax=true
-     style="background: url('/%E5%86%85%E5%AD%98%E6%B3%84%E6%BC%8F%E6%8E%92%E6%9F%A5/default.png') no-repeat center center; background-size: cover;">
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
   <div class="full-bg-img">
     <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
       <div class="banner-text text-center fade-in-up">
@@ -317,7 +317,7 @@
 <p>一些表有代理主键，而其他表使用原生主键 (其中一些是复合主键)。这仅仅是出于演示的目的，并不是一个可以效仿的例子。</p>
 <p>示例数据库可以被视为真实系统的转储：它包含了过去某个特定时刻获取的数据快照。要显示此时间，你可以调用 bookings.now() 函数。在示例查询中使用此函数，需要在现实世界中使用 now() 函数。</p>
 <p>机场名、城市名和飞机型号的名称存储在 airports_data 和 aircrafts_data 表中；它们有两种语言，英语和俄语。为了构造本章中的示例，我通常会查询实体关系图中显示的 airports 和 aircrafts 视图；这些视图基于 bookings.lang 参数的值选择输出语言。尽管如此，一些基表的名称仍可能出现在查询计划中。</p>
-<p><img src="/2025/05/05/DB/PostgreSQL14_Internals/ch16/ch16/img.png" srcset="/内存泄漏排查/loading.gif" lazyload alt="img.png"></p>
+<p><img src="/2025/05/05/DB/PostgreSQL14_Internals/ch16/ch16/img.png" srcset="/img/loading.gif" lazyload alt="img.png"></p>
 <h3 id="16-2-Simple-Query-Protocol"><a href="#16-2-Simple-Query-Protocol" class="headerlink" title="16.2 Simple Query Protocol"></a><a name="cp2"></a>16.2 Simple Query Protocol</h3><p>一个简单版本的 client-server 协议 3 支持执行 SQL 查询：它将查询文本发送至服务器，并获得完整的执行结果，无论其中包含多少行数据 4。发送到服务器的查询历经几个阶段：解析、转换、规划，然后执行。</p>
 <h4 id="16-2-1-解析"><a href="#16-2-1-解析" class="headerlink" title="16.2.1 解析"></a>16.2.1 解析</h4><p>首先，PostgreSQL 需要解析 5 查询文本以了解需要执行什么。</p>
 <p><strong>词法和语法分析。</strong> 词法分析器将查询文本分割为一组词素 6 (如关键字、字符串字面量和数值字面量)，而语法分析器根据 SQL 语言的语法 7 验证这组词素。PostgreSQL 依赖标准解析工具，即 Flex 和 Bison 工具。</p>
@@ -326,7 +326,7 @@
 <figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-keyword">SELECT</span> schemaname, tablename<br><span class="hljs-keyword">FROM</span> pg_tables<br><span class="hljs-keyword">WHERE</span> tableowner <span class="hljs-operator">=</span> <span class="hljs-string">&#x27;postgres&#x27;</span><br><span class="hljs-keyword">ORDER</span> <span class="hljs-keyword">BY</span> tablename;<br></code></pre></td></tr></table></figure>
 
 <p>词法分析器识别出五个关键字、五个标识符、一个字符串字面量和三个单字母词素 (逗号、等号和分号)。语法分析器使用这些词素来构建语法树，下图以非常简化的形式显示了语法树。树节点旁边的说明文字指定了查询的相应部分：</p>
-<p><img src="/2025/05/05/DB/PostgreSQL14_Internals/ch16/ch16/img_1.png" srcset="/内存泄漏排查/loading.gif" lazyload alt="img_1.png"></p>
+<p><img src="/2025/05/05/DB/PostgreSQL14_Internals/ch16/ch16/img_1.png" srcset="/img/loading.gif" lazyload alt="img_1.png"></p>
 <p>一个相当晦涩的 RTE 缩写代表 Range Table Entry。PostgreSQL 源代码中使用术语 range table 来表示表、子查询、关联结果，换句话说，指那些可以由 SQL 操作符处理的任何行集。8</p>
 <p><strong>语义分析。</strong> 语义分析 9 的目的是确认数据库中是否包含查询根据名称引用的表或其他对象，以及用户是否具有访问这些对象的权限。所有语义分析需要的信息都存储在系统表中。</p>
 <p>获得语法分析树后，语义分析器执行进一步的重构，包括添加对特定数据库对象、数据类型和其他信息的引用。</p>
@@ -341,7 +341,7 @@
 <p>然而，服务器并不处理查询的文本表示；所有操作都在语法树上执行。下图显示了转换后树的简化版本 (如果打开了 debug_print_rewrite 参数，你可以在服务器日志中看到其完整版本)。</p>
 <p>语法树反映了查询的语法结构，但它并没有说明操作应该以何种顺序执行。</p>
 <p>PostgreSQL 还支持用户通过重写规则系统实现的自定义转换。13</p>
-<p><img src="/2025/05/05/DB/PostgreSQL14_Internals/ch16/ch16/img_2.png" srcset="/内存泄漏排查/loading.gif" lazyload alt="img_2.png"></p>
+<p><img src="/2025/05/05/DB/PostgreSQL14_Internals/ch16/ch16/img_2.png" srcset="/img/loading.gif" lazyload alt="img_2.png"></p>
 <figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs text">规则系统的支持被宣称为 Postgres 发展的主要目标之一；14 当规则首次实现时，它还是一个学术项目，但从那时起，规则已经被多次重新设计。规则系统是一个非常强大的机制，但理解和调试它相当困难。甚至有人提议完全从 PostgreSQL 中移除规则，但这个想法并没有获得一致支持。在大多数情况下，使用触发器而不是规则会更安全也更容易。<br></code></pre></td></tr></table></figure>
 
 <h4 id="16-2-3-规划"><a href="#16-2-3-规划" class="headerlink" title="16.2.3 规划"></a>16.2.3 规划</h4><p>SQL 是一种声明式语言：查询仅指定了要获取哪些数据，但没有指定如何去获取。</p>
@@ -357,7 +357,7 @@
 <figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-operator">=</span><span class="hljs-operator">&gt;</span> EXPLAIN <span class="hljs-keyword">SELECT</span> schemaname, tablename<br><span class="hljs-keyword">FROM</span> pg_tables<br><span class="hljs-keyword">WHERE</span> tableowner <span class="hljs-operator">=</span> <span class="hljs-string">&#x27;postgres&#x27;</span><br><span class="hljs-keyword">ORDER</span> <span class="hljs-keyword">BY</span> tablename;<br>                             QUERY PLAN<br>−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−<br> Sort (cost<span class="hljs-operator">=</span><span class="hljs-number">21.03</span>.<span class="hljs-number">.21</span><span class="hljs-number">.04</span> <span class="hljs-keyword">rows</span><span class="hljs-operator">=</span><span class="hljs-number">1</span> width<span class="hljs-operator">=</span><span class="hljs-number">128</span>)<br>   Sort Key: c.relname<br>   −<span class="hljs-operator">&gt;</span> Nested Loop <span class="hljs-keyword">Left</span> <span class="hljs-keyword">Join</span> (cost<span class="hljs-operator">=</span><span class="hljs-number">0.00</span>.<span class="hljs-number">.21</span><span class="hljs-number">.02</span> <span class="hljs-keyword">rows</span><span class="hljs-operator">=</span><span class="hljs-number">1</span> width<span class="hljs-operator">=</span><span class="hljs-number">128</span>)<br>       <span class="hljs-keyword">Join</span> <span class="hljs-keyword">Filter</span>: (n.oid <span class="hljs-operator">=</span> c.relnamespace)<br>       −<span class="hljs-operator">&gt;</span> Seq Scan <span class="hljs-keyword">on</span> pg_class c (cost<span class="hljs-operator">=</span><span class="hljs-number">0.00</span>.<span class="hljs-number">.19</span><span class="hljs-number">.93</span> <span class="hljs-keyword">rows</span><span class="hljs-operator">=</span><span class="hljs-number">1</span> width<span class="hljs-operator">=</span><span class="hljs-number">72</span>)<br>           <span class="hljs-keyword">Filter</span>: ((relkind <span class="hljs-operator">=</span> <span class="hljs-keyword">ANY</span> (<span class="hljs-string">&#x27;&#123;r,p&#125;&#x27;</span>::&quot;char&quot;[])) <span class="hljs-keyword">AND</span> (pg_g...<br>       −<span class="hljs-operator">&gt;</span> Seq Scan <span class="hljs-keyword">on</span> pg_namespace n (cost<span class="hljs-operator">=</span><span class="hljs-number">0.00</span>.<span class="hljs-number">.1</span><span class="hljs-number">.04</span> <span class="hljs-keyword">rows</span><span class="hljs-operator">=</span><span class="hljs-number">4</span> wid...<br>(<span class="hljs-number">7</span> <span class="hljs-keyword">rows</span>)<br></code></pre></td></tr></table></figure>
 
 <p>查询计划中显示的 Seq Scan 节点对应读取表的操作，而 Nested Loop 节点代表连接操作。</p>
-<p><img src="/2025/05/05/DB/PostgreSQL14_Internals/ch16/ch16/img_3.png" srcset="/内存泄漏排查/loading.gif" lazyload alt="img_3.png"></p>
+<p><img src="/2025/05/05/DB/PostgreSQL14_Internals/ch16/ch16/img_3.png" srcset="/img/loading.gif" lazyload alt="img_3.png"></p>
 <p><strong>计划搜索。</strong> PostgreSQL 使用基于成本的优化器；17 它会检查潜在的计划，并估算执行它们所需的资源 (比如 I&#x2F;O 操作或 CPU 周期)。这种评估会具体细化成一个数字，称为计划的成本。在所有考虑的计划中，优化器会选择成本最低的计划。</p>
 <p>但问题在于，随着连接表的数量增加，潜在可用计划的数量呈指数级增长，因此即使是相对简单的查询，也不可能将全部计划考虑在内。通常情况下，会使用动态规划算法，同时结合一些启发式算法来缩小搜索范围。这使得规划器能够在可接受的时间内为包含大量表的查询找到数学上精确的解决方案。</p>
 <figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs text">精确的解决方案并不能保证所选计划确实是最优的，因为规划器使用的是简化的数学模型，并且可能缺乏可靠的输入数据。<br></code></pre></td></tr></table></figure>
@@ -367,11 +367,11 @@
 <p>最后一点可能需要解释一下。让我们看一个查询，它没有为 FROM 子句中列出的表指定任何显式连接：</p>
 <figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-keyword">SELECT</span> ...<br><span class="hljs-keyword">FROM</span> a, b, c, d, e<br><span class="hljs-keyword">WHERE</span> ...<br></code></pre></td></tr></table></figure>
 <p>此处，规划期必须考虑所有可能的连接组合。查询由语法树的以下部分表示 (示意性地展示)：</p>
-<p><img src="/2025/05/05/DB/PostgreSQL14_Internals/ch16/ch16/img_4.png" srcset="/内存泄漏排查/loading.gif" lazyload alt="img_4.png"></p>
+<p><img src="/2025/05/05/DB/PostgreSQL14_Internals/ch16/ch16/img_4.png" srcset="/img/loading.gif" lazyload alt="img_4.png"></p>
 <p>在下一个示例中，连接有一个由 JOIN 子句定义的特定结构。</p>
 <figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-keyword">SELECT</span> ...<br><span class="hljs-keyword">FROM</span> a, b <span class="hljs-keyword">JOIN</span> c <span class="hljs-keyword">ON</span> ..., d, e<br><span class="hljs-keyword">WHERE</span> ...<br></code></pre></td></tr></table></figure>
 <p>语法分析树表明了这种结构：</p>
-<p><img src="/2025/05/05/DB/PostgreSQL14_Internals/ch16/ch16/img_5.png" srcset="/内存泄漏排查/loading.gif" lazyload alt="img_5.png"></p>
+<p><img src="/2025/05/05/DB/PostgreSQL14_Internals/ch16/ch16/img_5.png" srcset="/img/loading.gif" lazyload alt="img_5.png"></p>
 <p>规划器通常会展平连接树，使其看起来像第一个例子中的那样。规划器算法会遍历树，并用其元素的平面列表替换每个 JOINEXPR 节点。21</p>
 <p>然而，只有当生成的平面列表中的元素不超过 join_collapse_limit 时，才会执行这种展平。在这个特定案例中，如果 join_collapse_limit 值小于 5，那么 JOINEXPR 节点将不会被展平。</p>
 <p>对于规划器来说，它意味着：</p>
@@ -384,7 +384,7 @@
 <p>这里有一个示例查询：</p>
 <figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-keyword">SELECT</span> ...<br><span class="hljs-keyword">FROM</span> a,<br>  (<br>    <span class="hljs-keyword">SELECT</span> ... <span class="hljs-keyword">FROM</span> b, c <span class="hljs-keyword">WHERE</span> ...<br>  ) bc,<br>  d, e<br><span class="hljs-keyword">WHERE</span> ...<br></code></pre></td></tr></table></figure>
 <p>相应的连接树如下所示。这里唯一的区别是这颗树包含 FROMEXPR 节点，而不是 JOINEXPR (参数名称由此而来)。</p>
-<p><img src="/2025/05/05/DB/PostgreSQL14_Internals/ch16/ch16/img_6.png" srcset="/内存泄漏排查/loading.gif" lazyload alt="img_6.png"></p>
+<p><img src="/2025/05/05/DB/PostgreSQL14_Internals/ch16/ch16/img_6.png" srcset="/img/loading.gif" lazyload alt="img_6.png"></p>
 <p><strong>遗传查询优化。</strong>  一旦展平之后，树可能在同一层包含太多元素 — 无论是表还是必须单独优化的连接结果。规划时间会随着需要连接的数据集数量指数级增长，因此可能会超出所有合理的限制。</p>
 <p>如果启用了 geqo 参数，且某一层的元素个数超过了 geqo_threshold 值，那么规划器将使用遗传算法来优化查询。22 这种算法比动态规划算法快得多，但不能保证找到的计划是最优的。因此，通常的做法是通过减少必须优化的元素数量来避免使用遗传算法。</p>
 <p>遗传算法有多个可配置的参数，23 但我不打算在这里进行介绍。</p>
@@ -412,7 +412,7 @@
 
 <p>首先，规划器估算定义数据访问方法的叶节点的基数。这些计算依赖于收集的统计信息，例如表的总大小。</p>
 <p>过滤条件的选择率取决于它们的类型。在最简单的情况下，可以假设它是一个常数值，尽管规划器试图使用所有可用的信息来细化评估。通常，了解如何估算简单的过滤条件就足够了；如果条件包含逻辑运算，那么选择率按以下公式计算：26</p>
-<p><img src="/2025/05/05/DB/PostgreSQL14_Internals/ch16/ch16/img_7.png" srcset="/内存泄漏排查/loading.gif" lazyload alt="img_7.png"></p>
+<p><img src="/2025/05/05/DB/PostgreSQL14_Internals/ch16/ch16/img_7.png" srcset="/img/loading.gif" lazyload alt="img_7.png"></p>
 <p>不幸的是，这些公式假设谓词 x 和 y 不相互依赖。对于相互依赖的谓词，这样的估算是不准确的。</p>
 <p>为了估算连接的基数，规划器必须获得笛卡尔积的基数 (即两个数据集基数的乘积) 并估算连接条件的选择率，这同样取决于条件类型。</p>
 <p>其他节点的基数 (例如排序或聚集) 估算以类似的方式进行。</p>
@@ -424,7 +424,7 @@
 <p>规划器执行的所有计算都只是估算，可能与实际执行时间无关。唯一目的是在相同条件下，对同一查询的不同计划进行比较。在其他情况下，比较查询 (尤其是不同的查询) 的成本是没有意义的。例如，由于过时的统计信息，成本可能被低估了；一旦刷新统计信息，计算出的数字可能会上升，随着估算越来越准确，规划器将选择一个更好的计划。</p>
 <h4 id="16-2-4-执行"><a href="#16-2-4-执行" class="headerlink" title="16.2.4 执行"></a>16.2.4 执行</h4><p>查询优化期间创建的计划现在需要被执行。27</p>
 <p>执行器在后端进程内存中打开一个 portal；28 它是一个保持当前正在执行的查询状态的对象。这个状态以一棵树的形式表示，展示了计划树的结构。</p>
-<p><img src="/2025/05/05/DB/PostgreSQL14_Internals/ch16/ch16/img_8.png" srcset="/内存泄漏排查/loading.gif" lazyload alt="img_8.png"></p>
+<p><img src="/2025/05/05/DB/PostgreSQL14_Internals/ch16/ch16/img_8.png" srcset="/img/loading.gif" lazyload alt="img_8.png"></p>
 <p>这棵树的节点就像一条流水线一样运行，相互请求以及发送数据。</p>
 <p>查询执行从根开始。根节点 (在本例中代表 SORT 操作) 从它的子节点中拉取数据。接收到所有行之后，会对它们进行排序并传递给客户端。</p>
 <p>一些节点 (如本例中所示的 NESTLOOP 节点) 从不同来源接收数据集并进行连接。这样的节点从两个子节点拉取数据，一旦接收到满足连接条件的一对行，就立即向上层传递结果 (不像排序，排序必须先获取所有行)。此时，节点的执行被中断，直到其父节点请求下一行。如果只需要部分结果 (例如，查询中有 LIMIT 子句)，那么操作将不会全部执行。</p>
@@ -588,8 +588,8 @@
                   <article class="post-next col-6">
                     
                     
-                      <a href="/2025/05/05/DB/PostgreSQL14_Internals/ch15/ch15/" title="ch15. Locks on MemoryStructures">
-                        <span class="hidden-mobile">ch15. Locks on MemoryStructures</span>
+                      <a href="/2025/05/05/DB/PostgreSQL14_Internals/ch14/ch14/" title="ch14. Miscellaneous Locks">
+                        <span class="hidden-mobile">ch14. Miscellaneous Locks</span>
                         <span class="visible-mobile">下一篇</span>
                         <i class="iconfont icon-arrowright"></i>
                       </a>

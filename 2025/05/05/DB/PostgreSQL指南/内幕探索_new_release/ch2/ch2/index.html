@@ -8,8 +8,8 @@
 <head>
   <meta charset="UTF-8">
 
-  <link rel="apple-touch-icon" sizes="76x76" href="/%E5%86%85%E5%AD%98%E6%B3%84%E6%BC%8F%E6%8E%92%E6%9F%A5/fluid.png">
-  <link rel="icon" href="/%E5%86%85%E5%AD%98%E6%B3%84%E6%BC%8F%E6%8E%92%E6%9F%A5/fluid.png">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
   
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
@@ -29,7 +29,7 @@
 <meta property="og:image" content="http://smilemzy.com/2025/05/05/DB/PostgreSQL%E6%8C%87%E5%8D%97/%E5%86%85%E5%B9%95%E6%8E%A2%E7%B4%A2_new_release/ch2/ch2/img.png">
 <meta property="og:image" content="http://smilemzy.com/2025/05/05/DB/PostgreSQL%E6%8C%87%E5%8D%97/%E5%86%85%E5%B9%95%E6%8E%A2%E7%B4%A2_new_release/ch2/ch2/img_1.png">
 <meta property="article:published_time" content="2025-05-05T12:24:15.081Z">
-<meta property="article:modified_time" content="2025-05-05T12:52:37.830Z">
+<meta property="article:modified_time" content="2025-05-06T11:45:19.284Z">
 <meta property="article:author" content="Smile">
 <meta property="article:tag" content="book">
 <meta property="article:tag" content="database">
@@ -77,7 +77,7 @@
   <script id="fluid-configs">
     var Fluid = window.Fluid || {};
     Fluid.ctx = Object.assign({}, Fluid.ctx)
-    var CONFIG = {"hostname":"smilemzy.com","root":"/","version":"1.9.8","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/内存泄漏排查/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false},"umami":{"src":null,"website_id":null,"domains":null,"start_time":"2024-01-01T00:00:00.000Z","token":null,"api_server":null}},"search_path":"/local-search.xml","include_content_in_search":true};
+    var CONFIG = {"hostname":"smilemzy.com","root":"/","version":"1.9.8","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false},"umami":{"src":null,"website_id":null,"domains":null,"start_time":"2024-01-01T00:00:00.000Z","token":null,"api_server":null}},"search_path":"/local-search.xml","include_content_in_search":true};
 
     if (CONFIG.web_analytics.follow_dnt) {
       var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
@@ -199,7 +199,7 @@
   
 
 <div id="banner" class="banner" parallax=true
-     style="background: url('/%E5%86%85%E5%AD%98%E6%B3%84%E6%BC%8F%E6%8E%92%E6%9F%A5/default.png') no-repeat center center; background-size: cover;">
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
   <div class="full-bg-img">
     <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
       <div class="banner-text text-center fade-in-up">
@@ -304,7 +304,7 @@
 <p>复制相关进程：执行流式复制。更多详细信息在第11章中描述。</p>
 <p>后台工作者进程（Background Worker Processes）：从9.3版本开始支持，可以执行用户实现的任何处理。</p>
 <p>更多信息，请参考官方文档。以下小节将详细介绍前三种类型的进程。</p>
-<p><img src="/2025/05/05/DB/PostgreSQL%E6%8C%87%E5%8D%97/%E5%86%85%E5%B9%95%E6%8E%A2%E7%B4%A2_new_release/ch2/ch2/img.png" srcset="/内存泄漏排查/loading.gif" lazyload alt="img.png"><br>此图展示了PostgreSQL服务器的进程结构：一个postgres服务器进程、两个后台进程、七个后台辅助进程以及两个客户端进程。同时，图中也描绘了数据库集群、共享内存区域及两个客户端进程。</p>
+<p><img src="/2025/05/05/DB/PostgreSQL%E6%8C%87%E5%8D%97/%E5%86%85%E5%B9%95%E6%8E%A2%E7%B4%A2_new_release/ch2/ch2/img.png" srcset="/img/loading.gif" lazyload alt="img.png"><br>此图展示了PostgreSQL服务器的进程结构：一个postgres服务器进程、两个后台进程、七个后台辅助进程以及两个客户端进程。同时，图中也描绘了数据库集群、共享内存区域及两个客户端进程。</p>
 <h4 id="2-1-1-postgres服务器进程"><a href="#2-1-1-postgres服务器进程" class="headerlink" title="2.1.1 postgres服务器进程"></a>2.1.1 postgres服务器进程</h4><p>如前所述，postgres服务器进程是PostgreSQL服务器中所有进程的父进程。在早期版本中，它被称为’postmaster’。</p>
 <p>当你使用带有’start’选项的pg_ctl实用程序时，postgres服务器进程将启动。<br>随后，它会在内存中分配一个共享内存区域，<br>启动多种后台进程，并根据需要启动与复制相关的进程和后台工作者进程，然后等待来自客户端的连接请求。<br>每当收到客户端的连接请求时，它就会启动一个后台进程。（启动的后台进程将处理连接客户端发出的所有查询。）</p>
 <p>postgres服务器进程监听一个网络端口，默认端口是5432。虽然可以在同一主机上运行多个PostgreSQL服务器，<br>但每个服务器必须设置为监听不同的端口号，例如5432、5433等。</p>
@@ -367,7 +367,7 @@
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><code class="hljs shell"><span class="hljs-meta prompt_">postgres&gt; </span><span class="language-bash">pstree -p 9687</span><br>-+= 00001 root /sbin/launchd<br> \-+- 09687 postgres /usr/local/pgsql/bin/postgres -D /usr/local/pgsql/data<br>   |--= 09688 postgres postgres: logger process<br>   |--= 09690 postgres postgres: checkpointer process<br>   |--= 09691 postgres postgres: writer process<br>   |--= 09692 postgres postgres: wal writer process<br>   |--= 09693 postgres postgres: autovacuum launcher process<br>   |--= 09694 postgres postgres: archiver process<br>   |--= 09695 postgres postgres: stats collector process<br>   |--= 09697 postgres postgres: postgres sampledb 192.168.1.100(54924) idle<br>   \--= 09717 postgres postgres: postgres sampledb 192.168.1.100(54964) idle in transaction<br></code></pre></td></tr></table></figure>
 <h3 id="2-2-内存架构"><a href="#2-2-内存架构" class="headerlink" title="2.2 内存架构"></a><a name="memory-structure"></a>2.2 内存架构</h3><p>PostgreSQL 中的内存架构可以分为两大类:</p>
 <p>本地内存区域 - 由每个后端进程为自己的使用而分配。<br>共享内存区域 - 由 PostgreSQL 服务器的所有进程共同使用。</p>
-<p>以下小节将简要介绍这些内存区域。<br><img src="/2025/05/05/DB/PostgreSQL%E6%8C%87%E5%8D%97/%E5%86%85%E5%B9%95%E6%8E%A2%E7%B4%A2_new_release/ch2/ch2/img_1.png" srcset="/内存泄漏排查/loading.gif" lazyload alt="img_1.png"></p>
+<p>以下小节将简要介绍这些内存区域。<br><img src="/2025/05/05/DB/PostgreSQL%E6%8C%87%E5%8D%97/%E5%86%85%E5%B9%95%E6%8E%A2%E7%B4%A2_new_release/ch2/ch2/img_1.png" srcset="/img/loading.gif" lazyload alt="img_1.png"></p>
 <h4 id="2-2-1-Local-Memory-Area"><a href="#2-2-1-Local-Memory-Area" class="headerlink" title="2.2.1 Local Memory Area"></a>2.2.1 Local Memory Area</h4><p>每个后端进程都会分配一个本地内存区域用于查询处理。这个区域被划分为几个子区域,<br>其大小要么是固定的,要么是可变的。</p>
 <p>表 2.2 列出了主要的子区域。各子区域的详细信息将在后续章节中介绍。</p>
 <table>

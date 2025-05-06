@@ -8,8 +8,8 @@
 <head>
   <meta charset="UTF-8">
 
-  <link rel="apple-touch-icon" sizes="76x76" href="/%E5%86%85%E5%AD%98%E6%B3%84%E6%BC%8F%E6%8E%92%E6%9F%A5/fluid.png">
-  <link rel="icon" href="/%E5%86%85%E5%AD%98%E6%B3%84%E6%BC%8F%E6%8E%92%E6%9F%A5/fluid.png">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
   
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
@@ -33,7 +33,7 @@
 <meta property="og:image" content="http://smilemzy.com/2025/05/05/DB/PostgreSQL%E6%8C%87%E5%8D%97/%E5%86%85%E5%B9%95%E6%8E%A2%E7%B4%A2_new_release/ch3/ch3/img_4.png">
 <meta property="og:image" content="http://smilemzy.com/2025/05/05/DB/PostgreSQL%E6%8C%87%E5%8D%97/%E5%86%85%E5%B9%95%E6%8E%A2%E7%B4%A2_new_release/ch3/ch3/img_5.png">
 <meta property="article:published_time" content="2025-05-05T12:24:15.088Z">
-<meta property="article:modified_time" content="2025-05-05T12:52:29.847Z">
+<meta property="article:modified_time" content="2025-05-06T11:45:19.260Z">
 <meta property="article:author" content="Smile">
 <meta property="article:tag" content="book">
 <meta property="article:tag" content="database">
@@ -81,7 +81,7 @@
   <script id="fluid-configs">
     var Fluid = window.Fluid || {};
     Fluid.ctx = Object.assign({}, Fluid.ctx)
-    var CONFIG = {"hostname":"smilemzy.com","root":"/","version":"1.9.8","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/内存泄漏排查/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false},"umami":{"src":null,"website_id":null,"domains":null,"start_time":"2024-01-01T00:00:00.000Z","token":null,"api_server":null}},"search_path":"/local-search.xml","include_content_in_search":true};
+    var CONFIG = {"hostname":"smilemzy.com","root":"/","version":"1.9.8","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false},"umami":{"src":null,"website_id":null,"domains":null,"start_time":"2024-01-01T00:00:00.000Z","token":null,"api_server":null}},"search_path":"/local-search.xml","include_content_in_search":true};
 
     if (CONFIG.web_analytics.follow_dnt) {
       var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
@@ -203,7 +203,7 @@
   
 
 <div id="banner" class="banner" parallax=true
-     style="background: url('/%E5%86%85%E5%AD%98%E6%B3%84%E6%BC%8F%E6%8E%92%E6%9F%A5/default.png') no-repeat center center; background-size: cover;">
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
   <div class="full-bg-img">
     <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
       <div class="banner-text text-center fade-in-up">
@@ -344,7 +344,7 @@
 <li>执行器（Executor）</li>
 </ol>
 <p>执行器按照计划树创建的顺序访问表和索引来执行查询。</p>
-<p><img src="/2025/05/05/DB/PostgreSQL%E6%8C%87%E5%8D%97/%E5%86%85%E5%B9%95%E6%8E%A2%E7%B4%A2_new_release/ch3/ch3/img.png" srcset="/内存泄漏排查/loading.gif" lazyload alt="img.png"></p>
+<p><img src="/2025/05/05/DB/PostgreSQL%E6%8C%87%E5%8D%97/%E5%86%85%E5%B9%95%E6%8E%A2%E7%B4%A2_new_release/ch3/ch3/img.png" srcset="/img/loading.gif" lazyload alt="img.png"></p>
 <p>本节将对这些子系统进行概览介绍。鉴于规划器（Planner）和执行器（Executor）的复杂性，它们的具体功能将在后续章节中进行详细阐述。</p>
 <blockquote>
 <p>PostgreSQL的查询处理过程在官方文档中有详细说明。<br><a target="_blank" rel="noopener" href="https://www.postgresql.org/docs/current/overview.html">https://www.postgresql.org/docs/current/overview.html</a></p>
@@ -353,14 +353,14 @@
 <figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs sql">testdb<span class="hljs-operator">=</span># <span class="hljs-keyword">SELECT</span> id, data <span class="hljs-keyword">FROM</span> tbl_a <span class="hljs-keyword">WHERE</span> id <span class="hljs-operator">&lt;</span> <span class="hljs-number">300</span> <span class="hljs-keyword">ORDER</span> <span class="hljs-keyword">BY</span> data;<br></code></pre></td></tr></table></figure>
 
 <p>解析树是一种树形结构，其根节点是由parsenodes.h中定义的SelectStmt结构。<br>图3.2(b)展示了图3.2(a)中所示查询的解析树。</p>
-<p><img src="/2025/05/05/DB/PostgreSQL%E6%8C%87%E5%8D%97/%E5%86%85%E5%B9%95%E6%8E%A2%E7%B4%A2_new_release/ch3/ch3/img_1.png" srcset="/内存泄漏排查/loading.gif" lazyload alt="img_1.png"></p>
+<p><img src="/2025/05/05/DB/PostgreSQL%E6%8C%87%E5%8D%97/%E5%86%85%E5%B9%95%E6%8E%A2%E7%B4%A2_new_release/ch3/ch3/img_1.png" srcset="/img/loading.gif" lazyload alt="img_1.png"></p>
 <p>SELECT查询中的各元素及其在解析树中对应的元素编号相同。例如，(1) 是目标列表中的第一项，代表表中的 ‘id’ 列；<br>(4) 是WHERE子句；以此类推。</p>
 <p>解析器在生成解析树时仅检查输入的语法。因此，只有当查询中存在语法错误时，它才会返回错误。</p>
 <p>解析器不检查输入查询的语义。例如，即使查询中包含一个不存在的表名，<br>解析器也不会返回错误。语义检查由分析器&#x2F;解析器完成。</p>
 <h4 id="3-1-2-Analyzer-Analyser"><a href="#3-1-2-Analyzer-Analyser" class="headerlink" title="3.1.2. Analyzer&#x2F;Analyser"></a>3.1.2. Analyzer&#x2F;Analyser</h4><p>分析器&#x2F;分析程序会对解析器生成的解析树执行语义分析，并生成查询树。</p>
 <p>查询树的根节点是由 parsenodes.h  (src&#x2F;include&#x2F;nodes&#x2F;parsenodes.h) 文件定义的 Query 结构体。<br>该结构体包含了与其对应的查询相关元数据，如命令类型（SELECT、INSERT 等），以及多个子节点。<br>每一个子节点组成一个列表或树形结构，用于存储各个具体子句的信息。</p>
 <p>图 3.3 描述了前一小节中图 3.2(a) 所示查询的查询树结构。</p>
-<p><img src="/2025/05/05/DB/PostgreSQL%E6%8C%87%E5%8D%97/%E5%86%85%E5%B9%95%E6%8E%A2%E7%B4%A2_new_release/ch3/ch3/img_2.png" srcset="/内存泄漏排查/loading.gif" lazyload alt="img_2.png"></p>
+<p><img src="/2025/05/05/DB/PostgreSQL%E6%8C%87%E5%8D%97/%E5%86%85%E5%B9%95%E6%8E%A2%E7%B4%A2_new_release/ch3/ch3/img_2.png" srcset="/img/loading.gif" lazyload alt="img_2.png"></p>
 <p>上述查询树简要说明如下：</p>
 <p>目标列表（targetlist）：是查询结果中的列列表。在此例中，列表包含两列：’id’ 和 ‘data’。<br>如果输入的查询树使用了 ‘*’（星号），分析器&#x2F;分析程序会将其显式替换为所有列。</p>
 <p>范围表（range table）：是查询中使用到的关系列表。在此例中，列表包含了表 ‘tbl_a’ 的信息，<br>如表的OID（对象标识符）和表名。</p>
@@ -379,7 +379,7 @@
 <figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs sql">sampledb<span class="hljs-operator">=</span># <span class="hljs-keyword">SELECT</span> <span class="hljs-operator">*</span> <span class="hljs-keyword">FROM</span> employees_list;<br></code></pre></td></tr></table></figure>
 
 <p>此时，重写器会处理范围表节点，将其转换为存储在pg_rules中的对应视图子查询的解析树。</p>
-<p><img src="/2025/05/05/DB/PostgreSQL%E6%8C%87%E5%8D%97/%E5%86%85%E5%B9%95%E6%8E%A2%E7%B4%A2_new_release/ch3/ch3/img_3.png" srcset="/内存泄漏排查/loading.gif" lazyload alt="img_3.png"></p>
+<p><img src="/2025/05/05/DB/PostgreSQL%E6%8C%87%E5%8D%97/%E5%86%85%E5%B9%95%E6%8E%A2%E7%B4%A2_new_release/ch3/ch3/img_3.png" srcset="/img/loading.gif" lazyload alt="img_3.png"></p>
 <p>由于PostgreSQL采用这种机制实现视图，因此在9.2版本之前视图是不可更新的。但从9.3版本开始，视图可以被更新了；<br>尽管如此，在更新视图时仍存在许多限制。这些具体细节在官方文档中有描述。</p>
 <h4 id="3-1-4-Planner-and-Executor"><a href="#3-1-4-Planner-and-Executor" class="headerlink" title="3.1.4. Planner and Executor"></a>3.1.4. Planner and Executor</h4><p>规划器接收来自重写器的查询树，并生成一个能被执行器最高效处理的（查询）计划树。</p>
 <p>PostgreSQL中的规划器基于纯粹的成本估算优化，不支持基于规则的优化或提示。<br>此规划器是PostgreSQL中最复杂的子系统。因此，本章后续部分将提供对规划器的概述。</p>
@@ -391,13 +391,13 @@
 <figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs sql">testdb<span class="hljs-operator">=</span># EXPLAIN <span class="hljs-keyword">SELECT</span> <span class="hljs-operator">*</span> <span class="hljs-keyword">FROM</span> tbl_a <span class="hljs-keyword">WHERE</span> id <span class="hljs-operator">&lt;</span> <span class="hljs-number">300</span> <span class="hljs-keyword">ORDER</span> <span class="hljs-keyword">BY</span> data;<br>                          QUERY PLAN<br><span class="hljs-comment">---------------------------------------------------------------</span><br> Sort  (cost<span class="hljs-operator">=</span><span class="hljs-number">182.34</span>.<span class="hljs-number">.183</span><span class="hljs-number">.09</span> <span class="hljs-keyword">rows</span><span class="hljs-operator">=</span><span class="hljs-number">300</span> width<span class="hljs-operator">=</span><span class="hljs-number">8</span>)<br>   Sort Key: data<br>   <span class="hljs-operator">-</span><span class="hljs-operator">&gt;</span>  Seq Scan <span class="hljs-keyword">on</span> tbl_a  (cost<span class="hljs-operator">=</span><span class="hljs-number">0.00</span>.<span class="hljs-number">.170</span><span class="hljs-number">.00</span> <span class="hljs-keyword">rows</span><span class="hljs-operator">=</span><span class="hljs-number">300</span> width<span class="hljs-operator">=</span><span class="hljs-number">8</span>)<br>         <span class="hljs-keyword">Filter</span>: (id <span class="hljs-operator">&lt;</span> <span class="hljs-number">300</span>)<br>(<span class="hljs-number">4</span> <span class="hljs-keyword">rows</span>)<br></code></pre></td></tr></table></figure>
 
 <p>This result shows the plan tree shown in Fig. 3.5.</p>
-<p><img src="/2025/05/05/DB/PostgreSQL%E6%8C%87%E5%8D%97/%E5%86%85%E5%B9%95%E6%8E%A2%E7%B4%A2_new_release/ch3/ch3/img_4.png" srcset="/内存泄漏排查/loading.gif" lazyload alt="img_4.png"></p>
+<p><img src="/2025/05/05/DB/PostgreSQL%E6%8C%87%E5%8D%97/%E5%86%85%E5%B9%95%E6%8E%A2%E7%B4%A2_new_release/ch3/ch3/img_4.png" srcset="/img/loading.gif" lazyload alt="img_4.png"></p>
 <p>计划树由称为计划节点的元素组成，这些元素连接到PlannedStmt结构的plantree列表上，<br>这些元素在plannodes.h中定义。具体细节将在第3.3.3节（及第3.5.4.2节）中进行解释。</p>
 <p>每个计划节点都包含了执行器处理所需的必要信息。对于单表查询而言，执行器会从计划树的末端开始，向根部进行处理。</p>
 <p>例如，图3.5所示的计划树是一个排序节点和顺序扫描节点的列表。因此，执行器首先通过顺序扫描的方式读取表tbl_a，<br>然后对获取的结果进行排序。</p>
 <p>执行器通过第8章所述的缓冲区管理器来读写数据库集群中的表和索引。在处理查询时，<br>执行器会使用预先分配的一些内存区域，如temp_buffers和work_mem，并在必要时创建临时文件。</p>
 <p>此外，在访问元组时，PostgreSQL利用并发控制机制来维护运行事务的一致性和隔离性。<br>并发控制机制在第5章中进行描述。</p>
-<p><img src="/2025/05/05/DB/PostgreSQL%E6%8C%87%E5%8D%97/%E5%86%85%E5%B9%95%E6%8E%A2%E7%B4%A2_new_release/ch3/ch3/img_5.png" srcset="/内存泄漏排查/loading.gif" lazyload alt="img_5.png"></p>
+<p><img src="/2025/05/05/DB/PostgreSQL%E6%8C%87%E5%8D%97/%E5%86%85%E5%B9%95%E6%8E%A2%E7%B4%A2_new_release/ch3/ch3/img_5.png" srcset="/img/loading.gif" lazyload alt="img_5.png"></p>
 <p>图3.6展示了执行器、缓冲区管理器和临时文件之间的关系。</p>
 <h3 id="3-2-单表查询的成本估算"><a href="#3-2-单表查询的成本估算" class="headerlink" title="3.2 单表查询的成本估算"></a><a name="cost-single-table"></a>3.2 单表查询的成本估算</h3><h3 id="3-3-单表查询计划树的创建"><a href="#3-3-单表查询计划树的创建" class="headerlink" title="3.3 单表查询计划树的创建"></a><a name="plan-single-table"></a>3.3 单表查询计划树的创建</h3><h3 id="3-4-执行器的工作原理"><a href="#3-4-执行器的工作原理" class="headerlink" title="3.4 执行器的工作原理"></a><a name="Executor-Performs"></a>3.4 执行器的工作原理</h3><h3 id="3-5-连接操作"><a href="#3-5-连接操作" class="headerlink" title="3.5 连接操作"></a><a name="Join-Operations"></a>3.5 连接操作</h3><h3 id="3-6-多表查询计划树的创建"><a href="#3-6-多表查询计划树的创建" class="headerlink" title="3.6 多表查询计划树的创建"></a><a name="plan-multi-table"></a>3.6 多表查询计划树的创建</h3>
                 
@@ -500,9 +500,9 @@
                   <article class="post-prev col-6">
                     
                     
-                      <a href="/2025/05/05/DB/PostgreSQL%E6%8C%87%E5%8D%97/%E5%86%85%E5%B9%95%E6%8E%A2%E7%B4%A2_new_release/ch4/ch4/" title="ch4. 外部数据包装器">
+                      <a href="/2025/05/05/DB/PostgreSQL%E6%8C%87%E5%8D%97/%E5%86%85%E5%B9%95%E6%8E%A2%E7%B4%A2_new_release/ch4/ch4/" title="ch3. 外部数据包装器">
                         <i class="iconfont icon-arrowleft"></i>
-                        <span class="hidden-mobile">ch4. 外部数据包装器</span>
+                        <span class="hidden-mobile">ch3. 外部数据包装器</span>
                         <span class="visible-mobile">上一篇</span>
                       </a>
                     

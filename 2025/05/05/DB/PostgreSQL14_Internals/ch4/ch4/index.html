@@ -8,8 +8,8 @@
 <head>
   <meta charset="UTF-8">
 
-  <link rel="apple-touch-icon" sizes="76x76" href="/%E5%86%85%E5%AD%98%E6%B3%84%E6%BC%8F%E6%8E%92%E6%9F%A5/fluid.png">
-  <link rel="icon" href="/%E5%86%85%E5%AD%98%E6%B3%84%E6%BC%8F%E6%8E%92%E6%9F%A5/fluid.png">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
   
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
@@ -32,7 +32,7 @@
 <meta property="og:image" content="http://smilemzy.com/2025/05/05/DB/PostgreSQL14_Internals/ch4/ch4/img_3.png">
 <meta property="og:image" content="http://smilemzy.com/2025/05/05/DB/PostgreSQL14_Internals/ch4/ch4/img_4.png">
 <meta property="article:published_time" content="2025-05-05T12:24:14.640Z">
-<meta property="article:modified_time" content="2025-05-05T12:59:39.054Z">
+<meta property="article:modified_time" content="2025-05-06T11:50:19.312Z">
 <meta property="article:author" content="Smile">
 <meta property="article:tag" content="book">
 <meta property="article:tag" content="database">
@@ -80,7 +80,7 @@
   <script id="fluid-configs">
     var Fluid = window.Fluid || {};
     Fluid.ctx = Object.assign({}, Fluid.ctx)
-    var CONFIG = {"hostname":"smilemzy.com","root":"/","version":"1.9.8","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/内存泄漏排查/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false},"umami":{"src":null,"website_id":null,"domains":null,"start_time":"2024-01-01T00:00:00.000Z","token":null,"api_server":null}},"search_path":"/local-search.xml","include_content_in_search":true};
+    var CONFIG = {"hostname":"smilemzy.com","root":"/","version":"1.9.8","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false},"umami":{"src":null,"website_id":null,"domains":null,"start_time":"2024-01-01T00:00:00.000Z","token":null,"api_server":null}},"search_path":"/local-search.xml","include_content_in_search":true};
 
     if (CONFIG.web_analytics.follow_dnt) {
       var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
@@ -202,7 +202,7 @@
   
 
 <div id="banner" class="banner" parallax=true
-     style="background: url('/%E5%86%85%E5%AD%98%E6%B3%84%E6%BC%8F%E6%8E%92%E6%9F%A5/default.png') no-repeat center center; background-size: cover;">
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
   <div class="full-bg-img">
     <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
       <div class="banner-text text-center fade-in-up">
@@ -318,13 +318,13 @@
 <p>为了确保隔离性，每个事务都使用其自己的快照。这意味着不同的事务可以看到在不同时间点获取的不同快照，但这些快照仍然是一致的。</p>
 <p>在读已提交隔离级别下，每个语句开始时获取一个快照，并且仅在该语句期间内保持活跃状态。</p>
 <p>在可重复读和可序列化隔离级别下，在事务内的第一条语句开始时获取一个快照，并且会保持活跃状态直到整个事务完成。</p>
-<p><img src="/2025/05/05/DB/PostgreSQL14_Internals/ch4/ch4/img.png" srcset="/内存泄漏排查/loading.gif" lazyload alt="img.png"></p>
+<p><img src="/2025/05/05/DB/PostgreSQL14_Internals/ch4/ch4/img.png" srcset="/img/loading.gif" lazyload alt="img.png"></p>
 <h3 id="4-2-RowVersion-Visibility"><a href="#4-2-RowVersion-Visibility" class="headerlink" title="4.2 RowVersion Visibility"></a><a name="cp2"></a>4.2 RowVersion Visibility</h3><p>快照并不是所有所需元组的物理拷贝。相反，它由几个数字定义，而元组的可见性则由特定规则决定。</p>
 <p>元组可见性由元组头中的 xmin 和 xmax 字段 (即执行插入和删除的事务 ID) 和相应的提示位定义。由于 xmin–xmax 区间不相交，因此在任何快照中，每一行仅由其版本中的一个所表示。</p>
 <p>确切的可见性规则十分复杂 1，因为考虑到了各种不同的场景和极端情况。非常粗略地，我们可以这样描述它们：一个元组在包括 xmin 事务更改但不包括 xmax 事务更改的快照中是可见的 (换句话说，该元组已经出现并且尚未被删除)。</p>
 <p>如果事务在快照创建之前提交，那么事务更改在快照中是可见的。作为一个例外，事务可以看到自己未提交的更改。如果事务被中止，其更改不会在任何快照中可见。</p>
 <p>让我们看一个简单的例子。在此图中，线段代表事务 (从它们的开始时间到提交时间)：</p>
-<p><img src="/2025/05/05/DB/PostgreSQL14_Internals/ch4/ch4/img_1.png" srcset="/内存泄漏排查/loading.gif" lazyload alt="img_1.png"></p>
+<p><img src="/2025/05/05/DB/PostgreSQL14_Internals/ch4/ch4/img_1.png" srcset="/img/loading.gif" lazyload alt="img_1.png"></p>
 <p>此处，应用于事务的可见性规则如下：</p>
 <pre><code class="hljs">1. 事务 2 在快照创建之前已提交，因此其更改是可见的。
 2. 事务 1 在快照创建时仍处于活跃状态，因此其更改不可见。
@@ -336,7 +336,7 @@
 <p>我们只能了解到事务的当前状态。此信息可以在服务器的共享内存中获取：ProcArray 结构包含所有活跃会话及其事务的列表。一旦事务完成，就无法确定它在快照创建时是否处于活跃状态。</p>
 <p>因此创建快照仅记录获取的时刻是不够的：还需要收集在那一时刻所有事务的状态。否则，之后将无法确定哪些元组在快照中必须可见，哪些必须被排除。</p>
 <p>让我们看一下系统在获取快照时以及一段时间后可用的信息，白色圆圈表示活跃事务，黑色圆圈表示已完成的事务：</p>
-<p><img src="/2025/05/05/DB/PostgreSQL14_Internals/ch4/ch4/img_2.png" srcset="/内存泄漏排查/loading.gif" lazyload alt="img_2.png"></p>
+<p><img src="/2025/05/05/DB/PostgreSQL14_Internals/ch4/ch4/img_2.png" srcset="/img/loading.gif" lazyload alt="img_2.png"></p>
 <p>假设我们不知道在获取快照时第一个事务仍在执行中，而第三个事务尚未开始。那么看起来它们就像第二个事务 (在那个时刻已提交) 一样，无法将它们过滤掉。</p>
 <p>因此，即使所有需要的元组都存在于堆页面中，PostgreSQL 也无法创建一个快照来显示过去某个任意时间点的数据一致状态。所以，PostgreSQL 无法实现回溯查询 (有时也称为时间或闪回查询)。</p>
 <figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs text">有趣的是，该功能被宣布为 Postgres 的目标之一，并在初期就实现了，但是当项目支持转交给社区时，它被从数据库系统中移除了 (Joseph M. Hellerstein, Looking Back at Postgres. https://arxiv.org/pdf/1901.01973.pdf)。<br></code></pre></td></tr></table></figure>
@@ -348,7 +348,7 @@
 <p>所有 ID 大于或等于 xmax 的事务要么仍在运行中，要么不存在，因此它们的更改不可见。</p>
 <p><strong>xip_list</strong> 是除了虚拟事务之外的所有活跃事务 ID 的列表，虚拟事务不会以任何方式影响可见性。</p>
 <p>快照还包括其他几个参数，但此处我们将忽略它们。</p>
-<p>以图形表示，快照可以表示为一个矩形，包括从 xmin 到 xmax 的事务。<br><img src="/2025/05/05/DB/PostgreSQL14_Internals/ch4/ch4/img_3.png" srcset="/内存泄漏排查/loading.gif" lazyload alt="img_3.png"></p>
+<p>以图形表示，快照可以表示为一个矩形，包括从 xmin 到 xmax 的事务。<br><img src="/2025/05/05/DB/PostgreSQL14_Internals/ch4/ch4/img_3.png" srcset="/img/loading.gif" lazyload alt="img_3.png"></p>
 <p>为了理解快照是如何定义可见性规则的，我们将在 accounts 表上复现上述场景。</p>
 <figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-operator">=</span><span class="hljs-operator">&gt;</span> <span class="hljs-keyword">TRUNCATE</span> <span class="hljs-keyword">TABLE</span> accounts;<br></code></pre></td></tr></table></figure>
 
@@ -409,7 +409,7 @@
 
 <p>虚拟事务没有真正的 ID，但它们仍然像常规事务一样使用快照，因此它们有自己的视界。唯一例外是没有活跃快照的虚拟事务：视界的概念对于它们来说毫无意义，当涉及到快照和可见性时，它们对系统是完全”透明的” (尽管 pg_stat_activity.backend_xmin 中仍可能包含旧快照的 xmin)。</p>
 <p>我们也可以用类似的方式去定义数据库视界。为此，我们应当获取这个数据库中所有事务的视界，并选择最远的一个，其 xmin 最老 7。在这个视界之外，过期的堆元组将永远不会对这个数据库中的任何事务可见。这样的元组便可以被 vacuum 安全地清理掉 — 这正是从实际角度来看，为什么视界的概念如此重要的原因。</p>
-<p><img src="/2025/05/05/DB/PostgreSQL14_Internals/ch4/ch4/img_4.png" srcset="/内存泄漏排查/loading.gif" lazyload alt="img_4.png"></p>
+<p><img src="/2025/05/05/DB/PostgreSQL14_Internals/ch4/ch4/img_4.png" srcset="/img/loading.gif" lazyload alt="img_4.png"></p>
 <p>让我们总结一下：</p>
 <pre><code class="hljs">1. 如果处于可重复读或可序列化隔离级别下的事务 (无论是真实的还是虚拟的) 运行了很长时间，它会保持数据库视界并推迟清理。
 2. 处于读已提交隔离级别下的真实事务以相同的方式保持数据库视界，即使它没有执行任何操作符 (处于 “idle in transaction” 状态)。

@@ -8,8 +8,8 @@
 <head>
   <meta charset="UTF-8">
 
-  <link rel="apple-touch-icon" sizes="76x76" href="/%E5%86%85%E5%AD%98%E6%B3%84%E6%BC%8F%E6%8E%92%E6%9F%A5/fluid.png">
-  <link rel="icon" href="/%E5%86%85%E5%AD%98%E6%B3%84%E6%BC%8F%E6%8E%92%E6%9F%A5/fluid.png">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
   
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
@@ -30,7 +30,7 @@
 <meta property="og:image" content="http://smilemzy.com/2025/05/05/DB/PostgreSQL14_Internals/ch9/ch9/img_1.png">
 <meta property="og:image" content="http://smilemzy.com/2025/05/05/DB/PostgreSQL14_Internals/ch9/ch9/img_2.png">
 <meta property="article:published_time" content="2025-05-05T12:24:14.682Z">
-<meta property="article:modified_time" content="2025-05-05T13:25:00.427Z">
+<meta property="article:modified_time" content="2025-05-06T11:53:13.527Z">
 <meta property="article:author" content="Smile">
 <meta property="article:tag" content="book">
 <meta property="article:tag" content="database">
@@ -78,7 +78,7 @@
   <script id="fluid-configs">
     var Fluid = window.Fluid || {};
     Fluid.ctx = Object.assign({}, Fluid.ctx)
-    var CONFIG = {"hostname":"smilemzy.com","root":"/","version":"1.9.8","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/内存泄漏排查/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false},"umami":{"src":null,"website_id":null,"domains":null,"start_time":"2024-01-01T00:00:00.000Z","token":null,"api_server":null}},"search_path":"/local-search.xml","include_content_in_search":true};
+    var CONFIG = {"hostname":"smilemzy.com","root":"/","version":"1.9.8","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false},"umami":{"src":null,"website_id":null,"domains":null,"start_time":"2024-01-01T00:00:00.000Z","token":null,"api_server":null}},"search_path":"/local-search.xml","include_content_in_search":true};
 
     if (CONFIG.web_analytics.follow_dnt) {
       var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
@@ -200,7 +200,7 @@
   
 
 <div id="banner" class="banner" parallax=true
-     style="background: url('/%E5%86%85%E5%AD%98%E6%B3%84%E6%BC%8F%E6%8E%92%E6%9F%A5/default.png') no-repeat center center; background-size: cover;">
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
   <div class="full-bg-img">
     <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
       <div class="banner-text text-center fade-in-up">
@@ -322,7 +322,7 @@
 
 <h3 id="9-2-Buffer-Cache-Design"><a href="#9-2-Buffer-Cache-Design" class="headerlink" title="9.2 Buffer Cache Design"></a><a name="cp2"></a>9.2 Buffer Cache Design</h3><p>缓冲区缓存位于服务器的共享内存中，所有进程都可以访问。它占据了大部分的共享内存，并且无疑是 PostgreSQL 中最重要和最复杂的数据结构之一。理解缓存的工作原理本身就很重要，但更重要的是，许多其他结构 (例如子事务、CLOG 事务状态和 WAL 条目) 使用类似的缓存机制，尽管这些结构更简单一些。</p>
 <p>这个缓存的名称受其内部结构的启发，因为它由一系列缓冲区组成。每个缓冲区保留了一个内存块，可以容纳单个数据页及其页头 3。</p>
-<p><img src="/2025/05/05/DB/PostgreSQL14_Internals/ch9/ch9/img.png" srcset="/内存泄漏排查/loading.gif" lazyload alt="img.png"></p>
+<p><img src="/2025/05/05/DB/PostgreSQL14_Internals/ch9/ch9/img.png" srcset="/img/loading.gif" lazyload alt="img.png"></p>
 <p>页头包含了一些关于缓冲区和其中页面的信息，比如：</p>
 <pre><code class="hljs">页面的物理位置 (文件 ID、分支和分支中的块号)
 用于显示页面中的数据已被修改，并且需要回写到磁盘的属性 (这样的页面被称为脏页)
@@ -346,7 +346,7 @@
 
 <p>哈希表有多种实现方式；在所有可能的选项中，缓冲区缓存使用的是可扩展哈希表，通过链解决哈希碰撞 7。</p>
 <p>哈希键由表文件的 ID、分支类型和此分支文件中的页面 ID 组成。因此，知道页面后，PostgreSQL 便可以快速找到包含该页面的缓冲区，或确认该页面当前没有被缓存。</p>
-<p><img src="/2025/05/05/DB/PostgreSQL14_Internals/ch9/ch9/img_1.png" srcset="/内存泄漏排查/loading.gif" lazyload alt="img_1.png"></p>
+<p><img src="/2025/05/05/DB/PostgreSQL14_Internals/ch9/ch9/img_1.png" srcset="/img/loading.gif" lazyload alt="img_1.png"></p>
 <figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs text">长期以来，缓冲区缓存的实现因依赖于哈希表而饱受批评：当需要查找某个特定关系的页面所占用的所有缓冲区时，这种结构是没有用的，因为在运行 DROP 和 TRUNCATE 命令，或在清理期间截断一个表时 8，需要从缓存中移除页面。然而，到目前为止还没有人提出适当的替代方案。<br></code></pre></td></tr></table></figure>
 
 <p>如果哈希表包含所需的缓冲区 ID，缓冲区管理器会锁定此缓冲区并将其 ID 返回给进程。然后这个进程便可以开始使用缓存页面，而不会产生任何 I&#x2F;O 流量。</p>
@@ -391,7 +391,7 @@
 <li><p>最终，所有空闲的缓冲区都将被用完 (因为数据库的大小通常大于为缓存分配的内存块)。那个时候，缓冲区管理器将不得不选择一个已经在使用的缓冲区，并从这个缓冲区中逐出缓存页面。逐出操作使用的是时钟扫描算法，时钟隐喻很好地说明了这一点。时钟指针指向一个缓冲区，开始绕着缓冲区缓存转动，并且在经过时将每个缓存页面的使用计数减一。时钟指针找到的第一个计数为零，并且未被锁定的缓冲区将被清除。因此，每次访问缓冲区 (即锁定) 时，使用计数都会增加，而当缓冲区管理器搜索要逐出的页面时，使用计数会减少。最终，最近最少使用的页面首先被逐出，而那些经常访问的页面将在缓存中保留更长时间。可以猜到，如果所有缓冲区的使用计数均不等于零，在它们中的任何一个计数变为零之前，时钟指针必须完成一次以上的完整循环。为了避免多次循环，PostgreSQL 将使用计数限制为 5 次。一旦找到了要逐出的缓冲区，便需要从哈希表中删除仍在该缓冲区中的页面引用。但是如果这个缓冲区是脏的，也就是说，它包含了一些修改过的数据，那么旧页面将不能被简单地丢弃 — 缓冲区管理器必须先将其写入到磁盘。</p>
 </li>
 </ol>
-<p><img src="/2025/05/05/DB/PostgreSQL14_Internals/ch9/ch9/img_2.png" srcset="/内存泄漏排查/loading.gif" lazyload alt="img_2.png"></p>
+<p><img src="/2025/05/05/DB/PostgreSQL14_Internals/ch9/ch9/img_2.png" srcset="/img/loading.gif" lazyload alt="img_2.png"></p>
 <p>然后缓冲区管理器将一个新页面读入所找到的缓冲区中 — 无论它是否需要被逐出或仍然是空闲的。此操作使用的是 Buffered I&#x2F;O，所以只有当操作系统无法在其自己的缓存中找到该页面时，才会从磁盘读取该页面。</p>
 <figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs text">那些使用 Direct I/O 并且不依赖操作系统缓存的数据库系统区分逻辑读 (来自 RAM，即来自缓冲区缓存) 和物理读 (来自磁盘)。从 PostgreSQL 的角度来看，页面既可以从缓冲区缓存中读取，也可以从操作系统请求，但是在后一种情况下，无法判断页面是在 RAM 中找到的，还是从磁盘读取的。<br></code></pre></td></tr></table></figure>
 

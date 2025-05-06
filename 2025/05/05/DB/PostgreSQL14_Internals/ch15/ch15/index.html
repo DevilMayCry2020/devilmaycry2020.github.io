@@ -8,8 +8,8 @@
 <head>
   <meta charset="UTF-8">
 
-  <link rel="apple-touch-icon" sizes="76x76" href="/%E5%86%85%E5%AD%98%E6%B3%84%E6%BC%8F%E6%8E%92%E6%9F%A5/fluid.png">
-  <link rel="icon" href="/%E5%86%85%E5%AD%98%E6%B3%84%E6%BC%8F%E6%8E%92%E6%9F%A5/fluid.png">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
   
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
@@ -29,7 +29,7 @@
 <meta property="og:image" content="http://smilemzy.com/2025/05/05/DB/PostgreSQL14_Internals/ch15/ch15/img.png">
 <meta property="og:image" content="http://smilemzy.com/2025/05/05/DB/PostgreSQL14_Internals/ch15/ch15/img_1.png">
 <meta property="article:published_time" content="2025-05-05T12:24:14.544Z">
-<meta property="article:modified_time" content="2025-05-05T12:57:04.216Z">
+<meta property="article:modified_time" content="2025-05-06T11:53:13.515Z">
 <meta property="article:author" content="Smile">
 <meta property="article:tag" content="book">
 <meta property="article:tag" content="database">
@@ -77,7 +77,7 @@
   <script id="fluid-configs">
     var Fluid = window.Fluid || {};
     Fluid.ctx = Object.assign({}, Fluid.ctx)
-    var CONFIG = {"hostname":"smilemzy.com","root":"/","version":"1.9.8","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/内存泄漏排查/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false},"umami":{"src":null,"website_id":null,"domains":null,"start_time":"2024-01-01T00:00:00.000Z","token":null,"api_server":null}},"search_path":"/local-search.xml","include_content_in_search":true};
+    var CONFIG = {"hostname":"smilemzy.com","root":"/","version":"1.9.8","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false},"umami":{"src":null,"website_id":null,"domains":null,"start_time":"2024-01-01T00:00:00.000Z","token":null,"api_server":null}},"search_path":"/local-search.xml","include_content_in_search":true};
 
     if (CONFIG.web_analytics.follow_dnt) {
       var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
@@ -199,7 +199,7 @@
   
 
 <div id="banner" class="banner" parallax=true
-     style="background: url('/%E5%86%85%E5%AD%98%E6%B3%84%E6%BC%8F%E6%8E%92%E6%9F%A5/default.png') no-repeat center center; background-size: cover;">
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
   <div class="full-bg-img">
     <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
       <div class="banner-text text-center fade-in-up">
@@ -314,14 +314,14 @@
 <p>轻量锁也没有提供死锁检测机制；我们必须相信 PostgreSQL 开发人员正确实现了这些锁。然而，这些锁确实有监测机制，因此与自旋锁不同，它们是可以被观察到的。</p>
 <h3 id="15-3-Examples"><a href="#15-3-Examples" class="headerlink" title="15.3 Examples"></a><a name="example"></a>15.3 Examples</h3><p>为了了解如何使用以及在何处使用自旋锁和轻量锁，让我们看下两个共享内存结构：缓冲区缓存和 WAL 缓冲区。我只会提到其中一些锁；由于全貌过于复杂，可能只有 PostgreSQL 内核开发人员感兴趣。</p>
 <h4 id="15-3-1-缓冲区缓存"><a href="#15-3-1-缓冲区缓存" class="headerlink" title="15.3.1 缓冲区缓存"></a>15.3.1 缓冲区缓存</h4><p>为了访问用于定位缓存中特定缓冲区的哈希表，进程必须以共享模式获取一个 BufferMapping 轻量锁以进行读取，或者如果预期有任何修改，则以独占模式获取。</p>
-<p><img src="/2025/05/05/DB/PostgreSQL14_Internals/ch15/ch15/img.png" srcset="/内存泄漏排查/loading.gif" lazyload alt="img.png"></p>
+<p><img src="/2025/05/05/DB/PostgreSQL14_Internals/ch15/ch15/img.png" srcset="/img/loading.gif" lazyload alt="img.png"></p>
 <p>哈希表的访问十分频繁，因此这个锁经常成为瓶颈。为了最大限度地提高粒度，它被构造为一个由 128 个独立的轻量锁组成的锁集，每个锁用于保护哈希表的一个分区。3</p>
 <figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs text">早在 2006 年，Postgres 8.2 版本就将哈希表锁转换为包含 16 个锁的锁集；十年后，当 9.5 版本发布时，锁集的大小增加到了 128 个，但对于现代多核系统来说，这可能仍然不够。<br></code></pre></td></tr></table></figure>
 
 <p>为了访问缓冲区头，进程获取缓冲区头自旋锁 4 (名字是任意的，因为自旋锁没有对用户可见的名字)。某些操作，比如增加使用计数，不需要显式锁定，可以使用原子 CPU 指令执行。</p>
 <p>为了读取缓冲区中的页面，进程需要获取此缓冲区头中的 BufferContent 锁 5。这个锁通常仅在读取元组指针时持有，稍后，缓冲区锁定提供的保护就足够了。如果需要修改缓冲区的内容，那么必须以独占模式获取 BufferContent 锁。当从磁盘读取某个缓冲区 (或写入磁盘) 时，PostgreSQL 还会在缓冲区头中获取 BufferIO 锁；它实际上是一个用作锁的属性，而不是一个真正的锁 6。它向请求访问这个页面的其他进程发出信号，告诉它们必须等到 I&#x2F;O 操作完成。</p>
 <p>指向空闲缓冲区的指针和淘汰机制的时钟指针由一个共同的缓冲区策略自旋锁保护 7。</p>
-<h4 id="15-3-2-WAL-缓冲区"><a href="#15-3-2-WAL-缓冲区" class="headerlink" title="15.3.2 WAL 缓冲区"></a>15.3.2 WAL 缓冲区</h4><p><img src="/2025/05/05/DB/PostgreSQL14_Internals/ch15/ch15/img_1.png" srcset="/内存泄漏排查/loading.gif" lazyload alt="img_1.png"></p>
+<h4 id="15-3-2-WAL-缓冲区"><a href="#15-3-2-WAL-缓冲区" class="headerlink" title="15.3.2 WAL 缓冲区"></a>15.3.2 WAL 缓冲区</h4><p><img src="/2025/05/05/DB/PostgreSQL14_Internals/ch15/ch15/img_1.png" srcset="/img/loading.gif" lazyload alt="img_1.png"></p>
 <p>WAL 缓存也使用哈希表将页面映射到缓冲区。不同于缓冲区缓存的哈希表，它由单个 WALBufMapping 轻量锁保护，因为 WAL 缓存较小 (通常是缓冲区缓存大小的 1&#x2F;32 )，并且缓冲区的访问更加有序 8。</p>
 <p>将 WAL 页面写入磁盘受到 WALWrite 轻量锁的保护，以确保此操作一次只由一个进程执行。</p>
 <p>为了创建一个 WAL 条目，进程首先在 WAL 页面内预留一些空间，然后用数据填充。空间预留严格有序；进程必须获取一个插入位置的自旋锁，以保护插入指针 9。但一旦空间被预留后，它就可以由若干并发进程共同填充。为此，每个进程都必须获取构成 WALInsert 锁集的 8 个轻量锁中的任何一个 10。</p>
@@ -468,9 +468,9 @@
                   <article class="post-prev col-6">
                     
                     
-                      <a href="/2025/05/05/DB/PostgreSQL14_Internals/ch16/ch16/" title="ch16. Query Execution Stages">
+                      <a href="/2025/05/05/DB/PostgreSQL14_Internals/ch14/ch14/" title="ch14. Miscellaneous Locks">
                         <i class="iconfont icon-arrowleft"></i>
-                        <span class="hidden-mobile">ch16. Query Execution Stages</span>
+                        <span class="hidden-mobile">ch14. Miscellaneous Locks</span>
                         <span class="visible-mobile">上一篇</span>
                       </a>
                     
@@ -478,8 +478,8 @@
                   <article class="post-next col-6">
                     
                     
-                      <a href="/2025/05/05/DB/PostgreSQL14_Internals/ch14/ch14/" title="ch14. Miscellaneous Locks">
-                        <span class="hidden-mobile">ch14. Miscellaneous Locks</span>
+                      <a href="/2025/05/05/DB/PostgreSQL14_Internals/ch13/ch13/" title="ch13. Row-Level Locks">
+                        <span class="hidden-mobile">ch13. Row-Level Locks</span>
                         <span class="visible-mobile">下一篇</span>
                         <i class="iconfont icon-arrowright"></i>
                       </a>
