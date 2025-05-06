@@ -8,8 +8,8 @@
 <head>
   <meta charset="UTF-8">
 
-  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
-  <link rel="icon" href="/img/fluid.png">
+  <link rel="apple-touch-icon" sizes="76x76" href="/%E5%86%85%E5%AD%98%E6%B3%84%E6%BC%8F%E6%8E%92%E6%9F%A5/fluid.png">
+  <link rel="icon" href="/%E5%86%85%E5%AD%98%E6%B3%84%E6%BC%8F%E6%8E%92%E6%9F%A5/fluid.png">
   
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
@@ -77,7 +77,7 @@
   <script id="fluid-configs">
     var Fluid = window.Fluid || {};
     Fluid.ctx = Object.assign({}, Fluid.ctx)
-    var CONFIG = {"hostname":"smilemzy.com","root":"/","version":"1.9.8","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false},"umami":{"src":null,"website_id":null,"domains":null,"start_time":"2024-01-01T00:00:00.000Z","token":null,"api_server":null}},"search_path":"/local-search.xml","include_content_in_search":true};
+    var CONFIG = {"hostname":"smilemzy.com","root":"/","version":"1.9.8","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/内存泄漏排查/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false},"umami":{"src":null,"website_id":null,"domains":null,"start_time":"2024-01-01T00:00:00.000Z","token":null,"api_server":null}},"search_path":"/local-search.xml","include_content_in_search":true};
 
     if (CONFIG.web_analytics.follow_dnt) {
       var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
@@ -199,7 +199,7 @@
   
 
 <div id="banner" class="banner" parallax=true
-     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+     style="background: url('/%E5%86%85%E5%AD%98%E6%B3%84%E6%BC%8F%E6%8E%92%E6%9F%A5/default.png') no-repeat center center; background-size: cover;">
   <div class="full-bg-img">
     <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
       <div class="banner-text text-center fade-in-up">
@@ -336,7 +336,7 @@
 <h4 id="2-2-5-无异常与可串行化"><a href="#2-2-5-无异常与可串行化" class="headerlink" title="2.2.5 无异常与可串行化"></a>2.2.5 无异常与可串行化</h4><p>SQL 标准还定义了可串行化隔离级别，该级别不允许任何异常。这与禁止更新丢失、脏读、不可重复读和幻读不同。事实上，已知异常的数量远远超过标准定义的数量，还有未知数量的未知异常。</p>
 <p>可串行化隔离级别必须防止任何异常。这意味着应用程序开发人员不必考虑隔离问题。如果事务在单独运行时执行正确的操作符序列，那么并发执行也不能破坏数据的一致性。</p>
 <p>为了阐述这个概念，我将使用标准中提供的一个众所周知的表格；为清晰起见，此处还添加了最后一列：</p>
-<p><img src="/2025/05/05/DB/PostgreSQL14_Internals/ch2/ch2/img.png" srcset="/img/loading.gif" lazyload alt="img.png"></p>
+<p><img src="/2025/05/05/DB/PostgreSQL14_Internals/ch2/ch2/img.png" srcset="/内存泄漏排查/loading.gif" lazyload alt="img.png"></p>
 <h4 id="2-2-6-为什么是这些异常？"><a href="#2-2-6-为什么是这些异常？" class="headerlink" title="2.2.6 为什么是这些异常？"></a>2.2.6 为什么是这些异常？</h4><p>为什么标准只提到了某些可能的异常，而且为什么是这些异常呢？</p>
 <p>似乎没有人确切知道。但很有可能是在制定最初版本的标准时，其他异常没有被考虑进去，<strong>因为那时理论远远落后于实践。</strong></p>
 <p>此外，当时的假设是隔离必须基于锁。广泛使用的两阶段锁定协议 (2PL) 要求事务在执行期间锁定受影响的行，并在完成时释放锁。简单来说，事务获取的锁越多，它与其他事务的隔离程度就越好。相应地，系统的性能就越差，因为事务开始排队访问同一行，而不是并发运行。</p>
@@ -351,7 +351,7 @@
 <p>快照隔离最大限度地减少了所需的锁数量。实际上，只有在尝试并发更新时，行才会被锁定。在所有其他情况下，操作均可以并发执行：写操作不会锁定读操作，读操作也永远不会锁定任何东西。</p>
 <p>PostgreSQL 使用了 SI 协议的多版本形式。多版本并发控制意味着，在任何时候数据库系统都可以包含同一行的多个版本，因此 PostgreSQL 可以将适当的版本包含在快照中，而不是中止尝试读取老版本数据的事务。</p>
 <p>基于快照，PostgreSQL 的隔离级别与标准中指定的要求有所不同 — 实际上，它甚至更加严格。脏读从设计上是禁止的。技术上，你可以指定读未提交级别，但其行为与读已提交相同，因此我将不再提及这个级别。可重复读既不允许不可重复读，也不允许幻读 (尽管它不保证完全隔离)。但在某些情况下，读已提交隔离级别存在更新丢失的风险。</p>
-<p><img src="/2025/05/05/DB/PostgreSQL14_Internals/ch2/ch2/img_1.png" srcset="/img/loading.gif" lazyload alt="img_1.png"></p>
+<p><img src="/2025/05/05/DB/PostgreSQL14_Internals/ch2/ch2/img_1.png" srcset="/内存泄漏排查/loading.gif" lazyload alt="img_1.png"></p>
 <p>在探讨隔离的内部机制之前，让我们从用户的角度分别讨论这三个隔离级别。</p>
 <p>为此，我们将创建一个账户表；Alice 和 Bob 分别拥有 1000 美元，但 Bob 拥有两个账户：</p>
 <figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-operator">=</span><span class="hljs-operator">&gt;</span> <span class="hljs-keyword">CREATE TABLE</span> accounts(<br>  id <span class="hljs-type">integer</span> <span class="hljs-keyword">PRIMARY KEY</span> GENERATED <span class="hljs-keyword">BY</span> <span class="hljs-keyword">DEFAULT</span> <span class="hljs-keyword">AS</span> <span class="hljs-keyword">IDENTITY</span>,<br>  client text,<br>  amount <span class="hljs-type">numeric</span><br>);<br><span class="hljs-operator">=</span><span class="hljs-operator">&gt;</span> <span class="hljs-keyword">INSERT INTO</span> accounts <span class="hljs-keyword">VALUES</span><br>  (<span class="hljs-number">1</span>, <span class="hljs-string">&#x27;alice&#x27;</span>, <span class="hljs-number">1000.00</span>), (<span class="hljs-number">2</span>, <span class="hljs-string">&#x27;bob&#x27;</span>, <span class="hljs-number">100.00</span>), (<span class="hljs-number">3</span>, <span class="hljs-string">&#x27;bob&#x27;</span>, <span class="hljs-number">900.00</span>);<br></code></pre></td></tr></table></figure>

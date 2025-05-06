@@ -8,8 +8,8 @@
 <head>
   <meta charset="UTF-8">
 
-  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
-  <link rel="icon" href="/img/fluid.png">
+  <link rel="apple-touch-icon" sizes="76x76" href="/%E5%86%85%E5%AD%98%E6%B3%84%E6%BC%8F%E6%8E%92%E6%9F%A5/fluid.png">
+  <link rel="icon" href="/%E5%86%85%E5%AD%98%E6%B3%84%E6%BC%8F%E6%8E%92%E6%9F%A5/fluid.png">
   
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
@@ -76,7 +76,7 @@
   <script id="fluid-configs">
     var Fluid = window.Fluid || {};
     Fluid.ctx = Object.assign({}, Fluid.ctx)
-    var CONFIG = {"hostname":"smilemzy.com","root":"/","version":"1.9.8","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false},"umami":{"src":null,"website_id":null,"domains":null,"start_time":"2024-01-01T00:00:00.000Z","token":null,"api_server":null}},"search_path":"/local-search.xml","include_content_in_search":true};
+    var CONFIG = {"hostname":"smilemzy.com","root":"/","version":"1.9.8","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/内存泄漏排查/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false},"umami":{"src":null,"website_id":null,"domains":null,"start_time":"2024-01-01T00:00:00.000Z","token":null,"api_server":null}},"search_path":"/local-search.xml","include_content_in_search":true};
 
     if (CONFIG.web_analytics.follow_dnt) {
       var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
@@ -198,7 +198,7 @@
   
 
 <div id="banner" class="banner" parallax=true
-     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+     style="background: url('/%E5%86%85%E5%AD%98%E6%B3%84%E6%BC%8F%E6%8E%92%E6%9F%A5/default.png') no-repeat center center; background-size: cover;">
   <div class="full-bg-img">
     <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
       <div class="banner-text text-center fade-in-up">
@@ -356,9 +356,9 @@
 <p>也就是将无日志表转为普通表的时候，会需要写大量的 REDO，不难理解，不然崩溃了就无法恢复数据了。<br>反之则很快，只需要修改一下元数据即可。</p>
 <p>因此，这种行为也可以进行发散，直接通过修改元数据的方式，<br>避免将无日志表转为普通表的时候写入大量 WAL，但是有什么幺蛾子就不好说了，<br>比如 PITR，都没有这个表的 WAL，那自然恢复出来的数据也不一致了。</p>
 <h3 id="5-块结构"><a href="#5-块结构" class="headerlink" title="5. 块结构"></a><a name="cp5"></a>5. 块结构</h3><p>还有一点值得注意的细节是，块上面的 LSN👇🏻</p>
-<p><img src="/2025/05/05/note/DB/postgresql/unlogged/README/img.png" srcset="/img/loading.gif" lazyload alt="img.png"></p>
+<p><img src="/2025/05/05/note/DB/postgresql/unlogged/README/img.png" srcset="/内存泄漏排查/loading.gif" lazyload alt="img.png"></p>
 <p>无日志表的 LSN 为 0，这意味着无日志表由其自己的数据文件中的数据表示，但不由日志文件中的数据表示。</p>
-<h3 id="6-小结"><a href="#6-小结" class="headerlink" title="6. 小结"></a><a name="cp6"></a>6. 小结</h3><p><img src="/2025/05/05/note/DB/postgresql/unlogged/README/img_1.png" srcset="/img/loading.gif" lazyload alt="img_1.png"></p>
+<h3 id="6-小结"><a href="#6-小结" class="headerlink" title="6. 小结"></a><a name="cp6"></a>6. 小结</h3><p><img src="/2025/05/05/note/DB/postgresql/unlogged/README/img_1.png" srcset="/内存泄漏排查/loading.gif" lazyload alt="img_1.png"></p>
 <p>参考：</p>
 <p><a target="_blank" rel="noopener" href="https://www.crunchydata.com/blog/postgresl-unlogged-tables">https://www.crunchydata.com/blog/postgresl-unlogged-tables</a></p>
 <p><a target="_blank" rel="noopener" href="https://levelup.gitconnected.com/logged-unlogged-and-temporary-tables-in-postgresql-d390d9a4ef15">https://levelup.gitconnected.com/logged-unlogged-and-temporary-tables-in-postgresql-d390d9a4ef15</a></p>

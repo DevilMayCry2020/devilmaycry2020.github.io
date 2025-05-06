@@ -8,8 +8,8 @@
 <head>
   <meta charset="UTF-8">
 
-  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
-  <link rel="icon" href="/img/fluid.png">
+  <link rel="apple-touch-icon" sizes="76x76" href="/%E5%86%85%E5%AD%98%E6%B3%84%E6%BC%8F%E6%8E%92%E6%9F%A5/fluid.png">
+  <link rel="icon" href="/%E5%86%85%E5%AD%98%E6%B3%84%E6%BC%8F%E6%8E%92%E6%9F%A5/fluid.png">
   
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
@@ -96,7 +96,7 @@
   <script id="fluid-configs">
     var Fluid = window.Fluid || {};
     Fluid.ctx = Object.assign({}, Fluid.ctx)
-    var CONFIG = {"hostname":"smilemzy.com","root":"/","version":"1.9.8","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false},"umami":{"src":null,"website_id":null,"domains":null,"start_time":"2024-01-01T00:00:00.000Z","token":null,"api_server":null}},"search_path":"/local-search.xml","include_content_in_search":true};
+    var CONFIG = {"hostname":"smilemzy.com","root":"/","version":"1.9.8","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/内存泄漏排查/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false},"umami":{"src":null,"website_id":null,"domains":null,"start_time":"2024-01-01T00:00:00.000Z","token":null,"api_server":null}},"search_path":"/local-search.xml","include_content_in_search":true};
 
     if (CONFIG.web_analytics.follow_dnt) {
       var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
@@ -218,7 +218,7 @@
   
 
 <div id="banner" class="banner" parallax=true
-     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+     style="background: url('/%E5%86%85%E5%AD%98%E6%B3%84%E6%BC%8F%E6%8E%92%E6%9F%A5/default.png') no-repeat center center; background-size: cover;">
   <div class="full-bg-img">
     <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
       <div class="banner-text text-center fade-in-up">
@@ -357,7 +357,7 @@
 <h4 id="9-1-1-Insertion-Operations-without-WAL"><a href="#9-1-1-Insertion-Operations-without-WAL" class="headerlink" title="9.1.1. Insertion Operations without WAL"></a>9.1.1. Insertion Operations without WAL</h4><p><strong>不使用WAL的插入操作</strong></p>
 <p>正如第8章所述，每个数据库管理系统都实现了共享缓冲池，以提供对关系页面的有效访问。</p>
 <p>假设我们在未实现WAL特性的PostgreSQL中向TABLE_A插入一些数据元组。这种情况在图9.1中进行了说明。</p>
-<p><img src="/2025/05/05/DB/PostgreSQL%E6%8C%87%E5%8D%97/%E5%86%85%E5%B9%95%E6%8E%A2%E7%B4%A2_new_release/ch9/ch9/img.png" srcset="/img/loading.gif" lazyload alt="img.png"></p>
+<p><img src="/2025/05/05/DB/PostgreSQL%E6%8C%87%E5%8D%97/%E5%86%85%E5%B9%95%E6%8E%A2%E7%B4%A2_new_release/ch9/ch9/img.png" srcset="/内存泄漏排查/loading.gif" lazyload alt="img.png"></p>
 <ol>
 <li>当我们发出第一条INSERT语句时，PostgreSQL会将TABLE_A页面从数据库集群加载到内存中的共享缓冲池，<br>并在页面中插入一个元组。页面不会立即写回到数据库集群中。（如第8章所述，修改过的页面通常被称为脏页面。）  </li>
 <li>当我们发出第二条INSERT语句时，PostgreSQL会在缓冲池中的页面插入一个新的元组。该页面尚未被写入到存储中。  </li>
@@ -377,7 +377,7 @@
 <p>WAL和检查点进程是在7.1版本中同时实现的。</p>
 </blockquote>
 <p>随着主要关键词和概念的介绍刚刚结束，接下来将描述带有WAL的元组插入过程。请参考图9.2及其后续描述。</p>
-<p><img src="/2025/05/05/DB/PostgreSQL%E6%8C%87%E5%8D%97/%E5%86%85%E5%B9%95%E6%8E%A2%E7%B4%A2_new_release/ch9/ch9/img_1.png" srcset="/img/loading.gif" lazyload alt="img_1.png"></p>
+<p><img src="/2025/05/05/DB/PostgreSQL%E6%8C%87%E5%8D%97/%E5%86%85%E5%B9%95%E6%8E%A2%E7%B4%A2_new_release/ch9/ch9/img_1.png" srcset="/内存泄漏排查/loading.gif" lazyload alt="img_1.png"></p>
 <blockquote>
 <p>Notation</p>
 <p>TABLE_A的LSN显示的是TABLE_A页面头部的pd_lsn值。<br>页面的LSN同理。</p>
@@ -391,7 +391,7 @@
 <li>假设操作系统发生故障。尽管共享缓冲池中的所有数据都丢失了，<br>但对页面的所有修改都作为历史数据被写入到了WAL段文件中。</li>
 </ol>
 <p>下面的指示说明了如何将我们的数据库集群恢复到崩溃前的状态。<br>无需特别操作，因为通过重新启动，PostgreSQL会自动进入恢复模式。请参阅图9.3（以及此幻灯片）。<br>PostgreSQL将顺序读取并重放从REDO点开始的适当WAL段文件中的XLOG记录。</p>
-<p><img src="/2025/05/05/DB/PostgreSQL%E6%8C%87%E5%8D%97/%E5%86%85%E5%B9%95%E6%8E%A2%E7%B4%A2_new_release/ch9/ch9/img_2.png" srcset="/img/loading.gif" lazyload alt="img_2.png"></p>
+<p><img src="/2025/05/05/DB/PostgreSQL%E6%8C%87%E5%8D%97/%E5%86%85%E5%B9%95%E6%8E%A2%E7%B4%A2_new_release/ch9/ch9/img_2.png" srcset="/内存泄漏排查/loading.gif" lazyload alt="img_2.png"></p>
 <ol>
 <li>PostgreSQL从适当的WAL段文件中读取第一条INSERT语句的XLOG记录，<br>并将TABLE_A页面从数据库集群加载到共享缓冲池中。  </li>
 <li>在尝试重放XLOG记录之前，PostgreSQL会将XLOG记录的LSN与对应页面的LSN进行比较。这样做的原因将在第9.8节中描述。<br>重放XLOG记录的规则如下： 如果XLOG记录的LSN大于页面的LSN，那么XLOG记录的数据部分会被插入到页面中，<br>并且页面的LSN会被更新为XLOG记录的LSN。 另一方面，如果XLOG记录的LSN较小，则除了读取下一条WAL记录外，<br>无需做其他操作。 在此例中，由于XLOG记录的LSN（LSN_1）大于TABLE_A的LSN（LSN_0）<br>，因此XLOG记录被重放。随后，TABLE_A的LSN从LSN_0更新为LSN_1。  </li>
@@ -406,7 +406,7 @@
 <h4 id="9-1-3-Full-Page-Writes"><a href="#9-1-3-Full-Page-Writes" class="headerlink" title="9.1.3. Full-Page Writes"></a>9.1.3. Full-Page Writes</h4><p>假设由于操作系统在后台写入器进程正在写入脏页面时发生故障，导致存储上的TABLE_A页面数据损坏。<br>由于XLOG记录不能在损坏的页面上重放，我们需要额外的功能来处理这种情况。</p>
 <p>PostgreSQL支持一种称为全页写入的特性来应对这类故障。如果启用此功能，PostgreSQL会在每次检查点后，<br>对每个页面的首次更改时，将页头数据和整个页面作为一个XLOG记录写入。（这是默认设置。）在PostgreSQL中，<br>包含整个页面的这种XLOG记录称为备份块（或全页映像）。</p>
 <p>让我们再次描述元组的插入过程，但这次启用全页写入。请参阅图9.4及其后续描述。</p>
-<p><img src="/2025/05/05/DB/PostgreSQL%E6%8C%87%E5%8D%97/%E5%86%85%E5%B9%95%E6%8E%A2%E7%B4%A2_new_release/ch9/ch9/img_3.png" srcset="/img/loading.gif" lazyload alt="img_3.png"></p>
+<p><img src="/2025/05/05/DB/PostgreSQL%E6%8C%87%E5%8D%97/%E5%86%85%E5%B9%95%E6%8E%A2%E7%B4%A2_new_release/ch9/ch9/img_3.png" srcset="/内存泄漏排查/loading.gif" lazyload alt="img_3.png"></p>
 <ol>
 <li>检查点进程开始执行检查点操作。  </li>
 <li>当我们插入第一条INSERT语句时，PostgreSQL的操作方式与上一小节类似，但这里的XLOG记录是该页面的备份块，<br>因为这是在最近一次检查点之后首次对该页面进行写入。（换句话说，它包含了整个页面的内容。）  </li>
@@ -416,7 +416,7 @@
 <li>为了展示全页写入的有效性，让我们考虑这样一个场景：由于后台写入器在向存储（硬盘驱动器或固态硬盘）<br>写入TABLE_A页面时操作系统发生故障，导致存储上的TABLE_A页面数据损坏。</li>
 </ol>
 <p>重启PostgreSQL服务器以修复损坏的集群。请参阅图9.5及其后续描述。</p>
-<p><img src="/2025/05/05/DB/PostgreSQL%E6%8C%87%E5%8D%97/%E5%86%85%E5%B9%95%E6%8E%A2%E7%B4%A2_new_release/ch9/ch9/img_4.png" srcset="/img/loading.gif" lazyload alt="img_4.png"></p>
+<p><img src="/2025/05/05/DB/PostgreSQL%E6%8C%87%E5%8D%97/%E5%86%85%E5%B9%95%E6%8E%A2%E7%B4%A2_new_release/ch9/ch9/img_4.png" srcset="/内存泄漏排查/loading.gif" lazyload alt="img_4.png"></p>
 <ol>
 <li>PostgreSQL读取第一条INSERT语句的XLOG记录，并将损坏的TABLE_A页面从数据库集群加载到共享缓冲池中。<br>在此例中，XLOG记录是备份块， 因为根据全页写入的写入规则，每个页面的第一个XLOG记录始终是其备份块。  </li>
 <li>当XLOG记录是其备份块时，将应用另一条重放规则：无论两个LSN的值如何，记录的数据部分（即页面本身）<br>都要覆盖写入到页面上，并将页面的LSN更新为XLOG记录的LSN。 在此例中，PostgreSQL将记录的数据部分<br>覆盖到损坏的页面上，并将TABLE_A的LSN更新为LSN_1。这样，损坏的页面就通过其备份块得到了恢复。  </li>
@@ -435,9 +435,9 @@
 <p>WAL段文件大小</p>
 <p>在11或更高版本中，可以在使用initdb命令创建PostgreSQL集群时，通过–wal-segsize选项配置WAL段文件的大小。</p>
 </blockquote>
-<p><img src="/2025/05/05/DB/PostgreSQL%E6%8C%87%E5%8D%97/%E5%86%85%E5%B9%95%E6%8E%A2%E7%B4%A2_new_release/ch9/ch9/img_5.png" srcset="/img/loading.gif" lazyload alt="img_5.png"></p>
+<p><img src="/2025/05/05/DB/PostgreSQL%E6%8C%87%E5%8D%97/%E5%86%85%E5%B9%95%E6%8E%A2%E7%B4%A2_new_release/ch9/ch9/img_5.png" srcset="/内存泄漏排查/loading.gif" lazyload alt="img_5.png"></p>
 <p>WAL段文件名采用十六进制24位数字表示，命名规则如下：</p>
-<p><img src="/2025/05/05/DB/PostgreSQL%E6%8C%87%E5%8D%97/%E5%86%85%E5%B9%95%E6%8E%A2%E7%B4%A2_new_release/ch9/ch9/img_6.png" srcset="/img/loading.gif" lazyload alt="img_6.png"></p>
+<p><img src="/2025/05/05/DB/PostgreSQL%E6%8C%87%E5%8D%97/%E5%86%85%E5%B9%95%E6%8E%A2%E7%B4%A2_new_release/ch9/ch9/img_6.png" srcset="/内存泄漏排查/loading.gif" lazyload alt="img_6.png"></p>
 <blockquote>
 <p>timelineld</p>
 <p>PostgreSQL的WAL中包含时间线ID（4字节无符号整数）的概念，<br>这在第10章描述的即时点恢复（Point-in-Time Recovery, PITR）<br>中使用。但在本章中，时间线ID固定为0x00000001，因为在以下描述中不需要这个概念。</p>
@@ -450,7 +450,7 @@
 <figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs sql">testdb<span class="hljs-operator">=</span># <span class="hljs-keyword">SELECT</span> pg_xlogfile_name(<span class="hljs-string">&#x27;1/00002D3E&#x27;</span>);  # <span class="hljs-keyword">In</span> versions <span class="hljs-number">10</span> <span class="hljs-keyword">or</span> later, &quot;SELECT pg_walfile_name(&#x27;1/00002D3E&#x27;);&quot;<br>     pg_xlogfile_name     <br><span class="hljs-comment">--------------------------</span><br> <span class="hljs-number">000000010000000100000000</span><br>(<span class="hljs-number">1</span> <span class="hljs-type">row</span>)<br></code></pre></td></tr></table></figure>
 <h3 id="9-3-Internal-Layout-of-WAL-Segment"><a href="#9-3-Internal-Layout-of-WAL-Segment" class="headerlink" title="9.3. Internal Layout of WAL Segment"></a><a name="wal-seg"></a>9.3. Internal Layout of WAL Segment</h3><p><strong>WAL段的内部结构</strong></p>
 <p>WAL段默认是一个16MB大小的文件，其内部被划分为8192字节（8KB）大小的页面。<br>首页面包含一个由XLogLongPageHeaderData结构定义的页头数据，而所有其他页面的页头则包含由<br>XLogPageHeaderData结构定义的页面信息。在页头之后，XLOG记录按照从页首开始的降序在每个页面中写入。<br>请参见图9.7。</p>
-<p><img src="/2025/05/05/DB/PostgreSQL%E6%8C%87%E5%8D%97/%E5%86%85%E5%B9%95%E6%8E%A2%E7%B4%A2_new_release/ch9/ch9/img_7.png" srcset="/img/loading.gif" lazyload alt="img_7.png"></p>
+<p><img src="/2025/05/05/DB/PostgreSQL%E6%8C%87%E5%8D%97/%E5%86%85%E5%B9%95%E6%8E%A2%E7%B4%A2_new_release/ch9/ch9/img_7.png" srcset="/内存泄漏排查/loading.gif" lazyload alt="img_7.png"></p>
 <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-keyword">typedef</span> XLogPageHeaderData *XLogPageHeader;<br><br><span class="hljs-comment">/*</span><br><span class="hljs-comment"> * When the XLP_LONG_HEADER flag is set, we store additional fields in the</span><br><span class="hljs-comment"> * page header.  (This is ordinarily done just in the first page of an</span><br><span class="hljs-comment"> * XLOG file.)	The additional fields serve to identify the file accurately.</span><br><span class="hljs-comment"> */</span><br><span class="hljs-keyword">typedef</span> <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">XLogLongPageHeaderData</span></span><br><span class="hljs-class">&#123;</span><br>	XLogPageHeaderData <span class="hljs-built_in">std</span>;		<span class="hljs-comment">/* standard header fields */</span><br>	uint64		xlp_sysid;		<span class="hljs-comment">/* system identifier from pg_control */</span><br>	uint32		xlp_seg_size;	<span class="hljs-comment">/* just as a cross-check */</span><br>	uint32		xlp_xlog_blcksz;	<span class="hljs-comment">/* just as a cross-check */</span><br>&#125; XLogLongPageHeaderData;<br></code></pre></td></tr></table></figure>
 
 <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-comment">/*</span><br><span class="hljs-comment"> * Each page of XLOG file has a header like this:</span><br><span class="hljs-comment"> */</span><br><span class="hljs-meta">#<span class="hljs-keyword">define</span> XLOG_PAGE_MAGIC 0xD113	<span class="hljs-comment">/* can be used as WAL version indicator */</span></span><br><br><span class="hljs-keyword">typedef</span> <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">XLogPageHeaderData</span></span><br><span class="hljs-class">&#123;</span><br>	uint16		xlp_magic;		<span class="hljs-comment">/* magic value for correctness checks */</span><br>	uint16		xlp_info;		<span class="hljs-comment">/* flag bits, see below */</span><br>	TimeLineID	xlp_tli;		<span class="hljs-comment">/* TimeLineID of first record on page */</span><br>	XLogRecPtr	xlp_pageaddr;	<span class="hljs-comment">/* XLOG address of this page */</span><br><br>	<span class="hljs-comment">/*</span><br><span class="hljs-comment">	 * When there is not enough space on current page for whole record, we</span><br><span class="hljs-comment">	 * continue on the next page.  xlp_rem_len is the number of bytes</span><br><span class="hljs-comment">	 * remaining from a previous page; it tracks xl_tot_len in the initial</span><br><span class="hljs-comment">	 * header.  Note that the continuation data isn&#x27;t necessarily aligned.</span><br><span class="hljs-comment">	 */</span><br>	uint32		xlp_rem_len;	<span class="hljs-comment">/* total len of remaining data for record */</span><br>&#125; XLogPageHeaderData;<br></code></pre></td></tr></table></figure>
@@ -511,7 +511,7 @@
 </blockquote>
 <h4 id="9-4-2-Data-Portion-of-XLOG-Record-versions-9-4-or-earlier"><a href="#9-4-2-Data-Portion-of-XLOG-Record-versions-9-4-or-earlier" class="headerlink" title="9.4.2. Data Portion of XLOG Record (versions 9.4 or earlier)"></a>9.4.2. Data Portion of XLOG Record (versions 9.4 or earlier)</h4><p><strong>XLOG 记录的数据部分 (9.4 版本或更早)</strong></p>
 <p>XLOG 记录的数据部分可以分为两类:备份块(包含整个页面)<br>和非备份块(包含不同的数据,具体取决于操作)。</p>
-<p><img src="/2025/05/05/DB/PostgreSQL%E6%8C%87%E5%8D%97/%E5%86%85%E5%B9%95%E6%8E%A2%E7%B4%A2_new_release/ch9/ch9/img_8.png" srcset="/img/loading.gif" lazyload alt="img_8.png"></p>
+<p><img src="/2025/05/05/DB/PostgreSQL%E6%8C%87%E5%8D%97/%E5%86%85%E5%B9%95%E6%8E%A2%E7%B4%A2_new_release/ch9/ch9/img_8.png" srcset="/内存泄漏排查/loading.gif" lazyload alt="img_8.png"></p>
 <p>XLOG 记录的内部布局如下所述,并给出一些具体示例。</p>
 <h5 id="9-4-2-1-Backup-Block"><a href="#9-4-2-1-Backup-Block" class="headerlink" title="9.4.2.1. Backup Block"></a>9.4.2.1. Backup Block</h5><p>备份块的结构如图 9.8(a) 所示。它由两个数据结构和一个数据对象组成:</p>
 <ol>
@@ -547,7 +547,7 @@
 </blockquote>
 <h4 id="9-4-3-Data-Portion-of-XLOG-Record-versions-9-5-or-later"><a href="#9-4-3-Data-Portion-of-XLOG-Record-versions-9-5-or-later" class="headerlink" title="9.4.3. Data Portion of XLOG Record (versions 9.5 or later)"></a>9.4.3. Data Portion of XLOG Record (versions 9.5 or later)</h4><p>在 9.4 或更早的版本中,XLOG 记录没有通用格式,所以每个资源管理器都必须定义自己的格式。<br>这使得维护源代码和实现与 WAL 相关的新功能变得越来越困难。为了解决这个问题,<br>在 9.5 版本中引入了一种独立于资源管理器的通用结构化格式。</p>
 <p>XLOG 记录的数据部分可以分为两部分:头部和数据部分,如图 9.9 所示。</p>
-<p><img src="/2025/05/05/DB/PostgreSQL%E6%8C%87%E5%8D%97/%E5%86%85%E5%B9%95%E6%8E%A2%E7%B4%A2_new_release/ch9/ch9/img_9.png" srcset="/img/loading.gif" lazyload alt="img_9.png"></p>
+<p><img src="/2025/05/05/DB/PostgreSQL%E6%8C%87%E5%8D%97/%E5%86%85%E5%B9%95%E6%8E%A2%E7%B4%A2_new_release/ch9/ch9/img_9.png" srcset="/内存泄漏排查/loading.gif" lazyload alt="img_9.png"></p>
 <p>XLOG 记录的头部包含零个或多个 XLogRecordBlockHeaders 和零个或一个<br>XLogRecordDataHeaderShort(或 XLogRecordDataHeaderLong)。它至少必须包含这些之一。</p>
 <p>当记录存储完整页面映像(即备份块)时,XLogRecordBlockHeader 包括<br>XLogRecordBlockImageHeader,如果该块被压缩,还包括 XLogRecordBlockCompressHeader。</p>
 <p>XLogRecordBlockHeader<br>XLogRecordBlockImageHeader<br>XLogRecordBlockCompressHeader<br>XLogRecordDataHeader  </p>
@@ -559,7 +559,7 @@
 <p>优点:<br>减少写入记录的 I&#x2F;O 成本。<br>抑制 WAL 段文件的消耗。</p>
 <p>缺点:<br>消耗大量 CPU 资源进行压缩。</p>
 </blockquote>
-<p><img src="/2025/05/05/DB/PostgreSQL%E6%8C%87%E5%8D%97/%E5%86%85%E5%B9%95%E6%8E%A2%E7%B4%A2_new_release/ch9/ch9/img_10.png" srcset="/img/loading.gif" lazyload alt="img_10.png"></p>
+<p><img src="/2025/05/05/DB/PostgreSQL%E6%8C%87%E5%8D%97/%E5%86%85%E5%B9%95%E6%8E%A2%E7%B4%A2_new_release/ch9/ch9/img_10.png" srcset="/内存泄漏排查/loading.gif" lazyload alt="img_10.png"></p>
 <h5 id="9-4-3-1-Backup-Block"><a href="#9-4-3-1-Backup-Block" class="headerlink" title="9.4.3.1. Backup Block"></a>9.4.3.1. Backup Block</h5><p>由 INSERT 语句创建的备份块如图 9.10(a) 所示。它由四个数据结构和一个数据对象组成:</p>
 <ol>
 <li>XLogRecord 结构(头部部分)。  </li>
@@ -610,10 +610,10 @@
 <p>(2) 函数 heap_insert() 将一个堆元组插入到共享缓冲池中的目标页面,<br>创建该页面的 XLOG 记录,并调用函数 XLogInsert()。</p>
 <p>(3) 函数 XLogInsert() 将 heap_insert() 创建的 XLOG 记录写入 WAL 缓冲区,<br>位置为 LSN_1,然后将修改页面的 pd_lsn 从 LSN_0 更新为 LSN_1。</p>
 <p>(4) 函数 finish_xact_command()被调用来提交该事务,它创建提交操作的 XLOG 记录,<br>然后函数 XLogInsert() 将此记录写入 WAL 缓冲区,位置为 LSN_2。</p>
-<p><img src="/2025/05/05/DB/PostgreSQL%E6%8C%87%E5%8D%97/%E5%86%85%E5%B9%95%E6%8E%A2%E7%B4%A2_new_release/ch9/ch9/img_11.png" srcset="/img/loading.gif" lazyload alt="img_11.png"></p>
+<p><img src="/2025/05/05/DB/PostgreSQL%E6%8C%87%E5%8D%97/%E5%86%85%E5%B9%95%E6%8E%A2%E7%B4%A2_new_release/ch9/ch9/img_11.png" srcset="/内存泄漏排查/loading.gif" lazyload alt="img_11.png"></p>
 <p>(5) 函数 XLogWrite() 将 WAL 缓冲区中的所有 XLOG 记录写入并刷新到 WAL 段文件中。<br>如果参数 wal_sync_method 设置为 ‘open_sync’ 或 ‘open_datasync’，这些记录将被同步写入,<br>因为该函数使用 open() 系统调用,并设置 ‘O_SYNC’ 或 ‘O_DSYNC’ 标志进行写入。<br>如果参数设置为 ‘fsync’、’fsync_writethrough’ 或 ‘fdatasync’，将执行相应的系统<br>调用 - fsync()、带 F_FULLFSYNC 选项的 fcntl() 或 fdatasync()。无论如何,<br>所有 XLOG 记录都被确保写入存储介质。</p>
 <p>(6) 函数 TransactionIdCommitTree() 将该事务的状态从 ‘IN_PROGRESS’ 更改为 ‘COMMITTED’<br>状态,写入 CLOG。</p>
-<p><img src="/2025/05/05/DB/PostgreSQL%E6%8C%87%E5%8D%97/%E5%86%85%E5%B9%95%E6%8E%A2%E7%B4%A2_new_release/ch9/ch9/img_12.png" srcset="/img/loading.gif" lazyload alt="img_12.png"></p>
+<p><img src="/2025/05/05/DB/PostgreSQL%E6%8C%87%E5%8D%97/%E5%86%85%E5%B9%95%E6%8E%A2%E7%B4%A2_new_release/ch9/ch9/img_12.png" srcset="/内存泄漏排查/loading.gif" lazyload alt="img_12.png"></p>
 <p>在上述示例中,提交操作导致将 XLOG 记录写入 WAL 段,但也可能由以下任何情况触发写入:</p>
 <ol>
 <li>一个正在运行的事务已提交或中止。  </li>
@@ -645,7 +645,7 @@
 </blockquote>
 <p>在接下来的小节中，将概述检查点的流程以及保存当前检查点元数据的pg_control文件。</p>
 <h4 id="9-7-1-Outline-of-the-Checkpoint-Processing"><a href="#9-7-1-Outline-of-the-Checkpoint-Processing" class="headerlink" title="9.7.1. Outline of the Checkpoint Processing"></a>9.7.1. Outline of the Checkpoint Processing</h4><p>检查点过程有两个方面：为数据库恢复做准备，以及清理共享缓冲池中的脏页。<br>在本小节中，我们将重点关注前者方面，并描述其内部处理过程。请参见图9.13以获得概览。</p>
-<p><img src="/2025/05/05/DB/PostgreSQL%E6%8C%87%E5%8D%97/%E5%86%85%E5%B9%95%E6%8E%A2%E7%B4%A2_new_release/ch9/ch9/img_13.png" srcset="/img/loading.gif" lazyload alt="img_13.png"></p>
+<p><img src="/2025/05/05/DB/PostgreSQL%E6%8C%87%E5%8D%97/%E5%86%85%E5%B9%95%E6%8E%A2%E7%B4%A2_new_release/ch9/ch9/img_13.png" srcset="/内存泄漏排查/loading.gif" lazyload alt="img_13.png"></p>
 <p>(1) 当检查点进程启动时，REDO点被存储在内存中。REDO点是最新检查点启动时刻写入的日志记录的位置，<br>它是数据库恢复的起始点。</p>
 <p>(2) 该检查点的XLOG记录（即，检查点记录）被写入WAL缓冲区。该记录的数据部分由CheckPoint结构定义，<br>该结构包含多个变量，如步骤(1)中存储的REDO点。<br>检查点记录被写入的位置也称为检查点。</p>
 <p>(3) 共享内存中的所有数据（例如，clog的内容等）都被刷新到存储器中。</p>
@@ -672,14 +672,14 @@
 <h3 id="9-8-Database-Recovery-in-PostgreSQL"><a href="#9-8-Database-Recovery-in-PostgreSQL" class="headerlink" title="9.8. Database Recovery in PostgreSQL"></a><a name="recovery"></a>9.8. Database Recovery in PostgreSQL</h3><p>PostgreSQL采用基于重做日志的恢复机制。如果数据库服务器崩溃，PostgreSQL可以通过顺序重放WAL<br>段文件中从REDO点开始的XLOG记录来恢复数据库集群。</p>
 <p>到本节为止，我们已经多次谈到数据库恢复。在这里，我将描述关于恢复的两个尚未解释的事项。</p>
 <p>第一件事是PostgreSQL如何启动恢复过程。当PostgreSQL启动时，它首先读取pg_control文件。<br>从那时起，以下是恢复过程的详细步骤。请参阅图9.14及以下描述。</p>
-<p><img src="/2025/05/05/DB/PostgreSQL%E6%8C%87%E5%8D%97/%E5%86%85%E5%B9%95%E6%8E%A2%E7%B4%A2_new_release/ch9/ch9/img_14.png" srcset="/img/loading.gif" lazyload alt="img_14.png"></p>
+<p><img src="/2025/05/05/DB/PostgreSQL%E6%8C%87%E5%8D%97/%E5%86%85%E5%B9%95%E6%8E%A2%E7%B4%A2_new_release/ch9/ch9/img_14.png" srcset="/内存泄漏排查/loading.gif" lazyload alt="img_14.png"></p>
 <ol>
 <li>PostgreSQL在启动时读取pg_control文件中的所有项目。如果状态项为’in production’，PostgreSQL会进入恢复模式 ，<br>因为这意味着数据库没有正常关闭。如果状态为’shut down’，PostgreSQL则进入常规启动模式。  </li>
 <li>PostgreSQL根据pg_control文件中所写的最新检查点记录的位置，从相应的WAL段文件中读取该记录，<br>并从中获取REDO点。如果最新的检查点记录无效，PostgreSQL会尝试读取前一个记录。如果两个记录都不可读，<br>则放弃自我恢复。（注意，在PostgreSQL 11或之后的版本中，不再存储前一个检查点。）  </li>
 <li>相应的资源管理器从REDO点开始，按顺序读取并重放XLOG记录，直到达到最新WAL段的末尾。当重放XLOG记录时，<br>如果它是备份块，则无论其LSN如何，都会覆盖到对应的表页面上。否则，对于非备份块的XLOG记录，<br>只有当记录的LSN大于对应页面的’pd_lsn’时，才会进行重放。</li>
 </ol>
 <p>第二点是关于LSN比较的问题：为什么需要比较非备份块的LSN和相应页面的pd_lsn。与之前的例子不同，<br>这里将通过一个具体示例来解释这一点，强调这种比较的必要性。请参阅图9.15和9.16。<br>（注意，为了简化描述，此处省略了WAL缓冲区。）</p>
-<p><img src="/2025/05/05/DB/PostgreSQL%E6%8C%87%E5%8D%97/%E5%86%85%E5%B9%95%E6%8E%A2%E7%B4%A2_new_release/ch9/ch9/img_15.png" srcset="/img/loading.gif" lazyload alt="img_15.png"></p>
+<p><img src="/2025/05/05/DB/PostgreSQL%E6%8C%87%E5%8D%97/%E5%86%85%E5%B9%95%E6%8E%A2%E7%B4%A2_new_release/ch9/ch9/img_15.png" srcset="/内存泄漏排查/loading.gif" lazyload alt="img_15.png"></p>
 <ol>
 <li>PostgreSQL向TABLE_A插入一个元组，并在LSN_1处写入一条XLOG记录。  </li>
 <li>后台写入进程将TABLE_A的页面写入到存储器中。此时，该页面的pd_lsn为LSN_1。  </li>
@@ -687,7 +687,7 @@
 </ol>
 <p>与概述中的示例不同，在此场景中，TABLE_A的页面已经至少被写入存储器一次。</p>
 <p>接下来，立即模式下关闭数据库，然后重新启动数据库。</p>
-<p><img src="/2025/05/05/DB/PostgreSQL%E6%8C%87%E5%8D%97/%E5%86%85%E5%B9%95%E6%8E%A2%E7%B4%A2_new_release/ch9/ch9/img_16.png" srcset="/img/loading.gif" lazyload alt="img_16.png"></p>
+<p><img src="/2025/05/05/DB/PostgreSQL%E6%8C%87%E5%8D%97/%E5%86%85%E5%B9%95%E6%8E%A2%E7%B4%A2_new_release/ch9/ch9/img_16.png" srcset="/内存泄漏排查/loading.gif" lazyload alt="img_16.png"></p>
 <ol>
 <li>PostgreSQL加载第一条XLOG记录和TABLE_A的页面，但由于记录的LSN(LSN_1)不大于页面<br>的LSN（也是LSN_1），因此不会对其进行重放。实际上，显然没有必要重放它。  </li>
 <li>接下来，PostgreSQL重放第二条XLOG记录，因为该记录的LSN(LSN_2)大于TABLE_A页面当前的LSN(LSN_1)。</li>
@@ -707,19 +707,19 @@
 <p>WAL段文件的数量从包含前一个REDO点的段开始计数（在10或更早版本中；在11或更高版本中即为REDO点所在段），<br>并且该值必须位于min_wal_size参数（默认为80MB，或5个文件）和max_wal_size参数（默认为1GB，或64个文件）之间。</p>
 <p>如果检查点开始，PostgreSQL将保留或回收必要的WAL段文件，并移除任何不必要的文件。</p>
 <p>图9.17展示了一个具体示例。假设在检查点开始之前有六个WAL段文件，其中WAL_3包含前一个REDO点<br>（在10或更早版本中；在11或更高版本中即为当前REDO点），并且PostgreSQL估计将需要五个文件。<br>在这种情况下，WAL_1将被重命名为WAL_7以便回收，而WAL_2将被移除。</p>
-<p><img src="/2025/05/05/DB/PostgreSQL%E6%8C%87%E5%8D%97/%E5%86%85%E5%B9%95%E6%8E%A2%E7%B4%A2_new_release/ch9/ch9/img_17.png" srcset="/img/loading.gif" lazyload alt="img_17.png"></p>
+<p><img src="/2025/05/05/DB/PostgreSQL%E6%8C%87%E5%8D%97/%E5%86%85%E5%B9%95%E6%8E%A2%E7%B4%A2_new_release/ch9/ch9/img_17.png" srcset="/内存泄漏排查/loading.gif" lazyload alt="img_17.png"></p>
 <p>如果由于WAL活动突增导致需要更多的WAL段文件，只要WAL段文件的总大小小于<br>max_wal_size参数，就会创建新的WAL段文件。例如，在图9.18中，如果WAL_7已经被填满，将会新创建WAL_8。</p>
-<p><img src="/2025/05/05/DB/PostgreSQL%E6%8C%87%E5%8D%97/%E5%86%85%E5%B9%95%E6%8E%A2%E7%B4%A2_new_release/ch9/ch9/img_18.png" srcset="/img/loading.gif" lazyload alt="img_18.png"></p>
+<p><img src="/2025/05/05/DB/PostgreSQL%E6%8C%87%E5%8D%97/%E5%86%85%E5%B9%95%E6%8E%A2%E7%B4%A2_new_release/ch9/ch9/img_18.png" srcset="/内存泄漏排查/loading.gif" lazyload alt="img_18.png"></p>
 <p>WAL段文件的数量会根据服务器活动进行调整。如果WAL数据写入量持续增加，<br>预估所需的WAL段文件数量以及WAL段文件的总大小将逐渐增加。相反，如果WAL数据写入量减少，这些数值也会减少。</p>
 <p>如果WAL段文件的总大小超过了max_wal_size参数设定的值，将启动一个检查点。图9.19说明了这种情况。<br>通过执行检查点操作，将创建一个新的REDO点并丢弃前一个REDO点；随后，不必要的旧WAL段文件将被回收。<br>这样一来，PostgreSQL将始终只保留数据库恢复所需WAL段文件。</p>
-<p><img src="/2025/05/05/DB/PostgreSQL%E6%8C%87%E5%8D%97/%E5%86%85%E5%B9%95%E6%8E%A2%E7%B4%A2_new_release/ch9/ch9/img_19.png" srcset="/img/loading.gif" lazyload alt="img_19.png"></p>
+<p><img src="/2025/05/05/DB/PostgreSQL%E6%8C%87%E5%8D%97/%E5%86%85%E5%B9%95%E6%8E%A2%E7%B4%A2_new_release/ch9/ch9/img_19.png" srcset="/内存泄漏排查/loading.gif" lazyload alt="img_19.png"></p>
 <p>wal_keep_size参数（在12或更早版本中为wal_keep_segments）和复制槽（replication slot）特性也会影响WAL段文件的数量。</p>
 <h3 id="9-10-Continuous-Archiving-and-Archive-Logs"><a href="#9-10-Continuous-Archiving-and-Archive-Logs" class="headerlink" title="9.10. Continuous Archiving and Archive Logs"></a><a name="archive"></a>9.10. Continuous Archiving and Archive Logs</h3><p>连续归档是一种特性，它在WAL（Write-Ahead Log）段文件切换时，将这些文件复制到归档区域。<br>此操作由归档（后台）进程执行。被复制的文件称为归档日志。此功能通常用于热物理备份和PITR（时间点恢复），<br>这些在第10章中有详细描述。</p>
 <p>归档区域的路径由配置参数‘archive_command’设置。例如，以下参数配置会每当发生段切换时，<br>将WAL段文件复制到目录‘&#x2F;home&#x2F;postgres&#x2F;archives&#x2F;’：</p>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs shell">archive_command = &#x27;cp %p /home/postgres/archives/%f&#x27;<br></code></pre></td></tr></table></figure>
 
 <p>在这个命令中，%p代表当前要归档的WAL段文件的完整路径，%f代表不包含路径的WAL段文件名</p>
-<p><img src="/2025/05/05/DB/PostgreSQL%E6%8C%87%E5%8D%97/%E5%86%85%E5%B9%95%E6%8E%A2%E7%B4%A2_new_release/ch9/ch9/img_20.png" srcset="/img/loading.gif" lazyload alt="img_20.png"></p>
+<p><img src="/2025/05/05/DB/PostgreSQL%E6%8C%87%E5%8D%97/%E5%86%85%E5%B9%95%E6%8E%A2%E7%B4%A2_new_release/ch9/ch9/img_20.png" srcset="/内存泄漏排查/loading.gif" lazyload alt="img_20.png"></p>
 <p>archive_command参数可以设置为任何Unix命令或工具。这意味着您可以使用scp命令或任何其他文件备份工具<br>将归档日志传输到另一台主机，而不仅仅局限于使用简单的复制命令。</p>
 <blockquote>
 <p>archive_library</p>

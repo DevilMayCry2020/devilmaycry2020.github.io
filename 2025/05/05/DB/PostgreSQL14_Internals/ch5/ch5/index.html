@@ -8,8 +8,8 @@
 <head>
   <meta charset="UTF-8">
 
-  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
-  <link rel="icon" href="/img/fluid.png">
+  <link rel="apple-touch-icon" sizes="76x76" href="/%E5%86%85%E5%AD%98%E6%B3%84%E6%BC%8F%E6%8E%92%E6%9F%A5/fluid.png">
+  <link rel="icon" href="/%E5%86%85%E5%AD%98%E6%B3%84%E6%BC%8F%E6%8E%92%E6%9F%A5/fluid.png">
   
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
@@ -82,7 +82,7 @@
   <script id="fluid-configs">
     var Fluid = window.Fluid || {};
     Fluid.ctx = Object.assign({}, Fluid.ctx)
-    var CONFIG = {"hostname":"smilemzy.com","root":"/","version":"1.9.8","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false},"umami":{"src":null,"website_id":null,"domains":null,"start_time":"2024-01-01T00:00:00.000Z","token":null,"api_server":null}},"search_path":"/local-search.xml","include_content_in_search":true};
+    var CONFIG = {"hostname":"smilemzy.com","root":"/","version":"1.9.8","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/内存泄漏排查/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false},"umami":{"src":null,"website_id":null,"domains":null,"start_time":"2024-01-01T00:00:00.000Z","token":null,"api_server":null}},"search_path":"/local-search.xml","include_content_in_search":true};
 
     if (CONFIG.web_analytics.follow_dnt) {
       var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
@@ -204,7 +204,7 @@
   
 
 <div id="banner" class="banner" parallax=true
-     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+     style="background: url('/%E5%86%85%E5%AD%98%E6%B3%84%E6%BC%8F%E6%8E%92%E6%9F%A5/default.png') no-repeat center center; background-size: cover;">
   <div class="full-bg-img">
     <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
       <div class="banner-text text-center fade-in-up">
@@ -366,9 +366,9 @@
 <pre><code class="hljs">Heap Hot Updated 位表示执行器需要沿着 CTID 链继续扫描。
 Heap Only Tuple 位表示这个元组没有被任何索引引用。
 </code></pre>
-<p><img src="/2025/05/05/DB/PostgreSQL14_Internals/ch5/ch5/img.png" srcset="/img/loading.gif" lazyload alt="img.png"></p>
+<p><img src="/2025/05/05/DB/PostgreSQL14_Internals/ch5/ch5/img.png" srcset="/内存泄漏排查/loading.gif" lazyload alt="img.png"></p>
 <p>随着我们进一步更新，链会增长 — 但仅限于页面范围内</p>
-<p><img src="/2025/05/05/DB/PostgreSQL14_Internals/ch5/ch5/img_1.png" srcset="/img/loading.gif" lazyload alt="img_1.png"></p>
+<p><img src="/2025/05/05/DB/PostgreSQL14_Internals/ch5/ch5/img_1.png" srcset="/内存泄漏排查/loading.gif" lazyload alt="img_1.png"></p>
 <p>索引仍然只包含一个引用，它指向这个链的头部：</p>
 <figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-operator">=</span><span class="hljs-operator">&gt;</span> <span class="hljs-keyword">SELECT</span> <span class="hljs-operator">*</span> <span class="hljs-keyword">FROM</span> index_page(<span class="hljs-string">&#x27;hot_id&#x27;</span>,<span class="hljs-number">1</span>);<br> itemoffset <span class="hljs-operator">|</span> htid  <span class="hljs-operator">|</span> dead<br>−−−−−−−−−−−−<span class="hljs-operator">+</span>−−−−−−−<span class="hljs-operator">+</span>−−−−−−<br>          <span class="hljs-number">1</span> <span class="hljs-operator">|</span> (<span class="hljs-number">0</span>,<span class="hljs-number">1</span>) <span class="hljs-operator">|</span> f<br>(<span class="hljs-number">1</span> <span class="hljs-type">row</span>)<br></code></pre></td></tr></table></figure>
 
@@ -376,12 +376,12 @@ Heap Only Tuple 位表示这个元组没有被任何索引引用。
 <h3 id="5-3-Page-Pruning-for-HOT-Updates"><a href="#5-3-Page-Pruning-for-HOT-Updates" class="headerlink" title="5.3 Page Pruning for HOT Updates"></a><a name="cp3"></a>5.3 Page Pruning for HOT Updates</h3><p>页剪枝的一个特殊情况 — 也同样重要，是 HOT 更新链的剪枝。</p>
 <p>在上面的例子中，已经超过了 fillfactor 阈值，因此下一次更新会触发页剪枝。但这一次，页面包含了 HOT 链。这个链的头部必须始终保持原位，因为它被索引引用，但其他指针可以被释放，因为它们肯定没有外部引用。</p>
 <p>为了避免移动头部，PostgreSQL 使用双重寻址：索引引用的指针 (在本例中为 (0,1)) 获取到的是 redirect 状态，因为它指向了当前链开始的元组：</p>
-<p><img src="/2025/05/05/DB/PostgreSQL14_Internals/ch5/ch5/img_2.png" srcset="/img/loading.gif" lazyload alt="img_2.png"></p>
+<p><img src="/2025/05/05/DB/PostgreSQL14_Internals/ch5/ch5/img_2.png" srcset="/内存泄漏排查/loading.gif" lazyload alt="img_2.png"></p>
 <p>元组 (0,1)，(0,2)，(0,3) 被剪枝了；头指针 1 被保留，用于重定向，而指针 2 和 3 已被释放 (unused 的状态) ，因此，它们保证没有来自索引的引用。新的元组作为元组 (0,2) 写入到空闲空间中。</p>
 <p>让我们再做一些更新：</p>
-<p><img src="/2025/05/05/DB/PostgreSQL14_Internals/ch5/ch5/img_3.png" srcset="/img/loading.gif" lazyload alt="img_3.png"></p>
+<p><img src="/2025/05/05/DB/PostgreSQL14_Internals/ch5/ch5/img_3.png" srcset="/内存泄漏排查/loading.gif" lazyload alt="img_3.png"></p>
 <p>下一次更新会触发页剪枝：</p>
-<p><img src="/2025/05/05/DB/PostgreSQL14_Internals/ch5/ch5/img_4.png" srcset="/img/loading.gif" lazyload alt="img_4.png"></p>
+<p><img src="/2025/05/05/DB/PostgreSQL14_Internals/ch5/ch5/img_4.png" srcset="/内存泄漏排查/loading.gif" lazyload alt="img_4.png"></p>
 <p>同样，一些元组被剪枝，指向链头的指针也相应地被移动。</p>
 <p>如果经常修改非索引列，那么减少 fillfactor 的值是有意义的，从而在页面中保留一些空间用于更新。当然，你必须牢记，fillfactor 值越低，页面中剩余的空闲空间就越多，因此表的物理大小会增长。</p>
 <h3 id="5-4-HOT-Chain-Splits"><a href="#5-4-HOT-Chain-Splits" class="headerlink" title="5.4 HOT Chain Splits"></a><a name="cp4"></a>5.4 HOT Chain Splits</h3><p>如果页面没有更多空间来容纳新的元组，那么链将被切断。PostgreSQL 将不得不添加一个单独的索引条目来引用位于另一个页面的元组。</p>
@@ -389,12 +389,12 @@ Heap Only Tuple 位表示这个元组没有被任何索引引用。
 <figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-operator">=</span><span class="hljs-operator">&gt;</span> <span class="hljs-keyword">BEGIN</span> ISOLATION LEVEL REPEATABLE READ;<br><span class="hljs-operator">=</span><span class="hljs-operator">&gt;</span> <span class="hljs-keyword">SELECT</span> <span class="hljs-number">1</span>;<br></code></pre></td></tr></table></figure>
 
 <p>现在我们在第一个会话中执行一些更新操作：</p>
-<p><img src="/2025/05/05/DB/PostgreSQL14_Internals/ch5/ch5/img_5.png" srcset="/img/loading.gif" lazyload alt="img_5.png"></p>
+<p><img src="/2025/05/05/DB/PostgreSQL14_Internals/ch5/ch5/img_5.png" srcset="/内存泄漏排查/loading.gif" lazyload alt="img_5.png"></p>
 <p>当下一次更新发生时，此页面将无法容纳另一个元组，并且页剪枝将无法释放任何空间：</p>
 <figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-operator">=</span><span class="hljs-operator">&gt;</span> <span class="hljs-keyword">UPDATE</span> hot <span class="hljs-keyword">SET</span> s <span class="hljs-operator">=</span> <span class="hljs-string">&#x27;L&#x27;</span>;<br></code></pre></td></tr></table></figure>
 <figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-operator">=</span><span class="hljs-operator">&gt;</span> <span class="hljs-keyword">COMMIT</span>; <span class="hljs-comment">-- the snapshot is not required anymore</span><br></code></pre></td></tr></table></figure>
 
-<p><img src="/2025/05/05/DB/PostgreSQL14_Internals/ch5/ch5/img_6.png" srcset="/img/loading.gif" lazyload alt="img_6.png"></p>
+<p><img src="/2025/05/05/DB/PostgreSQL14_Internals/ch5/ch5/img_6.png" srcset="/内存泄漏排查/loading.gif" lazyload alt="img_6.png"></p>
 <p>元组 (0,5) 包含跳转到第一个页面的引用 (1,1)：</p>
 <figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-operator">=</span><span class="hljs-operator">&gt;</span> <span class="hljs-keyword">SELECT</span> <span class="hljs-operator">*</span> <span class="hljs-keyword">FROM</span> heap_page(<span class="hljs-string">&#x27;hot&#x27;</span>,<span class="hljs-number">1</span>);<br>  ctid <span class="hljs-operator">|</span> state  <span class="hljs-operator">|</span> xmin <span class="hljs-operator">|</span> xmax <span class="hljs-operator">|</span> hhu <span class="hljs-operator">|</span> hot <span class="hljs-operator">|</span> t_ctid<br>−−−−−−−<span class="hljs-operator">+</span>−−−−−−−−<span class="hljs-operator">+</span>−−−−−−<span class="hljs-operator">+</span>−−−−−−<span class="hljs-operator">+</span>−−−−−<span class="hljs-operator">+</span>−−−−−<span class="hljs-operator">+</span>−−−−−−−−<br> (<span class="hljs-number">1</span>,<span class="hljs-number">1</span>) <span class="hljs-operator">|</span> normal <span class="hljs-operator">|</span> <span class="hljs-number">823</span>  <span class="hljs-operator">|</span> <span class="hljs-number">0</span> a  <span class="hljs-operator">|</span>     <span class="hljs-operator">|</span>     <span class="hljs-operator">|</span> (<span class="hljs-number">1</span>,<span class="hljs-number">1</span>)<br>(<span class="hljs-number">1</span> <span class="hljs-type">row</span>)<br></code></pre></td></tr></table></figure>
 

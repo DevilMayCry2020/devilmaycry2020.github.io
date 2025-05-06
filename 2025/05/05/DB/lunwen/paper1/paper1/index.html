@@ -8,8 +8,8 @@
 <head>
   <meta charset="UTF-8">
 
-  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
-  <link rel="icon" href="/img/fluid.png">
+  <link rel="apple-touch-icon" sizes="76x76" href="/%E5%86%85%E5%AD%98%E6%B3%84%E6%BC%8F%E6%8E%92%E6%9F%A5/fluid.png">
+  <link rel="icon" href="/%E5%86%85%E5%AD%98%E6%B3%84%E6%BC%8F%E6%8E%92%E6%9F%A5/fluid.png">
   
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
@@ -75,7 +75,7 @@
   <script id="fluid-configs">
     var Fluid = window.Fluid || {};
     Fluid.ctx = Object.assign({}, Fluid.ctx)
-    var CONFIG = {"hostname":"smilemzy.com","root":"/","version":"1.9.8","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false},"umami":{"src":null,"website_id":null,"domains":null,"start_time":"2024-01-01T00:00:00.000Z","token":null,"api_server":null}},"search_path":"/local-search.xml","include_content_in_search":true};
+    var CONFIG = {"hostname":"smilemzy.com","root":"/","version":"1.9.8","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/内存泄漏排查/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false},"umami":{"src":null,"website_id":null,"domains":null,"start_time":"2024-01-01T00:00:00.000Z","token":null,"api_server":null}},"search_path":"/local-search.xml","include_content_in_search":true};
 
     if (CONFIG.web_analytics.follow_dnt) {
       var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
@@ -197,7 +197,7 @@
   
 
 <div id="banner" class="banner" parallax=true
-     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+     style="background: url('/%E5%86%85%E5%AD%98%E6%B3%84%E6%BC%8F%E6%8E%92%E6%9F%A5/default.png') no-repeat center center; background-size: cover;">
   <div class="full-bg-img">
     <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
       <div class="banner-text text-center fade-in-up">
@@ -313,12 +313,12 @@
 <p>在本文中，我们对MVCC DBMS中关键的事务管理设计决策进行了这样的研究：<br>(1)并发控制协议；(2)版本存储；(3)垃圾回收；(4)索引管理。对于这些主题中的每一个，<br>我们都描述了内存中DBMS的最新实现，并讨论了它们之间的权衡。我们也指出了它们在支持更大的<br>线程数量和更复杂的工作负载方面存在的问题。作为这项研究的一部分，我们在Peloton[5]内存中的MVCC DBMS中实现了<br>所有方法。这为我们提供了一个统一的平台来比较各种实现，不受其他架构方面的影响。我们在一台拥有40个核心的<br>机器上部署了Peloton，并使用两个OLTP基准测试对其进行评估。我们的分析确定了给各个实现带来压力的情景，<br>并探讨了缓解这些问题的方法（如果可能的话）。</p>
 <h3 id="2-BACKGROUND"><a href="#2-BACKGROUND" class="headerlink" title="2. BACKGROUND"></a><a name="BACKGROUND"></a>2. BACKGROUND</h3><p>我们首先概述多版本并发控制（MVCC）的高级概念。</p>
 <p>然后，我们讨论数据库管理系统（DBMS）用来追踪事务和维护版本信息的元数据。</p>
-<h3 id="2-1-MVCC-Overview"><a href="#2-1-MVCC-Overview" class="headerlink" title="2.1 MVCC Overview"></a><a name="MVCC-Overview"></a>2.1 MVCC Overview</h3><p><img src="/2025/05/05/DB/lunwen/paper1/paper1/img.png" srcset="/img/loading.gif" lazyload alt="img.png"><br>表 1：MVCC 实现 —— 商业和研究型 MVCC DBMS 所做出的设计决策概览。对于每个系统（除 Oracle 外）<br>的年份属性是指其首次发布或宣布的时间。对于 Oracle，则是指系统首次包含 MVCC 的年份。<br>除了 Oracle、MySQL 和 Postgres 之外，所有系统均假设数据库的主要存储位置是在内存中。</p>
+<h3 id="2-1-MVCC-Overview"><a href="#2-1-MVCC-Overview" class="headerlink" title="2.1 MVCC Overview"></a><a name="MVCC-Overview"></a>2.1 MVCC Overview</h3><p><img src="/2025/05/05/DB/lunwen/paper1/paper1/img.png" srcset="/内存泄漏排查/loading.gif" lazyload alt="img.png"><br>表 1：MVCC 实现 —— 商业和研究型 MVCC DBMS 所做出的设计决策概览。对于每个系统（除 Oracle 外）<br>的年份属性是指其首次发布或宣布的时间。对于 Oracle，则是指系统首次包含 MVCC 的年份。<br>除了 Oracle、MySQL 和 Postgres 之外，所有系统均假设数据库的主要存储位置是在内存中。</p>
 <p>一种事务管理方案允许终端用户以多程序方式访问数据库，同时保持每个用户都在专用系统上单独执行的假象[9]。<br>它确保了数据库管理系统（DBMS）的原子性和隔离性保证。</p>
 <p>多版本系统的优点对于现代数据库应用至关重要。最重要的是，它可能比单版本系统允许更高的并发性。<br>例如，一个多版本并发控制（MVCC）DBMS允许一个事务读取对象的旧版本，同时另一个事务正在更新同一个对象。<br>这对于在同一时间执行只读查询，而读写事务继续更新数据库尤为重要。<br>如果DBMS从不删除旧版本，则系统还可以支持“time-travel”操作，使应用程序能够查询数据库在过去某个时间点的一致快照[8]。</p>
 <p>上述优势使得MVCC成为近年来实施的新DBMS中最受欢迎的选择。表1总结了过去三十年中的MVCC实现。<br>但是在DBMS中实现多版本的方式各不相同，每种方式都会产生额外的计算和存储开销。这些设计决策也高度相互依赖。<br>因此，要分辨哪些更好及其原因并非易事。对于内存中的DBMS尤其如此，因为磁盘不再是主要瓶颈。</p>
 <p>在接下来的部分中，我们将讨论这些设计决策的实现问题和性能权衡。然后在第7节中，我们对它们进行全面评估。<br>我们在此文中仅考虑可串行化的事务执行。<br>虽然日志记录和恢复是DBMS架构的另一个重要方面，但我们不在本研究中涉及，因为这方面与单版本系统没有什么不同，<br>而且内存中的DBMS日志记录已经在其他地方有所涵盖[33, 49]。</p>
-<h3 id="2-2-DBMS-Meta-Data"><a href="#2-2-DBMS-Meta-Data" class="headerlink" title="2.2 DBMS Meta-Data"></a><a name="DBMS-Meta-Data"></a>2.2 DBMS Meta-Data</h3><p><img src="/2025/05/05/DB/lunwen/paper1/paper1/img_1.png" srcset="/img/loading.gif" lazyload alt="img_1.png"></p>
+<h3 id="2-2-DBMS-Meta-Data"><a href="#2-2-DBMS-Meta-Data" class="headerlink" title="2.2 DBMS Meta-Data"></a><a name="DBMS-Meta-Data"></a>2.2 DBMS Meta-Data</h3><p><img src="/2025/05/05/DB/lunwen/paper1/paper1/img_1.png" srcset="/内存泄漏排查/loading.gif" lazyload alt="img_1.png"></p>
 <p>无论其实现如何，一个多版本并发控制（MVCC）数据库管理系统都会为事务和数据库元组维护通用的元数据。</p>
 <p>事务：当事务 T 首次进入系统时，DBMS 会为其分配一个唯一且单调递增的时间戳作为其标识符（Tid）。<br>并发控制协议利用此标识符来标记事务访问的元组版本。某些协议还使用它来确定事务的序列化顺序。</p>
 <p>元组：如图 1 所示，每个物理版本在其头部包含四个由 DBMS 使用来协调并发事务执行的元数据字段<br>（下一节中讨论的一些并发控制协议还包括其他字段）。txn-id 字段充当版本的写锁。当元组未处于写锁定状态时，<br>每个元组的该字段设置为零。大多数 DBMS 使用 64 位的 txn-id，以便它可以使用单一的比较并交换（CaS）指令来<br>原子地更新值。如果具有标识符 Tid 的事务 T 想要更新元组 A，则 DBMS 会检查 A 的 txn-id 字段是否为零。<br>如果是，则 DBMS 将使用 CaS 指令将 txn-id 的值设置为 Tid [27, 44]。任何尝试更新 A 的事务，<br>如果此 txn-id 字段既不为零也不等于其 Tid，则会被中止。接下来的两个元数据字段<br>是 begin-ts 和 end-ts 时间戳，它们表示元组版本的有效期。这两个字段最初都设置为零。<br>当事务删除元组时，DBMS 将元组的 begin-ts 设置为 INF。最后一个元数据字段是指针，<br>用于存储相邻（前一个或后一个）版本（如果有）的地址。</p>

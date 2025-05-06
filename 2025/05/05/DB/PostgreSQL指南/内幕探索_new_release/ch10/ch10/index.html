@@ -8,8 +8,8 @@
 <head>
   <meta charset="UTF-8">
 
-  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
-  <link rel="icon" href="/img/fluid.png">
+  <link rel="apple-touch-icon" sizes="76x76" href="/%E5%86%85%E5%AD%98%E6%B3%84%E6%BC%8F%E6%8E%92%E6%9F%A5/fluid.png">
+  <link rel="icon" href="/%E5%86%85%E5%AD%98%E6%B3%84%E6%BC%8F%E6%8E%92%E6%9F%A5/fluid.png">
   
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
@@ -80,7 +80,7 @@
   <script id="fluid-configs">
     var Fluid = window.Fluid || {};
     Fluid.ctx = Object.assign({}, Fluid.ctx)
-    var CONFIG = {"hostname":"smilemzy.com","root":"/","version":"1.9.8","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false},"umami":{"src":null,"website_id":null,"domains":null,"start_time":"2024-01-01T00:00:00.000Z","token":null,"api_server":null}},"search_path":"/local-search.xml","include_content_in_search":true};
+    var CONFIG = {"hostname":"smilemzy.com","root":"/","version":"1.9.8","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/内存泄漏排查/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false},"umami":{"src":null,"website_id":null,"domains":null,"start_time":"2024-01-01T00:00:00.000Z","token":null,"api_server":null}},"search_path":"/local-search.xml","include_content_in_search":true};
 
     if (CONFIG.web_analytics.follow_dnt) {
       var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
@@ -202,7 +202,7 @@
   
 
 <div id="banner" class="banner" parallax=true
-     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+     style="background: url('/%E5%86%85%E5%AD%98%E6%B3%84%E6%BC%8F%E6%8E%92%E6%9F%A5/default.png') no-repeat center center; background-size: cover;">
   <div class="full-bg-img">
     <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
       <div class="banner-text text-center fade-in-up">
@@ -320,7 +320,7 @@
 </ol>
 <p>这个简单的流程对于数据库管理员来说很容易使用，因为它除了像cp命令或类似归档工具这样的通用工具外，<br>不需要其他特殊工具。此外，此流程不需要表锁，因此所有用户都可以继续发出查询，而不受备份操作的影响。<br>这相比于其他主要的开源关系型数据库管理系统是一个显著的优势。</p>
 <p>制作基础备份的一个更简单的方法是使用pg_basebackup实用程序，它内部会发出上述的低级命令。</p>
-<p><img src="/2025/05/05/DB/PostgreSQL%E6%8C%87%E5%8D%97/%E5%86%85%E5%B9%95%E6%8E%A2%E7%B4%A2_new_release/ch10/ch10/img.png" srcset="/img/loading.gif" lazyload alt="img.png"></p>
+<p><img src="/2025/05/05/DB/PostgreSQL%E6%8C%87%E5%8D%97/%E5%86%85%E5%B9%95%E6%8E%A2%E7%B4%A2_new_release/ch10/ch10/img.png" srcset="/内存泄漏排查/loading.gif" lazyload alt="img.png"></p>
 <blockquote>
 <p>info</p>
 <p>The pg_backup_start and pg_backup_stop commands are defined<br>here: src&#x2F;backend&#x2F;access&#x2F;transam&#x2F;xlogfuncs.c.</p>
@@ -363,7 +363,7 @@
 <p>备份历史文件的命名方法如下所示：</p>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs shell">&#123;WAL segment&#125;.&#123;offset value at the time the base backup was started&#125;.backup<br></code></pre></td></tr></table></figure></blockquote>
 <h3 id="10-2-How-Point-in-Time-Recovery-Works"><a href="#10-2-How-Point-in-Time-Recovery-Works" class="headerlink" title="10.2. How Point-in-Time Recovery Works"></a><a name="pitr"></a>10.2. How Point-in-Time Recovery Works</h3><p>图10.2展示了PITR（Point-in-Time Recovery）的基本概念。在PITR模式下，PostgreSQL会将归档日志中<br>的WAL（Write-Ahead Log）数据重放到底层备份上，从pg_backup_start创建的REDO点开始，一直重放到您希望恢复的<br>那个时间点。在PostgreSQL中，需要恢复到的时间点被称为恢复目标（recovery target）。</p>
-<p><img src="/2025/05/05/DB/PostgreSQL%E6%8C%87%E5%8D%97/%E5%86%85%E5%B9%95%E6%8E%A2%E7%B4%A2_new_release/ch10/ch10/img_1.png" srcset="/img/loading.gif" lazyload alt="img_1.png"></p>
+<p><img src="/2025/05/05/DB/PostgreSQL%E6%8C%87%E5%8D%97/%E5%86%85%E5%B9%95%E6%8E%A2%E7%B4%A2_new_release/ch10/ch10/img_1.png" srcset="/内存泄漏排查/loading.gif" lazyload alt="img_1.png"></p>
 <p>以下是PITR工作原理的描述。</p>
 <p>假设你在2024年1月1日格林威治标准时间12:05时犯了一个错误。你需要删除数据库集群，并使用在此之前制作的<br>基础备份来恢复一个新的。</p>
 <p>首先，你需要设置restore_command参数的命令，同时在postgresql.conf文件中<br>（对于版本11或更早的，则是在recovery.conf文件中）设置recovery_target_time参数的时间为<br>你犯错的那个时间点（本例中为12:05 GMT）。</p>
@@ -410,11 +410,11 @@
 <p>图10.3从时间线ID的角度展示了PITR过程。</p>
 <p>首先，我们移除当前的数据库集群，并恢复之前制作的基础备份，以便回到恢复的起始点。这种情况在图中以红色箭头曲线表示。</p>
 <p>接下来，我们启动PostgreSQL服务器，它会重放归档日志中的WAL数据，从pg_backup_start创建的REDO点开始，<br>沿着初始时间线（时间线ID 1）直至恢复目标。这种情况在图中以蓝色箭头直线表示。<br>然后，为恢复后的数据库集群分配一个新的时间线ID 2，PostgreSQL在此新时间线上运行。</p>
-<p><img src="/2025/05/05/DB/PostgreSQL%E6%8C%87%E5%8D%97/%E5%86%85%E5%B9%95%E6%8E%A2%E7%B4%A2_new_release/ch10/ch10/img_2.png" srcset="/img/loading.gif" lazyload alt="img_2.png"></p>
+<p><img src="/2025/05/05/DB/PostgreSQL%E6%8C%87%E5%8D%97/%E5%86%85%E5%B9%95%E6%8E%A2%E7%B4%A2_new_release/ch10/ch10/img_2.png" srcset="/内存泄漏排查/loading.gif" lazyload alt="img_2.png"></p>
 <p>正如第9章中简要提到的，WAL段文件名的前8位数字等于创建该段的数据库集群的时间线ID。<br>当时间线ID发生变化时，WAL段文件名也会相应改变。</p>
 <p>聚焦于WAL段文件，恢复过程可以这样描述：假设我们使用两个归档日志<br>‘000000010000000000000009’和‘00000001000000000000000A’来恢复数据库集群。<br>新恢复的数据库集群会被分配时间线ID 2，PostgreSQL将从‘00000002000000000000000A’开始创建新的WAL段文件。</p>
 <p>图10.4展示了这种情况。</p>
-<p><img src="/2025/05/05/DB/PostgreSQL%E6%8C%87%E5%8D%97/%E5%86%85%E5%B9%95%E6%8E%A2%E7%B4%A2_new_release/ch10/ch10/img_3.png" srcset="/img/loading.gif" lazyload alt="img_3.png"></p>
+<p><img src="/2025/05/05/DB/PostgreSQL%E6%8C%87%E5%8D%97/%E5%86%85%E5%B9%95%E6%8E%A2%E7%B4%A2_new_release/ch10/ch10/img_3.png" srcset="/内存泄漏排查/loading.gif" lazyload alt="img_3.png"></p>
 <h4 id="10-3-2-Timeline-History-File"><a href="#10-3-2-Timeline-History-File" class="headerlink" title="10.3.2. Timeline History File"></a>10.3.2. Timeline History File</h4><p>当PITR过程完成后，会在归档目录下以及pg_xlog子目录（在版本10或之后为pg_wal子目录）<br>中创建一个名为类似‘00000002.history’的时间线历史文件。这个文件记录了它从哪个时间线分支出来以及分支发生的时间。</p>
 <p>The naming rule of this file is shown below:</p>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs shell">&quot;8-digit new timelineId&quot;.history<br></code></pre></td></tr></table></figure>
@@ -446,7 +446,7 @@
 
 <p>参数recovery_target_time设置的是您犯新错误的时间点，而参数recovery_target_timeline设置为2，<br>目的是沿着时间线ID 2进行恢复。</p>
 <p>重启PostgreSQL服务器并进入PITR模式，以便沿着时间线ID 2恢复目标时间点的数据库。参见图10.5。</p>
-<p><img src="/2025/05/05/DB/PostgreSQL%E6%8C%87%E5%8D%97/%E5%86%85%E5%B9%95%E6%8E%A2%E7%B4%A2_new_release/ch10/ch10/img_4.png" srcset="/img/loading.gif" lazyload alt="img_4.png"></p>
+<p><img src="/2025/05/05/DB/PostgreSQL%E6%8C%87%E5%8D%97/%E5%86%85%E5%B9%95%E6%8E%A2%E7%B4%A2_new_release/ch10/ch10/img_4.png" srcset="/内存泄漏排查/loading.gif" lazyload alt="img_4.png"></p>
 <ol>
 <li><p>PostgreSQL 从 backup_label 文件中读取 CHECKPOINT LOCATION 的值。  </p>
 </li>

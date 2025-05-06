@@ -8,8 +8,8 @@
 <head>
   <meta charset="UTF-8">
 
-  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
-  <link rel="icon" href="/img/fluid.png">
+  <link rel="apple-touch-icon" sizes="76x76" href="/%E5%86%85%E5%AD%98%E6%B3%84%E6%BC%8F%E6%8E%92%E6%9F%A5/fluid.png">
+  <link rel="icon" href="/%E5%86%85%E5%AD%98%E6%B3%84%E6%BC%8F%E6%8E%92%E6%9F%A5/fluid.png">
   
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
@@ -76,7 +76,7 @@
   <script id="fluid-configs">
     var Fluid = window.Fluid || {};
     Fluid.ctx = Object.assign({}, Fluid.ctx)
-    var CONFIG = {"hostname":"smilemzy.com","root":"/","version":"1.9.8","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false},"umami":{"src":null,"website_id":null,"domains":null,"start_time":"2024-01-01T00:00:00.000Z","token":null,"api_server":null}},"search_path":"/local-search.xml","include_content_in_search":true};
+    var CONFIG = {"hostname":"smilemzy.com","root":"/","version":"1.9.8","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/内存泄漏排查/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false},"umami":{"src":null,"website_id":null,"domains":null,"start_time":"2024-01-01T00:00:00.000Z","token":null,"api_server":null}},"search_path":"/local-search.xml","include_content_in_search":true};
 
     if (CONFIG.web_analytics.follow_dnt) {
       var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
@@ -198,7 +198,7 @@
   
 
 <div id="banner" class="banner" parallax=true
-     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+     style="background: url('/%E5%86%85%E5%AD%98%E6%B3%84%E6%BC%8F%E6%8E%92%E6%9F%A5/default.png') no-repeat center center; background-size: cover;">
   <div class="full-bg-img">
     <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
       <div class="banner-text text-center fade-in-up">
@@ -282,7 +282,7 @@
                 
                 <h4 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h4><p>PostgreSQL技术内幕<br>事务处理深度探索<br>ch3. MVCC</p>
 <h4 id="内容"><a href="#内容" class="headerlink" title="内容"></a>内容</h4><p>MVCC – 通过记录数据副本的方式，实现读写操作互不阻塞<br>MySQL、Oracle – 回滚段、undo<br>MySQL – 记录最新元组和历史元组的联系，根据时间判断可见<br>Oracle – 基于页面回滚的方式<br>PostgreSQL – 历史元组和最新元组存于Heap表  </p>
-<h5 id="3-1-元组上的版本信息"><a href="#3-1-元组上的版本信息" class="headerlink" title="3.1 元组上的版本信息"></a>3.1 元组上的版本信息</h5><p>每条元组 – 在头部记录版本信息，xmin、xmax、CommandID及一些Hints信息。<br>src\include\access\htup_details.h：121<br><img src="/2025/05/05/DB/PostgreSQL%E6%8A%80%E6%9C%AF%E5%86%85%E5%B9%95/%E4%BA%8B%E5%8A%A1%E5%A4%84%E7%90%86%E6%B7%B1%E5%BA%A6%E6%8E%A2%E7%B4%A2/ch3/ch3/img.png" srcset="/img/loading.gif" lazyload alt="img.png">  </p>
+<h5 id="3-1-元组上的版本信息"><a href="#3-1-元组上的版本信息" class="headerlink" title="3.1 元组上的版本信息"></a>3.1 元组上的版本信息</h5><p>每条元组 – 在头部记录版本信息，xmin、xmax、CommandID及一些Hints信息。<br>src\include\access\htup_details.h：121<br><img src="/2025/05/05/DB/PostgreSQL%E6%8A%80%E6%9C%AF%E5%86%85%E5%B9%95/%E4%BA%8B%E5%8A%A1%E5%A4%84%E7%90%86%E6%B7%B1%E5%BA%A6%E6%8E%A2%E7%B4%A2/ch3/ch3/img.png" srcset="/内存泄漏排查/loading.gif" lazyload alt="img.png">  </p>
 <h5 id="3-2-快照"><a href="#3-2-快照" class="headerlink" title="3.2 快照"></a>3.2 快照</h5><p>PostgreSQL 数据库的快照要保存当前的所有活跃事务的最小xid，最大xid，当前的活跃事务列表，当前事务的CommandID。<br>快照可以分为多种类型，每种快照类型都对应了一种判断元组可见性的方法。<br>快照中最重要的信息 xmin、xmax、xid(含 subxip)， 它们可以用来表示当前系统中所有事务所处的状态。<br>Snapshot-&gt;xmin – 代表的是当前所有活跃事务中的最小 xid，若 xid &lt; Snapshot-&gt;xmin ，则证明此事务提交或终止。<br>Snapshot-&gt;xmax – 借助 latestCompletedXid 获得的，xmax &#x3D; latestCompletedXid + 1 ，没当事务提交时，如果这个xid<br>比系统记录的 latestCompletedXid 更大，则需要 latestCompletedXid 的值为正在提交的 xid<br>latestCompletedXid – 记录的是所有已提交事务中最大的那个 xid<br>那么，一个 xid 大于 xmax，就代表这个事务还是活跃事务(或 尚未启动)。需要注意，此处的活跃指的是获得快照的<br>瞬时是活跃的，在快照存续期间，即使已经提交，快照的内容也不会变化。<br><strong>可见性判断</strong><br>快照类型<br>SnapshotType</p>
 <h5 id="3-3-获得快照"><a href="#3-3-获得快照" class="headerlink" title="3.3 获得快照"></a>3.3 获得快照</h5><p>生成一个快照要遍历 PGPROC 和 PGXACT 结构体<br>src\backend\utils\time\snapmgr.c<br>在PG14 之前，获取快照的同时会获得4个 xmin 变量：<br>TransactionXmin – 它的值和PGPROC 中的xmin保持一致，是当前事务第一次获得快照时的快照xmin<br>RecentXmin – 每次获得快照时的快照xmin<br>RecentGlobalXmin – 首先遍历PGPROC数组获得最小的 PGPROC-&gt;xmin(代表当前事务开始时最小的活跃事务ID)，<br>比它小的事务都已经提交或回滚；然后，减去为vacuum预留的空间；最后，结合复制槽中的xmin 和 Catalog xmin，<br>找到全局最小的xmin<br>RecentGlobalDataXmin – 不考虑事务槽中的 Catalog xmin<br>PG 14 修改以及 openguass csn！  </p>
 <h5 id="3-4-可见性判断"><a href="#3-4-可见性判断" class="headerlink" title="3.4 可见性判断"></a>3.4 可见性判断</h5><p>src\backend\access\heap\heapam_visibility.c：968<br>基于MVCC的可见性判断方法要结合快照，可参考《内幕指南》<br><strong>CSN</strong><br>B站 吕海波视频</p>

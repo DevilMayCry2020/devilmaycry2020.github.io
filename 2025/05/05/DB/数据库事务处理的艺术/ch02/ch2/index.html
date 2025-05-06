@@ -8,8 +8,8 @@
 <head>
   <meta charset="UTF-8">
 
-  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
-  <link rel="icon" href="/img/fluid.png">
+  <link rel="apple-touch-icon" sizes="76x76" href="/%E5%86%85%E5%AD%98%E6%B3%84%E6%BC%8F%E6%8E%92%E6%9F%A5/fluid.png">
+  <link rel="icon" href="/%E5%86%85%E5%AD%98%E6%B3%84%E6%BC%8F%E6%8E%92%E6%9F%A5/fluid.png">
   
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
@@ -95,7 +95,7 @@
   <script id="fluid-configs">
     var Fluid = window.Fluid || {};
     Fluid.ctx = Object.assign({}, Fluid.ctx)
-    var CONFIG = {"hostname":"smilemzy.com","root":"/","version":"1.9.8","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false},"umami":{"src":null,"website_id":null,"domains":null,"start_time":"2024-01-01T00:00:00.000Z","token":null,"api_server":null}},"search_path":"/local-search.xml","include_content_in_search":true};
+    var CONFIG = {"hostname":"smilemzy.com","root":"/","version":"1.9.8","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/内存泄漏排查/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false},"umami":{"src":null,"website_id":null,"domains":null,"start_time":"2024-01-01T00:00:00.000Z","token":null,"api_server":null}},"search_path":"/local-search.xml","include_content_in_search":true};
 
     if (CONFIG.web_analytics.follow_dnt) {
       var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
@@ -217,7 +217,7 @@
   
 
 <div id="banner" class="banner" parallax=true
-     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+     style="background: url('/%E5%86%85%E5%AD%98%E6%B3%84%E6%BC%8F%E6%8E%92%E6%9F%A5/default.png') no-repeat center center; background-size: cover;">
   <div class="full-bg-img">
     <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
       <div class="banner-text text-center fade-in-up">
@@ -304,7 +304,7 @@
 <p>另外，为了提升数据库处理事务的效率，除了采用不同的并发控制技术逐渐释放事务间的并发能力之外，还有一种思路就<br>是让用户自己判断所发起的操作是否影响到了数据的一致性，如果用户认为不影响数据一致性，则可以控制数据库的事务管理器，<br>放松对事务调度的限制（程序员必须慎重选择隔离级别），以提高并发程度。这样的技术就是“隔离级别”。</p>
 <h6 id="2-1-1-隔离级别"><a href="#2-1-1-隔离级别" class="headerlink" title="2.1.1　隔离级别"></a>2.1.1　隔离级别</h6><p>三种异常现象，是在并发情况下发生的，数据库系统使用不同的隔离级别，分别隔离了并发情况下对数据读写的三种异常 ，<br>使得异常不存在，这就是隔离的含义，即隔离异常现象杜绝了异常现象。</p>
 <p>SQL标准（American National Standards Institute，ANSI）提出四种隔离级别，分别是在三种读数据异常现象前后插入四个点，<br>形成了四种隔离地带，不同程度地禁止了三种读数据的异常现象的产生。参见表2-1。</p>
-<p><img src="/2025/05/05/DB/%E6%95%B0%E6%8D%AE%E5%BA%93%E4%BA%8B%E5%8A%A1%E5%A4%84%E7%90%86%E7%9A%84%E8%89%BA%E6%9C%AF/ch02/ch2/img.png" srcset="/img/loading.gif" lazyload alt="img.png"></p>
+<p><img src="/2025/05/05/DB/%E6%95%B0%E6%8D%AE%E5%BA%93%E4%BA%8B%E5%8A%A1%E5%A4%84%E7%90%86%E7%9A%84%E8%89%BA%E6%9C%AF/ch02/ch2/img.png" srcset="/内存泄漏排查/loading.gif" lazyload alt="img.png"></p>
 <p>并发执行的事务能够看到存储的信息（即数据），好似事务之间是串行执行（生成的数据）。<br>这样，因为等价于串行执行，所以数据的一致性不会被破坏，但是这个“隔离性”是隔离级别中最高的级别，<br>其他的隔离级别不能保证“一致性”但却能提高事务的运行效率。</p>
 <p>SQL标准对于隔离级别定义如下：</p>
 <p>1）Serializable（串行化，或称为可串行化）</p>
@@ -317,7 +317,7 @@
 <p>一个事务在执行过程中可以看到没有提交的其他事务新插入的元组，而且能看到没有提交的其他事务对已有元组的更新。</p>
 <p>这四种隔离级别，都不允许“脏写（dirty write，参见1.1.4节）”发生。</p>
 <p>下面以并发控制技术采用封锁的方式来概要地了解一下并发控制技术和隔离级别之间的关系，如表2-2所示。</p>
-<p>表2-2　各种隔离级别在基于锁的并发控制技术下的实现情况<br><img src="/2025/05/05/DB/%E6%95%B0%E6%8D%AE%E5%BA%93%E4%BA%8B%E5%8A%A1%E5%A4%84%E7%90%86%E7%9A%84%E8%89%BA%E6%9C%AF/ch02/ch2/img_1.png" srcset="/img/loading.gif" lazyload alt="img_1.png"></p>
+<p>表2-2　各种隔离级别在基于锁的并发控制技术下的实现情况<br><img src="/2025/05/05/DB/%E6%95%B0%E6%8D%AE%E5%BA%93%E4%BA%8B%E5%8A%A1%E5%A4%84%E7%90%86%E7%9A%84%E8%89%BA%E6%9C%AF/ch02/ch2/img_1.png" srcset="/内存泄漏排查/loading.gif" lazyload alt="img_1.png"></p>
 <h6 id="2-1-2-快照隔离"><a href="#2-1-2-快照隔离" class="headerlink" title="2.1.2　快照隔离"></a>2.1.2　快照隔离</h6><p>一种常用的隔离技术，称为“快照隔离（Snapshot Isolation，简称SI）”。</p>
 <p><strong>1.什么是“快照隔离”？</strong></p>
 <p>快照隔离是一种保证，即事务中的所有读取操作都将看到数据库的一个一致的快照<br>（实际上，它读取的是事务开始时存在的最后一个已提交值），并且该事务只有在其所做的更新与自该快照以来的任<br>何并发更新不冲突的情况下才能成功提交。</p>
@@ -330,12 +330,12 @@
 利用这个快照可以判断本事务和其他事务之间启动的先后顺序、事务的读写数据情况等，以确定是否存在写–写冲突。
 （5）这就是“快照隔离”技术的本质，其实，也是“快照隔离”技术要达到的目的。
 </code></pre>
-<p>修正后的SQL标准定义的三种读数据异常现象与快照隔离的比较表：<br><img src="/2025/05/05/DB/%E6%95%B0%E6%8D%AE%E5%BA%93%E4%BA%8B%E5%8A%A1%E5%A4%84%E7%90%86%E7%9A%84%E8%89%BA%E6%9C%AF/ch02/ch2/img_2.png" srcset="/img/loading.gif" lazyload alt="img_2.png"></p>
+<p>修正后的SQL标准定义的三种读数据异常现象与快照隔离的比较表：<br><img src="/2025/05/05/DB/%E6%95%B0%E6%8D%AE%E5%BA%93%E4%BA%8B%E5%8A%A1%E5%A4%84%E7%90%86%E7%9A%84%E8%89%BA%E6%9C%AF/ch02/ch2/img_2.png" srcset="/内存泄漏排查/loading.gif" lazyload alt="img_2.png"></p>
 <p><strong>2.“快照隔离”的技术实现手段</strong></p>
 <p>“快照隔离”是MVCC技术的一种实现方式（详情参见2.2.4节）。MVCC技术的本质，是为每个对象在写操作发生时，生成<br>一个新的版本；在读操作发生时，读出最近的一个版本。这样同一个元组因有多个版本（传说中的分身术）、且并发的事务有生<br>命周期存在，每个事务读到的元组（实则是元组的某个版本）是不一样的，相当于并发事务在操作不同的元组对象，因此看起来“<br>不存在并发”（除了写–写冲突一定要操作同一个对象，如同孙大圣被金钹扣住的一定是真身），不满足1.2.2节提到的“冲突<br>行为”的定义。</p>
 <p>存在有多个版本的元组级的对象，物理组织通常有两种：一是磁盘类型的数据库，MVCC冗余了磁盘页内部的元组；<br>二是内存类型的数据库，MVCC冗余了内存中的元组，两者所不同的，是元组存放的位置不同，前者是位于页面内部，<br>后者是直接在内存中组成一个链表。前者典型的实现如PostgreSQL和InnoDB，后者典型的实现如阿里的OceanBase、<br>微软的Hekaton。</p>
 <p><strong>3.“快照隔离”的实现技术是如何解决各种冲突的？</strong></p>
-<p><img src="/2025/05/05/DB/%E6%95%B0%E6%8D%AE%E5%BA%93%E4%BA%8B%E5%8A%A1%E5%A4%84%E7%90%86%E7%9A%84%E8%89%BA%E6%9C%AF/ch02/ch2/img_3.png" srcset="/img/loading.gif" lazyload alt="img_3.png"></p>
+<p><img src="/2025/05/05/DB/%E6%95%B0%E6%8D%AE%E5%BA%93%E4%BA%8B%E5%8A%A1%E5%A4%84%E7%90%86%E7%9A%84%E8%89%BA%E6%9C%AF/ch02/ch2/img_3.png" srcset="/内存泄漏排查/loading.gif" lazyload alt="img_3.png"></p>
 <p>首先，如图2-1所示，有5个并发执行的事务，分别是T1到T5。</p>
 <p>其次，事务所能读取的数据，一定是已经提交了的事务的、最新的数据。</p>
 <p>“最新的”含义表明，假设事务T1和T3都修改了同一个数据项X，则事务T5所能看到的数据项X一定是事务T3生成的版本，<br>因为事务T3生成的版本新于事务T1生成的版本。</p>
@@ -396,10 +396,10 @@
 <p><strong>1.锁的粒度</strong></p>
 <p>锁被分为两种粒度后，即区分为读锁（共享锁）和写锁（排它锁），则并发操作可以被区分为四种：<br>读–读、读–写、写–读、写–写，这样，至少读–读操作的并发可被允许进行，使得在用锁保证数据一致性的情况下，<br>并发能力得以提高。可以得到我们通常所说的“锁的相容性矩阵”。</p>
 <p>如果进一步把锁的种类再细化，增加意向锁等，则可以得到如表2-4所示锁的相容性矩阵表，这个表是用于多个事务之间<br>进行事务间加锁时互斥操作使用的（锁的互斥使得并发的事务间遵循了可串行性）。但是，在实际的编程实战中，还有如<br>表2-5所示锁的升级图，用于在一个事务内对本事务的多个加锁操作进行锁升级的。具体说明，参看表2-4和表2-5。</p>
-<p>锁的相容性矩阵表（不同的事务间新锁的申请）：<br><img src="/2025/05/05/DB/%E6%95%B0%E6%8D%AE%E5%BA%93%E4%BA%8B%E5%8A%A1%E5%A4%84%E7%90%86%E7%9A%84%E8%89%BA%E6%9C%AF/ch02/ch2/img_4.png" srcset="/img/loading.gif" lazyload alt="img_4.png"></p>
+<p>锁的相容性矩阵表（不同的事务间新锁的申请）：<br><img src="/2025/05/05/DB/%E6%95%B0%E6%8D%AE%E5%BA%93%E4%BA%8B%E5%8A%A1%E5%A4%84%E7%90%86%E7%9A%84%E8%89%BA%E6%9C%AF/ch02/ch2/img_4.png" srcset="/内存泄漏排查/loading.gif" lazyload alt="img_4.png"></p>
 <p>“Granted Mode”表示已经赋予的锁。N表示不存在锁，IS共享意向锁，IX排它意向锁，S共享锁，SIX共享排它意向锁，U更新锁，X排它锁。<br>对于“Granted Mode”，从N到X这些锁，存在一个排斥的过程，IS排斥其他并发操作的力度最弱，X最强，现实中数据库的事务调度器实现实<br>例中在为事务加锁时，就遵循着这样的一个顺序依序比较，如Informix、PostgreSQL等系统。</p>
 <p>由于可以有多种粒度的锁存在，多粒度封锁协议（multiple-granularity locking protocol） [《数据库系统概念》，第六版，Abraham Siberschatz等著。]<br>被提出，<br>可以增强并发度，减少锁的开销，本节不再多述，请参阅相关书籍。</p>
-<p>锁的合并图（同一个事务内锁的升级）：<br><img src="/2025/05/05/DB/%E6%95%B0%E6%8D%AE%E5%BA%93%E4%BA%8B%E5%8A%A1%E5%A4%84%E7%90%86%E7%9A%84%E8%89%BA%E6%9C%AF/ch02/ch2/img_5.png" srcset="/img/loading.gif" lazyload alt="img_5.png"></p>
+<p>锁的合并图（同一个事务内锁的升级）：<br><img src="/2025/05/05/DB/%E6%95%B0%E6%8D%AE%E5%BA%93%E4%BA%8B%E5%8A%A1%E5%A4%84%E7%90%86%E7%9A%84%E8%89%BA%E6%9C%AF/ch02/ch2/img_5.png" srcset="/内存泄漏排查/loading.gif" lazyload alt="img_5.png"></p>
 <pre><code class="hljs">本图表明在同一个事务内对同一个数据项的加锁操作的升级（多种粒度的锁，为了提升并发度，
 当同一个对象上发生第二次锁申请时，则允许锁进行转换（lock conversion），就是锁的升级和降级。
 升级（upgrade）：表示从共享到排他的转换，发生在锁增长阶段；降级（downgrade）；表示从排他到
@@ -431,12 +431,12 @@
 还要求事务提交之前不得释放任何锁。这样就满足了严格性的要求（严格性要求先发生写操作的事务提交或中止的
 操作优先于其他事务）。
 </code></pre>
-<p>表2-6　可恢复性示例：<br><img src="/2025/05/05/DB/%E6%95%B0%E6%8D%AE%E5%BA%93%E4%BA%8B%E5%8A%A1%E5%A4%84%E7%90%86%E7%9A%84%E8%89%BA%E6%9C%AF/ch02/ch2/img_6.png" srcset="/img/loading.gif" lazyload alt="img_6.png"></p>
+<p>表2-6　可恢复性示例：<br><img src="/2025/05/05/DB/%E6%95%B0%E6%8D%AE%E5%BA%93%E4%BA%8B%E5%8A%A1%E5%A4%84%E7%90%86%E7%9A%84%E8%89%BA%E6%9C%AF/ch02/ch2/img_6.png" srcset="/内存泄漏排查/loading.gif" lazyload alt="img_6.png"></p>
 <p>主流数据库系统实现的两阶段封锁协议，实际上指的是SS2PL而非2PL。因为只有SS2PL才能保证数据的一致性。</p>
 <p>使用SS2PL实现事务调度的主流数据库系统有Informix。开源的PostgreSQL和MySQL不仅使用了SS2PL，而且还使用MVCC来提高事<br>务并发调度的效率。Oracle、DB2、SQL Server也是基于SS2PL和MVCC实现的事务并发调度。</p>
 <p><strong>3.封锁技术是怎样解决各种读异常的？</strong></p>
 <p>对于脏读和不可重复读，封锁技术不会发生这两种读异常现象，原因如表2-7所示。</p>
-<p>表2-7　修正后的SQL标准定义的三种读数据异常现象与封锁技术的比较表：<br><img src="/2025/05/05/DB/%E6%95%B0%E6%8D%AE%E5%BA%93%E4%BA%8B%E5%8A%A1%E5%A4%84%E7%90%86%E7%9A%84%E8%89%BA%E6%9C%AF/ch02/ch2/img_7.png" srcset="/img/loading.gif" lazyload alt="img_7.png"></p>
+<p>表2-7　修正后的SQL标准定义的三种读数据异常现象与封锁技术的比较表：<br><img src="/2025/05/05/DB/%E6%95%B0%E6%8D%AE%E5%BA%93%E4%BA%8B%E5%8A%A1%E5%A4%84%E7%90%86%E7%9A%84%E8%89%BA%E6%9C%AF/ch02/ch2/img_7.png" srcset="/内存泄漏排查/loading.gif" lazyload alt="img_7.png"></p>
 <p>对于幻象，需要分为几种情况讨论：</p>
 <p>（1）没有索引，使用表或页面级锁：因为锁的粒度大，锁把一些不相关的元组也囊括在锁定的范围内，<br>这使得其他事务的WHERE条件不能获取被锁住的表或页面（这相当于锁住了WHERE条件指定的数据对象和对象的外延范围，<br>这个外延范围被称为间隙“gap”），因而可以避免幻象异常。</p>
 <p>（2）没有索引，锁的粒度是元组级：因为锁的粒度到了元组一级，即操作多少元组就锁定<br>多少元组对象，所以其他事务的WHERE条件能够不受已经加锁的影响，因而可能存在幻象。解决方式是锁的粒度升级为表级或页级。</p>
@@ -454,18 +454,18 @@
 <p>基于前面的分析，我们可以看到，当有冲突发生的时候，新进入事务调度器被判断为存<br>在冲突的事务立即被回滚，所以不会存在事务形成互为等待的环，因此，死锁现象不会发生。</p>
 <p><strong>1.基于时间戳的并发调度算法</strong></p>
 <p>在实践中，基于时间戳的并发调度算法[<a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Timestamp-based_concurrency_control]">https://en.wikipedia.org/wiki/Timestamp-based_concurrency_control]</a><br>实现如下，基本原理如上，不再详细描述</p>
-<p><img src="/2025/05/05/DB/%E6%95%B0%E6%8D%AE%E5%BA%93%E4%BA%8B%E5%8A%A1%E5%A4%84%E7%90%86%E7%9A%84%E8%89%BA%E6%9C%AF/ch02/ch2/img_8.png" srcset="/img/loading.gif" lazyload alt="img_8.png"></p>
+<p><img src="/2025/05/05/DB/%E6%95%B0%E6%8D%AE%E5%BA%93%E4%BA%8B%E5%8A%A1%E5%A4%84%E7%90%86%E7%9A%84%E8%89%BA%E6%9C%AF/ch02/ch2/img_8.png" srcset="/内存泄漏排查/loading.gif" lazyload alt="img_8.png"></p>
 <p><strong>2.Thomas写法则</strong></p>
 <p>在基于时间戳的并发控制技术中，有一项改进措施，称为“Thomas写法则”，其对应的情况如表2-8所示。</p>
-<p>表2-8　Thomas write rule：<br><img src="/2025/05/05/DB/%E6%95%B0%E6%8D%AE%E5%BA%93%E4%BA%8B%E5%8A%A1%E5%A4%84%E7%90%86%E7%9A%84%E8%89%BA%E6%9C%AF/ch02/ch2/img_9.png" srcset="/img/loading.gif" lazyload alt="img_9.png"></p>
+<p>表2-8　Thomas write rule：<br><img src="/2025/05/05/DB/%E6%95%B0%E6%8D%AE%E5%BA%93%E4%BA%8B%E5%8A%A1%E5%A4%84%E7%90%86%E7%9A%84%E8%89%BA%E6%9C%AF/ch02/ch2/img_9.png" srcset="/内存泄漏排查/loading.gif" lazyload alt="img_9.png"></p>
 <p>“Thomas写法则”有助于改进基于时间戳的并发控制效率，使得特定情况的写操作被“节省”因而提高了执行效率。<br>但是，如果事务T2在t7时刻不提交而是中止，则会存在一个潜在的问题：被中止的事务T2覆盖了数据项Z的旧值，Z的旧值和旧的写时间戳应该被恢复。<br>需要调度器保存数据项Z的旧值以便需要恢复时使用，这为事务调度器增加了负担。<strong>现实的数据库管理系统中，<br>几乎没有单纯使用基于时间戳排序的并发控制方法的（T0和其他算法常结合使用）。</strong></p>
 <h6 id="2-2-3-基于有效性检查的并发控制方法"><a href="#2-2-3-基于有效性检查的并发控制方法" class="headerlink" title="2.2.3　基于有效性检查的并发控制方法"></a>2.2.3　基于有效性检查的并发控制方法</h6><p>在上一节，我们讨论了基于时间戳排序的并发控制技术，基于有效性检查的并发控制技术和基于时间戳的技术有很大相似之处，<br>所以本节我们换一种讨论方式，先讨论这两种技术的相同点和差异，借助时间戳排序技术理解有效性检查的并发控制技术。<br>如表2-9所示。</p>
-<p>表2-9　基于时间戳排序的并发控制技术与基于有效性检查的并发控制技术的比较表<br><img src="/2025/05/05/DB/%E6%95%B0%E6%8D%AE%E5%BA%93%E4%BA%8B%E5%8A%A1%E5%A4%84%E7%90%86%E7%9A%84%E8%89%BA%E6%9C%AF/ch02/ch2/img_10.png" srcset="/img/loading.gif" lazyload alt="img_10.png"></p>
+<p>表2-9　基于时间戳排序的并发控制技术与基于有效性检查的并发控制技术的比较表<br><img src="/2025/05/05/DB/%E6%95%B0%E6%8D%AE%E5%BA%93%E4%BA%8B%E5%8A%A1%E5%A4%84%E7%90%86%E7%9A%84%E8%89%BA%E6%9C%AF/ch02/ch2/img_10.png" srcset="/内存泄漏排查/loading.gif" lazyload alt="img_10.png"></p>
 <p>基于有效性检查的并发控制技术（validation protocol），对于每一个事务，在其生命周期中被划分为两个或三个阶段，<br>每个事务必须按如下顺序依次执行：<br>读阶段（read phase）、有效性检查阶段（validation phase）、写阶段（write phase）</p>
 <h6 id="2-2-4-基于MVCC的并发控制方法"><a href="#2-2-4-基于MVCC的并发控制方法" class="headerlink" title="2.2.4　基于MVCC的并发控制方法"></a>2.2.4　基于MVCC的并发控制方法</h6><p>多版本并发控制（Multiversion concurrency control，MVCC）技术，核心思想是：</p>
 <p>（1）当事务Ti执行一个读操作，并发控制器选择一个版本进行读取，这个版本的获取，依赖于事务Ti所能读取的数据的<br>上下文；这个上下文（有个通俗名称，叫做事务的快照，快照要和多版本相配合）是事务Ti在数据库系统里的当前并发执<br>行的诸多事务的状态的一份拷贝，其中的信息能够帮助判断：获取到的元组是否对本事务是可读取的 （元组可见性判断）？</p>
 <p>（2）多版本并发控制技术不是一个可独立使用的事务并发控制技术，而是需要基于其他并发控制技术，如基于时间戳<br>的称为“多版本时间戳排序机制（multiversion timestamp-ordering scheme）”，基于两阶段封锁协议的称<br>为“多版本两阶段封锁协议（multiversion two-phase locking protocol）”。如下分别讨论这两种并发控制技术，<br>并如表2-10所示进行比较。</p>
-<p>表2-10　两种MVCC并发控制技术比较表<br><img src="/2025/05/05/DB/%E6%95%B0%E6%8D%AE%E5%BA%93%E4%BA%8B%E5%8A%A1%E5%A4%84%E7%90%86%E7%9A%84%E8%89%BA%E6%9C%AF/ch02/ch2/img_11.png" srcset="/img/loading.gif" lazyload alt="img_11.png"></p>
+<p>表2-10　两种MVCC并发控制技术比较表<br><img src="/2025/05/05/DB/%E6%95%B0%E6%8D%AE%E5%BA%93%E4%BA%8B%E5%8A%A1%E5%A4%84%E7%90%86%E7%9A%84%E8%89%BA%E6%9C%AF/ch02/ch2/img_11.png" srcset="/内存泄漏排查/loading.gif" lazyload alt="img_11.png"></p>
 <p><strong>1.多版本时间戳排序机制</strong></p>
 <p>首先，数据库系统在事务开始前赋予一个时间戳，记为TS（Ti），这个时间戳则决定了并发的事务的调度顺序。</p>
 <p>其次，对于每个数据项X，多版本体现在：X有一个版本序列&lt;X1，X2，…，Xn&gt;，其中，每个版本Xi包括三个字段，分别是：</p>
@@ -541,7 +541,7 @@ t2时刻执行读操作。但如果是基于多版本的封锁并发控制技术
 一个效果是指每一种并发控制技术所讨论的就是在上面的两条规则限定下，并发度如何被提高。
 即并发执行的效率问题。
 </code></pre>
-<h6 id="2-3-1-并发控制技术整体比较"><a href="#2-3-1-并发控制技术整体比较" class="headerlink" title="2.3.1　并发控制技术整体比较"></a>2.3.1　并发控制技术整体比较</h6><p><img src="/2025/05/05/DB/%E6%95%B0%E6%8D%AE%E5%BA%93%E4%BA%8B%E5%8A%A1%E5%A4%84%E7%90%86%E7%9A%84%E8%89%BA%E6%9C%AF/ch02/ch2/img_12.png" srcset="/img/loading.gif" lazyload alt="img_12.png"></p>
+<h6 id="2-3-1-并发控制技术整体比较"><a href="#2-3-1-并发控制技术整体比较" class="headerlink" title="2.3.1　并发控制技术整体比较"></a>2.3.1　并发控制技术整体比较</h6><p><img src="/2025/05/05/DB/%E6%95%B0%E6%8D%AE%E5%BA%93%E4%BA%8B%E5%8A%A1%E5%A4%84%E7%90%86%E7%9A%84%E8%89%BA%E6%9C%AF/ch02/ch2/img_12.png" srcset="/内存泄漏排查/loading.gif" lazyload alt="img_12.png"></p>
 <p>①协议改进后（在事务的末尾执行写操作，在写操作正在执行时，其他事务不允许访问已经写过的数据项）可保证可恢复性。</p>
 <p>②协议改进后（在事务的末尾执行写操作，在写操作正在执行时，其他事务不允许访问已经写过的数据项）可保证无级联性。</p>
 <p>③写操作可能引起事务的回滚。</p>
@@ -552,21 +552,21 @@ t2时刻执行读操作。但如果是基于多版本的封锁并发控制技术
 <p>⑧某个版本的写时间戳小于等于最老的只读事务的时间戳，则可被删除。</p>
 <p>⑨一系列冲突的短事务会引起长事务反复重启。</p>
 <p>⑩事务回滚后又被自动重启。重启是有效性检查协议明显地区别于其他并发控制技术的特点之一。</p>
-<p><img src="/2025/05/05/DB/%E6%95%B0%E6%8D%AE%E5%BA%93%E4%BA%8B%E5%8A%A1%E5%A4%84%E7%90%86%E7%9A%84%E8%89%BA%E6%9C%AF/ch02/ch2/img_13.png" srcset="/img/loading.gif" lazyload alt="img_13.png"><br><img src="/2025/05/05/DB/%E6%95%B0%E6%8D%AE%E5%BA%93%E4%BA%8B%E5%8A%A1%E5%A4%84%E7%90%86%E7%9A%84%E8%89%BA%E6%9C%AF/ch02/ch2/img_14.png" srcset="/img/loading.gif" lazyload alt="img_14.png"></p>
-<p><img src="/2025/05/05/DB/%E6%95%B0%E6%8D%AE%E5%BA%93%E4%BA%8B%E5%8A%A1%E5%A4%84%E7%90%86%E7%9A%84%E8%89%BA%E6%9C%AF/ch02/ch2/img_15.png" srcset="/img/loading.gif" lazyload alt="img_15.png"></p>
+<p><img src="/2025/05/05/DB/%E6%95%B0%E6%8D%AE%E5%BA%93%E4%BA%8B%E5%8A%A1%E5%A4%84%E7%90%86%E7%9A%84%E8%89%BA%E6%9C%AF/ch02/ch2/img_13.png" srcset="/内存泄漏排查/loading.gif" lazyload alt="img_13.png"><br><img src="/2025/05/05/DB/%E6%95%B0%E6%8D%AE%E5%BA%93%E4%BA%8B%E5%8A%A1%E5%A4%84%E7%90%86%E7%9A%84%E8%89%BA%E6%9C%AF/ch02/ch2/img_14.png" srcset="/内存泄漏排查/loading.gif" lazyload alt="img_14.png"></p>
+<p><img src="/2025/05/05/DB/%E6%95%B0%E6%8D%AE%E5%BA%93%E4%BA%8B%E5%8A%A1%E5%A4%84%E7%90%86%E7%9A%84%E8%89%BA%E6%9C%AF/ch02/ch2/img_15.png" srcset="/内存泄漏排查/loading.gif" lazyload alt="img_15.png"></p>
 <p>①更新锁步被共享锁阻塞，所以更新带来的写操作可以执行；插入操作需要检查是否满足谓词锁如满足谓词锁则在可串行化隔离级别下被阻塞，所以表格中写为“不一定”。</p>
 <p>②读–写冲突中，写操作被回滚或不被回滚都有可能，取决于写事务的时间戳值与读操作的时间戳的比较，详情参见2.2.2节。</p>
 <p>③写–读冲突中，读操作被回滚或不被回滚都有可能，取决于读事务的时间戳值与写操作的时间戳的比较，详情参见2.2.2节。</p>
 <h6 id="2-3-2-S2PL和SS2PL的比较"><a href="#2-3-2-S2PL和SS2PL的比较" class="headerlink" title="2.3.2　S2PL和SS2PL的比较"></a>2.3.2　S2PL和SS2PL的比较</h6><p>在2.2.1节，我们讨论了S2PL和SS2PL的基本内容，本节对这两项技术参照图2-6做一个详细对比。</p>
-<p><img src="/2025/05/05/DB/%E6%95%B0%E6%8D%AE%E5%BA%93%E4%BA%8B%E5%8A%A1%E5%A4%84%E7%90%86%E7%9A%84%E8%89%BA%E6%9C%AF/ch02/ch2/img_16.png" srcset="/img/loading.gif" lazyload alt="img_16.png"></p>
-<h6 id="2-3-3-事务属性与并发控制技术的关系"><a href="#2-3-3-事务属性与并发控制技术的关系" class="headerlink" title="2.3.3　事务属性与并发控制技术的关系"></a>2.3.3　事务属性与并发控制技术的关系</h6><p><img src="/2025/05/05/DB/%E6%95%B0%E6%8D%AE%E5%BA%93%E4%BA%8B%E5%8A%A1%E5%A4%84%E7%90%86%E7%9A%84%E8%89%BA%E6%9C%AF/ch02/ch2/img_17.png" srcset="/img/loading.gif" lazyload alt="img_17.png"></p>
+<p><img src="/2025/05/05/DB/%E6%95%B0%E6%8D%AE%E5%BA%93%E4%BA%8B%E5%8A%A1%E5%A4%84%E7%90%86%E7%9A%84%E8%89%BA%E6%9C%AF/ch02/ch2/img_16.png" srcset="/内存泄漏排查/loading.gif" lazyload alt="img_16.png"></p>
+<h6 id="2-3-3-事务属性与并发控制技术的关系"><a href="#2-3-3-事务属性与并发控制技术的关系" class="headerlink" title="2.3.3　事务属性与并发控制技术的关系"></a>2.3.3　事务属性与并发控制技术的关系</h6><p><img src="/2025/05/05/DB/%E6%95%B0%E6%8D%AE%E5%BA%93%E4%BA%8B%E5%8A%A1%E5%A4%84%E7%90%86%E7%9A%84%E8%89%BA%E6%9C%AF/ch02/ch2/img_17.png" srcset="/内存泄漏排查/loading.gif" lazyload alt="img_17.png"></p>
 <p>图分为上下两部分，上面的部分写有“noninherently blocking properties”，表明不存在因并发而致使某些<br>操作被阻塞。下面的部分写有“inherently blocking properties”，表明存在因并发而致使某些操作被阻塞。</p>
 <h6 id="2-3-4-SCO和SS2PL的比较"><a href="#2-3-4-SCO和SS2PL的比较" class="headerlink" title="2.3.4　SCO和SS2PL的比较"></a>2.3.4　SCO和SS2PL的比较</h6><p>还有一种并发控制技术，提交排序（Commitment ordering，CO）详情参见1.4.2节和<a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Commitment_ordering">https://en.wikipedia.org/wiki/Commitment_ordering</a> 。SCO就是CO技术的一个变种。如图2-8所示。</p>
-<p><img src="/2025/05/05/DB/%E6%95%B0%E6%8D%AE%E5%BA%93%E4%BA%8B%E5%8A%A1%E5%A4%84%E7%90%86%E7%9A%84%E8%89%BA%E6%9C%AF/ch02/ch2/img_18.png" srcset="/img/loading.gif" lazyload alt="img_18.png"></p>
+<p><img src="/2025/05/05/DB/%E6%95%B0%E6%8D%AE%E5%BA%93%E4%BA%8B%E5%8A%A1%E5%A4%84%E7%90%86%E7%9A%84%E8%89%BA%E6%9C%AF/ch02/ch2/img_18.png" srcset="/内存泄漏排查/loading.gif" lazyload alt="img_18.png"></p>
 <p>SS2PL：强两阶段封锁协议Strong strict two-phase locking protocol，事务T1先于事务T2，两者可以并发执行，对于同一个数据项X事务T1的读操作r1（X）先于事务T2的写操作w2（X）发生，事务T2的写操作被延迟，即只有事务T1提交&#x2F;撤销后，事务T2才能提交。所以读操作会阻塞写操作（“读–写”操作）。这样并发度被降低 （如图，<br>事务T2的写操作被延迟，等事务T1结束后，事务T2用了一段时间为t的提交时间段才能完成提交&#x2F;撤销）。</p>
 <p>SCO：严格提交排序Strict Commitment Ordering，事务T1先于事务T2，两者可以并发执行，对于同一个数据项X事务T1的读操作r1（X）先于事务T2的写操作w2（X）发生，但是，事务T2的写操作被允许执行，只是事务T2的提交&#x2F;撤销操作被延迟，等到事务T1提交&#x2F;撤销后，事务T2才能提交或撤销。所以读操作不会阻塞写操作。这样并发度被提高。</p>
 <h6 id="2-3-5-TO和SS2PL的比较"><a href="#2-3-5-TO和SS2PL的比较" class="headerlink" title="2.3.5　TO和SS2PL的比较"></a>2.3.5　TO和SS2PL的比较</h6><p>在2.2.1节我们讨论了基于封锁的机制SS2PL，在2.2.2节讨论了基于时间戳的排序协议TO，这是两种并发控制技术，都可以用于并发事务间保证数据一致性。但是，这两种技术之间，有什么不同呢？</p>
-<p><img src="/2025/05/05/DB/%E6%95%B0%E6%8D%AE%E5%BA%93%E4%BA%8B%E5%8A%A1%E5%A4%84%E7%90%86%E7%9A%84%E8%89%BA%E6%9C%AF/ch02/ch2/img_19.png" srcset="/img/loading.gif" lazyload alt="img_19.png"></p>
+<p><img src="/2025/05/05/DB/%E6%95%B0%E6%8D%AE%E5%BA%93%E4%BA%8B%E5%8A%A1%E5%A4%84%E7%90%86%E7%9A%84%E8%89%BA%E6%9C%AF/ch02/ch2/img_19.png" srcset="/内存泄漏排查/loading.gif" lazyload alt="img_19.png"></p>
 <p>所以，SS2PL满足“可恢复性”而TO不满足“可恢复性”。《数据库系统概念（第六版）》一书15.4.2节谈到了一些弥补TO不具备“可恢复性”缺陷的技术，以保证事务的调度是可恢复的，本书不再赘述，请参阅相关书籍和资料。</p>
 <h5 id="2-4-深入探讨隔离级别"><a href="#2-4-深入探讨隔离级别" class="headerlink" title="2.4　深入探讨隔离级别"></a>2.4　深入探讨隔离级别</h5><p>2.1节讲述了ANSI SQL标准定义的四种隔离级别，这四种隔离级别应对的是1.1.3节探讨的ANSI SQL标准定义的三种读数据异常现象，而且ANSI SQL标准是在数据库的基于锁的并发控制技<br>术下定义的，所以三种读数据异常、四种隔离级别和基于锁的并发控制技术之间的关系着密不可分。</p>
 <p>2.2节讲述了多种并发控制技术，这些技术首先要保证并发事务的可串行性，其次要提升并发事务的执行效率，各种并发控制技术从不同角度提出了以上两个问题的解决方式。从可串行性的角度看，各种并发控制技术实则确保的是隔离级别中的最高级别“可串行化”。</p>

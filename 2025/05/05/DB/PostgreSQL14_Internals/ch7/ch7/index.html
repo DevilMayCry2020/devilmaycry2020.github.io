@@ -8,8 +8,8 @@
 <head>
   <meta charset="UTF-8">
 
-  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
-  <link rel="icon" href="/img/fluid.png">
+  <link rel="apple-touch-icon" sizes="76x76" href="/%E5%86%85%E5%AD%98%E6%B3%84%E6%BC%8F%E6%8E%92%E6%9F%A5/fluid.png">
+  <link rel="icon" href="/%E5%86%85%E5%AD%98%E6%B3%84%E6%BC%8F%E6%8E%92%E6%9F%A5/fluid.png">
   
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
@@ -78,7 +78,7 @@
   <script id="fluid-configs">
     var Fluid = window.Fluid || {};
     Fluid.ctx = Object.assign({}, Fluid.ctx)
-    var CONFIG = {"hostname":"smilemzy.com","root":"/","version":"1.9.8","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false},"umami":{"src":null,"website_id":null,"domains":null,"start_time":"2024-01-01T00:00:00.000Z","token":null,"api_server":null}},"search_path":"/local-search.xml","include_content_in_search":true};
+    var CONFIG = {"hostname":"smilemzy.com","root":"/","version":"1.9.8","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/内存泄漏排查/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false},"umami":{"src":null,"website_id":null,"domains":null,"start_time":"2024-01-01T00:00:00.000Z","token":null,"api_server":null}},"search_path":"/local-search.xml","include_content_in_search":true};
 
     if (CONFIG.web_analytics.follow_dnt) {
       var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
@@ -200,7 +200,7 @@
   
 
 <div id="banner" class="banner" parallax=true
-     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+     style="background: url('/%E5%86%85%E5%AD%98%E6%B3%84%E6%BC%8F%E6%8E%92%E6%9F%A5/default.png') no-repeat center center; background-size: cover;">
   <div class="full-bg-img">
     <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
       <div class="banner-text text-center fade-in-up">
@@ -310,12 +310,12 @@
 <p>为了正确处理回卷，PostgreSQL 必须比较事务的年龄 (年龄定义为自该事务开始以来，后续出现的事务数量) 而不是事务 ID。因此，我们应该使用更老 (先于) 和更年轻 (后于) 的概念，而不是小于和大于的术语。</p>
 <p>在代码中，这种比较方式通过使用 32 位算术实现：首先找到 32 位事务 ID 之间的差值，然后将这个结果与零进行比较 2。</p>
 <p>为了更好地可视化这个概念，你可以将一系列事务 ID 想象成一个时钟面。对于每个事务，顺时针方向的半圆是未来，而另一半是过去。</p>
-<p><img src="/2025/05/05/DB/PostgreSQL14_Internals/ch7/ch7/img.png" srcset="/img/loading.gif" lazyload alt="img.png"></p>
+<p><img src="/2025/05/05/DB/PostgreSQL14_Internals/ch7/ch7/img.png" srcset="/内存泄漏排查/loading.gif" lazyload alt="img.png"></p>
 <p>然而，这种可视化有一个令人头疼的问题。与最近的事务相比，旧事务 (T1) 处于遥远的过去。但迟早一个新的事务会在与未来有关的半圆中看到它。如果真是这样，那将产生灾难性的影响：从现在开始，所有更新的事务都将看不到事务 T1 所做的更改。</p>
 <h3 id="7-2-Tuple-Freezing-and-Visibility-Rules"><a href="#7-2-Tuple-Freezing-and-Visibility-Rules" class="headerlink" title="7.2 Tuple Freezing and Visibility Rules"></a><a name="cp2"></a>7.2 Tuple Freezing and Visibility Rules</h3><p>为了防止这种”时间旅行”，清理进程会执行一项额外的任务 (除了页面清理 3 )：它寻找超过数据库视界的元组 (所以这些元组在所有快照中都可见) 并以一种特殊的方式标记它们，也就是，冻结它们。</p>
 <p>对于冻结的元组，由于这些元组已知在所有快照中都是可见的，因此可见性规则不必考虑 xmin，可以安全重用此事务 ID。</p>
 <p>你可以想象为 xmin 事务 ID 在冻结的元组中被一个假想的”负无穷大” 所替代 (如下图所示的雪花)；这表明该元组由一个过去很久的事务所创建，它的实际 ID 已经不重要了。然而，实际上 xmin 保持不变，而冻结属性由两个提示位的组合所定义：committed 和 aborted。</p>
-<p><img src="/2025/05/05/DB/PostgreSQL14_Internals/ch7/ch7/img_1.png" srcset="/img/loading.gif" lazyload alt="img_1.png"></p>
+<p><img src="/2025/05/05/DB/PostgreSQL14_Internals/ch7/ch7/img_1.png" srcset="/内存泄漏排查/loading.gif" lazyload alt="img_1.png"></p>
 <figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs text">许多来源 (包括文档) 都提到 FrozenTransactionId = 2。这就是我所提及的&quot;负无穷大&quot; — 在 9.4 之前的版本中，这个值用于替换 xmin，但现在改为使用提示位。这样一来，原来的事务 ID 保留在元组中，这对调试和支持都很方便。即使旧系统已升级到更高版本，它们仍然可能包含已废弃的 FrozenTransactionId。<br></code></pre></td></tr></table></figure>
 
 <p>xmax 事务 ID 不以任何方式参与冻结。它只存在于过期的元组中，一旦这些元组在所有快照中都不再可见 (这意味着 xmax ID 超出了数据库视界)，便会将其清理掉。</p>
@@ -381,7 +381,7 @@
 <p>当数据库中存在某些未冻结事务 ID 的年龄超过 autovacuum_freeze_max_age 值的风险时，将强制启动自动清理 4 (即使它已关闭)。这种行为基于所有表中最老的 pg_class.relfrozenxid 事务的年龄，因为所有更老的事务都确保已被冻结。此事务 ID 存储在系统表中：</p>
 <figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-operator">=</span><span class="hljs-operator">&gt;</span> <span class="hljs-keyword">SELECT</span> datname, datfrozenxid, age(datfrozenxid) <span class="hljs-keyword">FROM</span> pg_database;<br>  datname  <span class="hljs-operator">|</span> datfrozenxid <span class="hljs-operator">|</span> age<br>−−−−−−−−−−−<span class="hljs-operator">+</span>−−−−−−−−−−−−−−<span class="hljs-operator">+</span>−−−−−<br> postgres  <span class="hljs-operator">|</span>          <span class="hljs-number">726</span> <span class="hljs-operator">|</span> <span class="hljs-number">132</span><br> template1 <span class="hljs-operator">|</span>          <span class="hljs-number">726</span> <span class="hljs-operator">|</span> <span class="hljs-number">132</span><br> template0 <span class="hljs-operator">|</span>          <span class="hljs-number">726</span> <span class="hljs-operator">|</span> <span class="hljs-number">132</span><br> internals <span class="hljs-operator">|</span>          <span class="hljs-number">726</span> <span class="hljs-operator">|</span> <span class="hljs-number">132</span><br>(<span class="hljs-number">4</span> <span class="hljs-keyword">rows</span>)<br></code></pre></td></tr></table></figure>
 
-<p><img src="/2025/05/05/DB/PostgreSQL14_Internals/ch7/ch7/img_2.png" srcset="/img/loading.gif" lazyload alt="img_2.png"></p>
+<p><img src="/2025/05/05/DB/PostgreSQL14_Internals/ch7/ch7/img_2.png" srcset="/内存泄漏排查/loading.gif" lazyload alt="img_2.png"></p>
 <p>autovacuum_freeze_max_age 被限制在 20 亿个事务 (略小于圆的一半)，默认值是这个值的十分之一。这样做是有充分理由的：较大的值会增加事务 ID 回卷的风险，因为 PostgreSQL 可能无法及时冻结所有需要的元组。在此情况下，服务器必须立即停止以防止可能的问题，并且必须由管理员重启。</p>
 <p>autovacuum_freeze_max_age 的值也会影响到 CLOG 的大小。没有必要保留已冻结事务的状态，集簇中在 datfrozenxid 最老事务之前的所有事务都已经确保被冻结。那些不再需要的 CLOG 文件会被自动清理进程删除 5。</p>
 <p>更改 autovacuum_freeze_max_age 参数需要重启服务器。但是，上面讨论的所有冻结设置也可以在表级别通过相应的存储参数进行调整。请注意，所有这些参数的名称都以”auto”开头：</p>

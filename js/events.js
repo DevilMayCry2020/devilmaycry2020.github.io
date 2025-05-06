@@ -131,7 +131,7 @@ Fluid.events = {
       if (img.complete) { img.onload(); }
     }
 
-    var notLazyImages = jQuery('main img:not([lazyload])');
+    var notLazyImages = jQuery('main 内存泄漏排查:not([lazyload])');
     var total = notLazyImages.length;
     for (const img of notLazyImages) {
       const old = img.onload;

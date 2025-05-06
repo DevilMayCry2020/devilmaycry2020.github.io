@@ -8,8 +8,8 @@
 <head>
   <meta charset="UTF-8">
 
-  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
-  <link rel="icon" href="/img/fluid.png">
+  <link rel="apple-touch-icon" sizes="76x76" href="/%E5%86%85%E5%AD%98%E6%B3%84%E6%BC%8F%E6%8E%92%E6%9F%A5/fluid.png">
+  <link rel="icon" href="/%E5%86%85%E5%AD%98%E6%B3%84%E6%BC%8F%E6%8E%92%E6%9F%A5/fluid.png">
   
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
@@ -82,7 +82,7 @@
   <script id="fluid-configs">
     var Fluid = window.Fluid || {};
     Fluid.ctx = Object.assign({}, Fluid.ctx)
-    var CONFIG = {"hostname":"smilemzy.com","root":"/","version":"1.9.8","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false},"umami":{"src":null,"website_id":null,"domains":null,"start_time":"2024-01-01T00:00:00.000Z","token":null,"api_server":null}},"search_path":"/local-search.xml","include_content_in_search":true};
+    var CONFIG = {"hostname":"smilemzy.com","root":"/","version":"1.9.8","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/内存泄漏排查/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false},"umami":{"src":null,"website_id":null,"domains":null,"start_time":"2024-01-01T00:00:00.000Z","token":null,"api_server":null}},"search_path":"/local-search.xml","include_content_in_search":true};
 
     if (CONFIG.web_analytics.follow_dnt) {
       var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
@@ -204,7 +204,7 @@
   
 
 <div id="banner" class="banner" parallax=true
-     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+     style="background: url('/%E5%86%85%E5%AD%98%E6%B3%84%E6%BC%8F%E6%8E%92%E6%9F%A5/default.png') no-repeat center center; background-size: cover;">
   <div class="full-bg-img">
     <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
       <div class="banner-text text-center fade-in-up">
@@ -308,19 +308,19 @@
 <figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs sql">testdb<span class="hljs-operator">=</span># \d tbl<br>                <span class="hljs-keyword">Table</span> &quot;public.tbl&quot;<br> <span class="hljs-keyword">Column</span> <span class="hljs-operator">|</span>  Type   <span class="hljs-operator">|</span> <span class="hljs-keyword">Collation</span> <span class="hljs-operator">|</span> Nullable <span class="hljs-operator">|</span> <span class="hljs-keyword">Default</span> <br><span class="hljs-comment">--------+---------+-----------+----------+---------</span><br> id     <span class="hljs-operator">|</span> <span class="hljs-type">integer</span> <span class="hljs-operator">|</span>           <span class="hljs-operator">|</span> <span class="hljs-keyword">not null</span> <span class="hljs-operator">|</span> <br> data   <span class="hljs-operator">|</span> text    <span class="hljs-operator">|</span>           <span class="hljs-operator">|</span>          <span class="hljs-operator">|</span> <br>Indexes:<br>    &quot;tbl_pkey&quot; <span class="hljs-keyword">PRIMARY KEY</span>, btree (id)<br></code></pre></td></tr></table></figure>
 
 <p>表 ‘tbl’ 有 1000 个元组；其中 id 为 1000 的最后一个元组存储在表的第 5 页中。<br>这个最后一个元组被对应索引元组指向，<br>该索引元组的键值是 1000，tid 是 ‘(5, 1)’。如图 7.1(a) 所示。</p>
-<p><img src="/2025/05/05/DB/PostgreSQL%E6%8C%87%E5%8D%97/%E5%86%85%E5%B9%95%E6%8E%A2%E7%B4%A2_new_release/ch7/ch7/img.png" srcset="/img/loading.gif" lazyload alt="img.png"></p>
+<p><img src="/2025/05/05/DB/PostgreSQL%E6%8C%87%E5%8D%97/%E5%86%85%E5%B9%95%E6%8E%A2%E7%B4%A2_new_release/ch7/ch7/img.png" srcset="/内存泄漏排查/loading.gif" lazyload alt="img.png"></p>
 <p>让我们考虑在不使用 HOT 的情况下更新最后一个元组。</p>
 <figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs sql">testdb<span class="hljs-operator">=</span># <span class="hljs-keyword">UPDATE</span> tbl <span class="hljs-keyword">SET</span> data <span class="hljs-operator">=</span> <span class="hljs-string">&#x27;B&#x27;</span> <span class="hljs-keyword">WHERE</span> id <span class="hljs-operator">=</span> <span class="hljs-number">1000</span>;<br></code></pre></td></tr></table></figure>
 
 <p>在这种情况下, PostgreSQL 不仅会插入新的表元组,还会将新的索引元组插入到索引页中。<br>如图 7.1(b) 所示。</p>
 <p>插入索引元组会消耗索引页的空间,而且插入和清理索引元组的成本都很高。HOT 可以减轻这些问题的影响。</p>
 <h4 id="7-1-2-How-HOT-Performs"><a href="#7-1-2-How-HOT-Performs" class="headerlink" title="7.1.2. How HOT Performs"></a>7.1.2. How HOT Performs</h4><p>当使用 HOT 更新一行时,如果更新后的行将存储在与老行相同的表页面中,PostgreSQL 不会插入相应的<br>索引元组,而是会分别将 HEAP_HOT_UPDATED 位和 HEAP_ONLY_TUPLE 位设置到老元组和新元组<br>的 t_infomask2 字段中。如图 7.2 和 7.3 所示。</p>
-<p><img src="/2025/05/05/DB/PostgreSQL%E6%8C%87%E5%8D%97/%E5%86%85%E5%B9%95%E6%8E%A2%E7%B4%A2_new_release/ch7/ch7/img_1.png" srcset="/img/loading.gif" lazyload alt="img_1.png"></p>
+<p><img src="/2025/05/05/DB/PostgreSQL%E6%8C%87%E5%8D%97/%E5%86%85%E5%B9%95%E6%8E%A2%E7%B4%A2_new_release/ch7/ch7/img_1.png" srcset="/内存泄漏排查/loading.gif" lazyload alt="img_1.png"></p>
 <p>例如,在这种情况下,Tuple_1 和 Tuple_2 分别被设置了 HEAP_HOT_UPDATED 位和 HEAP_ONLY_TUPLE 位。</p>
 <p>另外,无论是修剪还是碎片整理过程(下文描述)是否执行,HEAP_HOT_UPDATED 和 HEAP_ONLY_TUPLE 位都会被使用。</p>
-<p><img src="/2025/05/05/DB/PostgreSQL%E6%8C%87%E5%8D%97/%E5%86%85%E5%B9%95%E6%8E%A2%E7%B4%A2_new_release/ch7/ch7/img_2.png" srcset="/img/loading.gif" lazyload alt="img_2.png"></p>
+<p><img src="/2025/05/05/DB/PostgreSQL%E6%8C%87%E5%8D%97/%E5%86%85%E5%B9%95%E6%8E%A2%E7%B4%A2_new_release/ch7/ch7/img_2.png" srcset="/内存泄漏排查/loading.gif" lazyload alt="img_2.png"></p>
 <p>接下来,将描述 PostgreSQL 在使用 HOT 更新元组后,如何通过索引扫描访问更新后的元组。请参见图 7.4(a)。</p>
-<p><img src="/2025/05/05/DB/PostgreSQL%E6%8C%87%E5%8D%97/%E5%86%85%E5%B9%95%E6%8E%A2%E7%B4%A2_new_release/ch7/ch7/img_3.png" srcset="/img/loading.gif" lazyload alt="img_3.png"></p>
+<p><img src="/2025/05/05/DB/PostgreSQL%E6%8C%87%E5%8D%97/%E5%86%85%E5%B9%95%E6%8E%A2%E7%B4%A2_new_release/ch7/ch7/img_3.png" srcset="/内存泄漏排查/loading.gif" lazyload alt="img_3.png"></p>
 <p>(1) 找到指向目标元组的索引元组。<br>(2) 访问索引元组指向的行指针[1]。<br>(3) 读取 Tuple_1。<br>(4) 通过 Tuple_1 的 t_ctid 访问 Tuple_2。  </p>
 <p>在这种情况下,PostgreSQL 读取了两个元组 Tuple_1 和 Tuple_2,并使用第 5 章描述的<br>并发控制机制来决定哪个是可见的。</p>
 <p>但是,如果删除了表页面中的死元组,就会出现一个问题。例如,在图 7.4(a)中,如果<br>Tuple_1 被删除,因为它是一个死元组,那么 Tuple_2 就无法从索引中访问。</p>
@@ -328,13 +328,13 @@
 <p>(1) 找到索引元组。<br>(2) 访问索引元组指向的行指针[1]。<br>(3) 通过重定向的行指针访问指向 Tuple_2 的行指针[2]。<br>(4) 读取行指针[2]指向的 Tuple_2。  </p>
 <p>当执行 SELECT、UPDATE、INSERT 和 DELETE 等 SQL 命令时,如果可能,就会执行修剪处理。<br>具体的执行时机在本章中没有描述,因为它非常复杂。详细信息在 README.HOT 文件中有说明。</p>
 <p>PostgreSQL 会在适当的时候尽可能地删除死元组,就像修剪过程一样。在 PostgreSQL 的文档中,<br>这个处理过程称为碎片整理(defragmentation)。图 7.5 描述了 HOT 的碎片整理过程。</p>
-<p><img src="/2025/05/05/DB/PostgreSQL%E6%8C%87%E5%8D%97/%E5%86%85%E5%B9%95%E6%8E%A2%E7%B4%A2_new_release/ch7/ch7/img_4.png" srcset="/img/loading.gif" lazyload alt="img_4.png"></p>
+<p><img src="/2025/05/05/DB/PostgreSQL%E6%8C%87%E5%8D%97/%E5%86%85%E5%B9%95%E6%8E%A2%E7%B4%A2_new_release/ch7/ch7/img_4.png" srcset="/内存泄漏排查/loading.gif" lazyload alt="img_4.png"></p>
 <p>需要注意的是,碎片整理的成本低于普通 VACUUM 处理的成本,因为碎片整理不涉及删除索引元组。</p>
 <p>因此,使用 HOT 可以减少索引和表的页面消耗;这也减少了 VACUUM 处理需要处理的元组数量。因此,<br>HOT 对性能有积极影响,因为它最终减少了更新时插入索引元组的数量,以及 VACUUM 处理的必要性。</p>
 <p><strong>无法使用 HOT 的情况</strong><br>为了更清楚地理解 HOT 的工作原理,我将描述无法使用 HOT 的情况。</p>
 <p>当更新后的元组存储在与存储旧元组的页面不同的页面中时,<br>指向该元组的索引元组也必须插入到索引页面中。如图 7.6(a)所示。</p>
 <p>当索引元组的键值发生更新时,必须在索引页面中插入一个新的索引元组。如图 7.6(b)所示。</p>
-<p><img src="/2025/05/05/DB/PostgreSQL%E6%8C%87%E5%8D%97/%E5%86%85%E5%B9%95%E6%8E%A2%E7%B4%A2_new_release/ch7/ch7/img_5.png" srcset="/img/loading.gif" lazyload alt="img_5.png"></p>
+<p><img src="/2025/05/05/DB/PostgreSQL%E6%8C%87%E5%8D%97/%E5%86%85%E5%B9%95%E6%8E%A2%E7%B4%A2_new_release/ch7/ch7/img_5.png" srcset="/内存泄漏排查/loading.gif" lazyload alt="img_5.png"></p>
 <h3 id="7-2-Index-Only-Scans"><a href="#7-2-Index-Only-Scans" class="headerlink" title="7.2 Index-Only Scans"></a><a name="IOS"></a>7.2 Index-Only Scans</h3><p>为了减少 I&#x2F;O (输入&#x2F;输出) 成本,当 SELECT 语句的所有目标条目都包含在索引键中时,<br>索引扫描(通常称为索引仅访问)可以直接使用索引键而不访问相应的表页面。<br>这种技术几乎所有的商业数据库管理系统(RDBMS)都提供,如 DB2 和 Oracle。<br>PostgreSQL 从 9.2 版本开始引入了这个选项。</p>
 <p>下面,将通过一个具体的例子描述 PostgreSQL 中索引仅扫描的工作方式。</p>
 <p>该示例的假设条件解释如下:</p>
@@ -359,7 +359,7 @@
 <p>因此,PostgreSQL 必须访问表数据来检查索引元组中数据的可见性。这就像把车把放在马前面。</p>
 <p>为了避免这个困境,PostgreSQL 使用目标表的可见性映射(visibility map)。如果存储在某个页面中<br>的所有元组都是可见的,PostgreSQL 就使用索引元组的键,而不访问从索引元组指向的表页面来检查其可见性。<br>否则,PostgreSQL 读取从索引元组指向的表元组,并检查该元组的可见性,这是普通的过程。</p>
 <p>在这个例子中,不需要访问 Tuple_18,因为存储 Tuple_18 的 0th 页是可见的,也就是说 0th 页中的<br>所有元组都是可见的。相反,需要访问 Tuple_19,因为 1st 页的可见性不可见,需要处理并发控制。<br>参见图 7.7。</p>
-<p><img src="/2025/05/05/DB/PostgreSQL%E6%8C%87%E5%8D%97/%E5%86%85%E5%B9%95%E6%8E%A2%E7%B4%A2_new_release/ch7/ch7/img_6.png" srcset="/img/loading.gif" lazyload alt="img_6.png"></p>
+<p><img src="/2025/05/05/DB/PostgreSQL%E6%8C%87%E5%8D%97/%E5%86%85%E5%B9%95%E6%8E%A2%E7%B4%A2_new_release/ch7/ch7/img_6.png" srcset="/内存泄漏排查/loading.gif" lazyload alt="img_6.png"></p>
 
                 
               </div>

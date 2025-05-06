@@ -8,8 +8,8 @@
 <head>
   <meta charset="UTF-8">
 
-  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
-  <link rel="icon" href="/img/fluid.png">
+  <link rel="apple-touch-icon" sizes="76x76" href="/%E5%86%85%E5%AD%98%E6%B3%84%E6%BC%8F%E6%8E%92%E6%9F%A5/fluid.png">
+  <link rel="icon" href="/%E5%86%85%E5%AD%98%E6%B3%84%E6%BC%8F%E6%8E%92%E6%9F%A5/fluid.png">
   
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
@@ -81,7 +81,7 @@
   <script id="fluid-configs">
     var Fluid = window.Fluid || {};
     Fluid.ctx = Object.assign({}, Fluid.ctx)
-    var CONFIG = {"hostname":"smilemzy.com","root":"/","version":"1.9.8","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false},"umami":{"src":null,"website_id":null,"domains":null,"start_time":"2024-01-01T00:00:00.000Z","token":null,"api_server":null}},"search_path":"/local-search.xml","include_content_in_search":true};
+    var CONFIG = {"hostname":"smilemzy.com","root":"/","version":"1.9.8","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/内存泄漏排查/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false},"umami":{"src":null,"website_id":null,"domains":null,"start_time":"2024-01-01T00:00:00.000Z","token":null,"api_server":null}},"search_path":"/local-search.xml","include_content_in_search":true};
 
     if (CONFIG.web_analytics.follow_dnt) {
       var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
@@ -203,7 +203,7 @@
   
 
 <div id="banner" class="banner" parallax=true
-     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+     style="background: url('/%E5%86%85%E5%AD%98%E6%B3%84%E6%BC%8F%E6%8E%92%E6%9F%A5/default.png') no-repeat center center; background-size: cover;">
   <div class="full-bg-img">
     <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
       <div class="banner-text text-center fade-in-up">
@@ -326,7 +326,7 @@
 3. 请求的模式与授予队列中最严格的锁及转换队列之前的所有模式兼容，并且锁位于转换队列的头部
 </code></pre>
 <p>转换请求按先进先出的原则处理，授予队列和转换队列与由GES管理的每个资源相关联。</p>
-<p><img src="/2025/05/05/note/DB/Oracle/RAC/GRD/README/img.png" srcset="/img/loading.gif" lazyload alt="img.png"></p>
+<p><img src="/2025/05/05/note/DB/Oracle/RAC/GRD/README/img.png" srcset="/内存泄漏排查/loading.gif" lazyload alt="img.png"></p>
 <p>队列基本上是支持排队机制并且可以在不同模式下获取的锁。一个队列可以由一个进程以独占模式持有，其他进程可以根据类型持有非独占模式。RAC中的队列与单实例中的相同。</p>
 <h3 id="1-4-Global-Enqueue-Services-GES"><a href="#1-4-Global-Enqueue-Services-GES" class="headerlink" title="1.4 Global Enqueue Services (GES)"></a><a name="data-Organization"></a>1.4 Global Enqueue Services (GES)</h3><p>GES协调所有全局队列的请求，它还处理死锁和超时。有两种类型的本地锁，闩锁和队列，闩锁不影响集群只影响本地实例，队列可以影响集群和实例。</p>
 <p>队列是用于序列化对数据库资源访问的共享结构，它们支持多种模式并且持有时间比闩锁长，它们保护诸如表或库缓存对象之类的持久对象。队列可以使用以下任何一种模式：</p>
@@ -378,7 +378,7 @@
 <p>事务锁和行锁与单实例数据库相同，唯一的区别是队列是全局队列，查看锁定机制以深入了解Oracle锁定的工作原理。</p>
 <h3 id="1-6-Messaging"><a href="#1-6-Messaging" class="headerlink" title="1.6 Messaging"></a><a name="data-Organization"></a>1.6 Messaging</h3><p>RAC与单实例消息传递之间的区别在于，RAC使用高速互连，而单实例则使用共享内存和信号量，在多CPU架构中，当一个或多个进程希望使用处理器时会用到中断。全局增强系统（GES）使用消息进行实例间通信，这是通过消息和异步陷阱（ASTs）完成的。LMON和LMD都使用消息与其他实例通信，当需要锁时，全局资源目录（GRD）将被更新。可以使用视图V$GES_MISC查看消息流量。</p>
 <p>三路锁消息最多涉及三个实例，包括主实例（M）、持有实例（H）和请求实例（R），具体序列如下所示，其中请求实例R对持有实例H的块B1感兴趣。资源在主实例M中被管理。</p>
-<p><img src="/2025/05/05/note/DB/Oracle/RAC/GRD/README/img_1.png" srcset="/img/loading.gif" lazyload alt="img_1.png"></p>
+<p><img src="/2025/05/05/note/DB/Oracle/RAC/GRD/README/img_1.png" srcset="/内存泄漏排查/loading.gif" lazyload alt="img_1.png"></p>
 <pre><code class="hljs">1. 实例R从GRD获取关于资源的所有权信息，然后实例R向主实例M发送消息请求访问该资源。此消息通过直接发送，因为它至关重要。
 
 2. 实例M接收到消息并将其转发给持有实例H。这也通过直接方式发送，这被称为阻塞异步陷阱（BAST）。
@@ -388,7 +388,7 @@
 4. 一旦在资源上获得了锁句柄，实例R就向实例M发送确认消息。此消息被排队发送，因为它不那么关键，这称为获取异步陷阱（AAST）。
 </code></pre>
 <p>由于GES严重依赖消息传递，互连必须是高质量的（高性能、低延迟），同时消息保持较小（128字节）以提高性能。交通控制器（TRFC）用于控制集群中实例之间的DLM流量，它使用缓冲来适应大流量。TRFC通过使用票证（序列号）跟踪一切，有一个预定义的票证池，这取决于网络发送缓冲区大小。在发送任何消息之前需要获取一张票证，一旦消息发送出去，票证就会返回到池中，由LMS或LMD执行此操作。如果没有可用的票证，则消息必须等待直到有票证可用。你可以控制票证的数量并查看它们。</p>
-<p><img src="/2025/05/05/note/DB/Oracle/RAC/GRD/README/img_2.png" srcset="/img/loading.gif" lazyload alt="img_2.png"></p>
+<p><img src="/2025/05/05/note/DB/Oracle/RAC/GRD/README/img_2.png" srcset="/内存泄漏排查/loading.gif" lazyload alt="img_2.png"></p>
 <h3 id="1-7-Global-Cache-Services-GCS"><a href="#1-7-Global-Cache-Services-GCS" class="headerlink" title="1.7 Global Cache Services (GCS)"></a><a name="data-Organization"></a>1.7 Global Cache Services (GCS)</h3><p>GCS锁仅保护全局缓存中的数据块（也称为PCM锁），可以在共享或独占模式下获取。每个锁元素可以将其锁角色设置为本地（与单实例相同）或全局。当处于全局角色时，可能有三种锁模式：共享、独占和空。在全局角色模式下，你只能根据该资源的主实例的指示读取或写入数据块。锁和状态信息保存在SGA中，并由GCS维护，这些被称为锁元素。它还持有一系列由相应锁元素覆盖的缓存缓冲区链。这些可以通过v$lock_element查看，参数_db_block_hash_buckets控制哈希缓冲区链桶的数量。</p>
 <p>如上所述，GCS锁使用以下模式。</p>
 <table>
@@ -416,16 +416,16 @@
 <p>在本地角色中，只允许S和X模式。当主实例请求时，持有实例向其他实例提供块的副本。如果块在全球范围内是干净的，此实例锁角色保持本地。如果块被修改（变脏），则保留PI并且锁变为全局。在全局锁角色中，锁模式可以是N、S和X，块是全局的，甚至可能在任何实例中都是脏的，并且磁盘版本可能已过时。感兴趣的一方只能使用X模式修改块，实例不能从磁盘读取因为它可能不是最新的，持有实例可以根据主实例的指示发送副本给其他实例。</p>
 <p>在我的cache_fusion部分有一个完整的详细指南，这将帮助你更好地理解。</p>
 <p>锁元素持有锁状态信息（转换、授予等）。锁元素由锁进程管理以确定锁的模式，它们也保存一系列由锁元素覆盖的缓存缓冲区，允许Oracle数据库跟踪在锁元素（模式）需要降级（X &gt; N）的情况下必须写入磁盘的缓存缓冲区。</p>
-<p><img src="/2025/05/05/note/DB/Oracle/RAC/GRD/README/img_3.png" srcset="/img/loading.gif" lazyload alt="img_3.png"></p>
+<p><img src="/2025/05/05/note/DB/Oracle/RAC/GRD/README/img_3.png" srcset="/内存泄漏排查/loading.gif" lazyload alt="img_3.png"></p>
 <p>锁元素保护缓冲缓存中的所有数据块，下面的列表描述了由LEs使用GCS锁管理的数据块类别（x$bh.class）。</p>
-<p><img src="/2025/05/05/note/DB/Oracle/RAC/GRD/README/img_4.png" srcset="/img/loading.gif" lazyload alt="img_4.png"></p>
+<p><img src="/2025/05/05/note/DB/Oracle/RAC/GRD/README/img_4.png" srcset="/内存泄漏排查/loading.gif" lazyload alt="img_4.png"></p>
 <p>因此，将所有这些放在一起，你得到以下内容：GCS在GRD中管理PCM锁，PCM锁管理全局缓存中的数据块。数据块可以保存在任何一个实例的缓冲缓存（这是全局的）中，如果找不到，则可以通过请求实例从磁盘读取。GCS监控并维护所有实例中块的列表和模式。每个实例将管理一定数量的资源，但一个资源只能由一个实例管理。GCS通过要求实例在修改或读取数据库块之前获取锁来确保缓存一致性。GCS锁不是行级锁，行级锁与PCM锁结合使用。GCS锁确保块由一个实例访问，然后行级锁在行级别管理这些块。如果一个块被修改，所有过去的映像(PI)不再是最新的，需要获得新的副本。</p>
 <p>一致读处理意味着读者永远不会阻塞写者，这与单实例中的情况相同。一个可以帮助的参数是_db_block_max_cr_dba，它限制了缓冲缓存中每个DBA的CR副本数量。如果有太多针对特定缓冲区的CR请求到达，持有者可以放弃该缓冲区上的锁并将缓冲区写入磁盘，这样请求者就可以从磁盘读取它，特别是当请求的块有较旧的SCN并需要重建时（称为CR构造）。这在技术上被称为公平降级转换，参数_fairness_threshold可以用于配置它。</p>
 <p>当CR构造涉及过多工作且缓存中没有当前块或PI块可用于块清除时，lightwork规则会被触发。下面的内容可以用来查看降级转换发生的次数。</p>
-<p><img src="/2025/05/05/note/DB/Oracle/RAC/GRD/README/img_5.png" srcset="/img/loading.gif" lazyload alt="img_5.png"></p>
+<p><img src="/2025/05/05/note/DB/Oracle/RAC/GRD/README/img_5.png" srcset="/内存泄漏排查/loading.gif" lazyload alt="img_5.png"></p>
 <p>GRD是锁和资源的中央存储库，它分布在所有节点上（不是单个节点），但只有一个实例管理一个资源。维护资源信息的过程称为锁主控或资源主控。我在备份部分谈到了锁重新主控。</p>
 <p>资源亲和性允许在其本地节点上对常用资源进行资源主控，它使用动态资源主控来移动资源主的位置。通常，资源主控仅在实例加入或离开RAC环境时发生，从Oracle 10g R2开始，主控发生在对象级别，这有助于细粒度的对象重新主控。可以使用多个参数动态地对对象进行重新主控。</p>
-<p><img src="/2025/05/05/note/DB/Oracle/RAC/GRD/README/img_6.png" srcset="/img/loading.gif" lazyload alt="img_6.png"></p>
+<p><img src="/2025/05/05/note/DB/Oracle/RAC/GRD/README/img_6.png" srcset="/内存泄漏排查/loading.gif" lazyload alt="img_6.png"></p>
 <p>在更改上述任何参数之前，应咨询Oracle。</p>
 
                 
