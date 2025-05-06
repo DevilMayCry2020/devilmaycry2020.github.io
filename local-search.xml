@@ -1500,11 +1500,11 @@
   
   
   <entry>
-    <title>ch26. GiST</title>
-    <link href="/2025/05/05/DB/PostgreSQL14_Internals/ch26/ch26/"/>
-    <url>/2025/05/05/DB/PostgreSQL14_Internals/ch26/ch26/</url>
+    <title>ch27. SP-GiST</title>
+    <link href="/2025/05/05/DB/PostgreSQL14_Internals/ch27/ch27/"/>
+    <url>/2025/05/05/DB/PostgreSQL14_Internals/ch27/ch27/</url>
     
-    <content type="html"><![CDATA[<h2 id="ch26-GiST"><a href="#ch26-GiST" class="headerlink" title="ch26. GiST"></a>ch26. GiST</h2><p>本章主要内容如下：</p><table><thead><tr><th>Chapter Contents</th></tr></thead><tbody><tr><td><a href="#cp1">26.1 Overview</a></td></tr><tr><td><a href="#cp2">26.2 R-Trees for Points</a></td></tr><tr><td><a href="#cp3">26.3 RD-Trees for Full-Text Search</a></td></tr><tr><td><a href="#cp4">26.4 Other Data Types</a></td></tr></tbody></table><h3 id="26-1-Overview"><a href="#26-1-Overview" class="headerlink" title="26.1 Overview"></a><a name="cp1"></a>26.1 Overview</h3><h3 id="26-2-R-Trees-for-Points"><a href="#26-2-R-Trees-for-Points" class="headerlink" title="26.2 R-Trees for Points"></a><a name="cp2"></a>26.2 R-Trees for Points</h3><h3 id="26-3-RD-Trees-for-Full-Text-Search"><a href="#26-3-RD-Trees-for-Full-Text-Search" class="headerlink" title="26.3 RD-Trees for Full-Text Search"></a><a name="cp3"></a>26.3 RD-Trees for Full-Text Search</h3><h3 id="26-4-Other-Data-Types"><a href="#26-4-Other-Data-Types" class="headerlink" title="26.4 Other Data Types"></a><a name="cp4"></a>26.4 Other Data Types</h3>]]></content>
+    <content type="html"><![CDATA[<h2 id="ch27-SP-GiST"><a href="#ch27-SP-GiST" class="headerlink" title="ch27. SP-GiST"></a>ch27. SP-GiST</h2><p>本章主要内容如下：</p><table><thead><tr><th>Chapter Contents</th></tr></thead><tbody><tr><td><a href="#cp1">27.1 Overview</a></td></tr><tr><td><a href="#cp2">27.2 Quadtrees for Points</a></td></tr><tr><td><a href="#cp3">27.3 K-Dimensional Trees for Points</a></td></tr><tr><td><a href="#cp4">27.4 Radix Trees for Strings</a></td></tr><tr><td><a href="#cp5">27.5 Other Data Types</a></td></tr></tbody></table><h3 id="27-1-Overview"><a href="#27-1-Overview" class="headerlink" title="27.1 Overview"></a><a name="cp1"></a>27.1 Overview</h3><h3 id="27-2-Quadtrees-for-Points"><a href="#27-2-Quadtrees-for-Points" class="headerlink" title="27.2 Quadtrees for Points"></a><a name="cp2"></a>27.2 Quadtrees for Points</h3><h3 id="27-3-K-Dimensional-Trees-for-Points"><a href="#27-3-K-Dimensional-Trees-for-Points" class="headerlink" title="27.3 K-Dimensional Trees for Points"></a><a name="cp3"></a>27.3 K-Dimensional Trees for Points</h3><h3 id="27-4-Radix-Trees-for-Strings"><a href="#27-4-Radix-Trees-for-Strings" class="headerlink" title="27.4 Radix Trees for Strings"></a><a name="cp4"></a>27.4 Radix Trees for Strings</h3><h3 id="27-5-Other-Data-Types"><a href="#27-5-Other-Data-Types" class="headerlink" title="27.5 Other Data Types"></a><a name="cp5"></a>27.5 Other Data Types</h3>]]></content>
     
     
     <categories>
@@ -1531,11 +1531,11 @@
   
   
   <entry>
-    <title>ch27. SP-GiST</title>
-    <link href="/2025/05/05/DB/PostgreSQL14_Internals/ch27/ch27/"/>
-    <url>/2025/05/05/DB/PostgreSQL14_Internals/ch27/ch27/</url>
+    <title>ch26. GiST</title>
+    <link href="/2025/05/05/DB/PostgreSQL14_Internals/ch26/ch26/"/>
+    <url>/2025/05/05/DB/PostgreSQL14_Internals/ch26/ch26/</url>
     
-    <content type="html"><![CDATA[<h2 id="ch27-SP-GiST"><a href="#ch27-SP-GiST" class="headerlink" title="ch27. SP-GiST"></a>ch27. SP-GiST</h2><p>本章主要内容如下：</p><table><thead><tr><th>Chapter Contents</th></tr></thead><tbody><tr><td><a href="#cp1">27.1 Overview</a></td></tr><tr><td><a href="#cp2">27.2 Quadtrees for Points</a></td></tr><tr><td><a href="#cp3">27.3 K-Dimensional Trees for Points</a></td></tr><tr><td><a href="#cp4">27.4 Radix Trees for Strings</a></td></tr><tr><td><a href="#cp5">27.5 Other Data Types</a></td></tr></tbody></table><h3 id="27-1-Overview"><a href="#27-1-Overview" class="headerlink" title="27.1 Overview"></a><a name="cp1"></a>27.1 Overview</h3><h3 id="27-2-Quadtrees-for-Points"><a href="#27-2-Quadtrees-for-Points" class="headerlink" title="27.2 Quadtrees for Points"></a><a name="cp2"></a>27.2 Quadtrees for Points</h3><h3 id="27-3-K-Dimensional-Trees-for-Points"><a href="#27-3-K-Dimensional-Trees-for-Points" class="headerlink" title="27.3 K-Dimensional Trees for Points"></a><a name="cp3"></a>27.3 K-Dimensional Trees for Points</h3><h3 id="27-4-Radix-Trees-for-Strings"><a href="#27-4-Radix-Trees-for-Strings" class="headerlink" title="27.4 Radix Trees for Strings"></a><a name="cp4"></a>27.4 Radix Trees for Strings</h3><h3 id="27-5-Other-Data-Types"><a href="#27-5-Other-Data-Types" class="headerlink" title="27.5 Other Data Types"></a><a name="cp5"></a>27.5 Other Data Types</h3>]]></content>
+    <content type="html"><![CDATA[<h2 id="ch26-GiST"><a href="#ch26-GiST" class="headerlink" title="ch26. GiST"></a>ch26. GiST</h2><p>本章主要内容如下：</p><table><thead><tr><th>Chapter Contents</th></tr></thead><tbody><tr><td><a href="#cp1">26.1 Overview</a></td></tr><tr><td><a href="#cp2">26.2 R-Trees for Points</a></td></tr><tr><td><a href="#cp3">26.3 RD-Trees for Full-Text Search</a></td></tr><tr><td><a href="#cp4">26.4 Other Data Types</a></td></tr></tbody></table><h3 id="26-1-Overview"><a href="#26-1-Overview" class="headerlink" title="26.1 Overview"></a><a name="cp1"></a>26.1 Overview</h3><h3 id="26-2-R-Trees-for-Points"><a href="#26-2-R-Trees-for-Points" class="headerlink" title="26.2 R-Trees for Points"></a><a name="cp2"></a>26.2 R-Trees for Points</h3><h3 id="26-3-RD-Trees-for-Full-Text-Search"><a href="#26-3-RD-Trees-for-Full-Text-Search" class="headerlink" title="26.3 RD-Trees for Full-Text Search"></a><a name="cp3"></a>26.3 RD-Trees for Full-Text Search</h3><h3 id="26-4-Other-Data-Types"><a href="#26-4-Other-Data-Types" class="headerlink" title="26.4 Other Data Types"></a><a name="cp4"></a>26.4 Other Data Types</h3>]]></content>
     
     
     <categories>
@@ -1655,11 +1655,11 @@
   
   
   <entry>
-    <title>ch22. Hashing</title>
-    <link href="/2025/05/05/DB/PostgreSQL14_Internals/ch22/ch22/"/>
-    <url>/2025/05/05/DB/PostgreSQL14_Internals/ch22/ch22/</url>
+    <title>ch21. Nested Loop</title>
+    <link href="/2025/05/05/DB/PostgreSQL14_Internals/ch21/ch21/"/>
+    <url>/2025/05/05/DB/PostgreSQL14_Internals/ch21/ch21/</url>
     
-    <content type="html"><![CDATA[<h2 id="ch22-Hashing"><a href="#ch22-Hashing" class="headerlink" title="ch22. Hashing"></a>ch22. Hashing</h2><p>本章主要内容如下：</p><table><thead><tr><th>Chapter Contents</th></tr></thead><tbody><tr><td><a href="#cp1">22.1 Hash Joins</a></td></tr><tr><td><a href="#cp2">22.2 Distinct Values and Grouping</a></td></tr></tbody></table><h3 id="22-1-Join-Types-and-Methods"><a href="#22-1-Join-Types-and-Methods" class="headerlink" title="22.1 Join Types and Methods"></a><a name="cp1"></a>22.1 Join Types and Methods</h3><h3 id="22-2-Nested-Loop-Joins"><a href="#22-2-Nested-Loop-Joins" class="headerlink" title="22.2 Nested Loop Joins"></a><a name="cp2"></a>22.2 Nested Loop Joins</h3>]]></content>
+    <content type="html"><![CDATA[<h2 id="ch21-Nested-Loop"><a href="#ch21-Nested-Loop" class="headerlink" title="ch21. Nested Loop"></a>ch21. Nested Loop</h2><p>本章主要内容如下：</p><table><thead><tr><th>Chapter Contents</th></tr></thead><tbody><tr><td><a href="#cp1">21.1 Join Types and Methods</a></td></tr><tr><td><a href="#cp2">21.2 Nested Loop Joins</a></td></tr></tbody></table><h3 id="21-1-Join-Types-and-Methods"><a href="#21-1-Join-Types-and-Methods" class="headerlink" title="21.1 Join Types and Methods"></a><a name="cp1"></a>21.1 Join Types and Methods</h3><h3 id="21-2-Nested-Loop-Joins"><a href="#21-2-Nested-Loop-Joins" class="headerlink" title="21.2 Nested Loop Joins"></a><a name="cp2"></a>21.2 Nested Loop Joins</h3>]]></content>
     
     
     <categories>
@@ -1686,11 +1686,11 @@
   
   
   <entry>
-    <title>ch21. Nested Loop</title>
-    <link href="/2025/05/05/DB/PostgreSQL14_Internals/ch21/ch21/"/>
-    <url>/2025/05/05/DB/PostgreSQL14_Internals/ch21/ch21/</url>
+    <title>ch22. Hashing</title>
+    <link href="/2025/05/05/DB/PostgreSQL14_Internals/ch22/ch22/"/>
+    <url>/2025/05/05/DB/PostgreSQL14_Internals/ch22/ch22/</url>
     
-    <content type="html"><![CDATA[<h2 id="ch21-Nested-Loop"><a href="#ch21-Nested-Loop" class="headerlink" title="ch21. Nested Loop"></a>ch21. Nested Loop</h2><p>本章主要内容如下：</p><table><thead><tr><th>Chapter Contents</th></tr></thead><tbody><tr><td><a href="#cp1">21.1 Join Types and Methods</a></td></tr><tr><td><a href="#cp2">21.2 Nested Loop Joins</a></td></tr></tbody></table><h3 id="21-1-Join-Types-and-Methods"><a href="#21-1-Join-Types-and-Methods" class="headerlink" title="21.1 Join Types and Methods"></a><a name="cp1"></a>21.1 Join Types and Methods</h3><h3 id="21-2-Nested-Loop-Joins"><a href="#21-2-Nested-Loop-Joins" class="headerlink" title="21.2 Nested Loop Joins"></a><a name="cp2"></a>21.2 Nested Loop Joins</h3>]]></content>
+    <content type="html"><![CDATA[<h2 id="ch22-Hashing"><a href="#ch22-Hashing" class="headerlink" title="ch22. Hashing"></a>ch22. Hashing</h2><p>本章主要内容如下：</p><table><thead><tr><th>Chapter Contents</th></tr></thead><tbody><tr><td><a href="#cp1">22.1 Hash Joins</a></td></tr><tr><td><a href="#cp2">22.2 Distinct Values and Grouping</a></td></tr></tbody></table><h3 id="22-1-Join-Types-and-Methods"><a href="#22-1-Join-Types-and-Methods" class="headerlink" title="22.1 Join Types and Methods"></a><a name="cp1"></a>22.1 Join Types and Methods</h3><h3 id="22-2-Nested-Loop-Joins"><a href="#22-2-Nested-Loop-Joins" class="headerlink" title="22.2 Nested Loop Joins"></a><a name="cp2"></a>22.2 Nested Loop Joins</h3>]]></content>
     
     
     <categories>
